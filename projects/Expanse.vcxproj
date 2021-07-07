@@ -162,9 +162,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Main.cpp" />
+    <ClCompile Include="..\src\Utils\Random.cpp" />
     <ClCompile Include="..\src\Utils\SDL_Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Utils\Array2D.h" />
+    <ClInclude Include="..\src\Utils\Math.h" />
+    <ClInclude Include="..\src\Utils\Random.h" />
+    <ClInclude Include="..\src\Utils\RectPoints.h" />
     <ClInclude Include="..\src\Utils\SDL_Utils.h" />
   </ItemGroup>
   <ItemGroup>
