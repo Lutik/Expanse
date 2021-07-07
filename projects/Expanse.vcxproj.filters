@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{a4d38c3f-1cee-465a-8aa9-89d9e37afd06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utils">
+      <UniqueIdentifier>{880989f2-aab1-4ebd-acc3-540c1a7e3d0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="copy_dll">
+      <UniqueIdentifier>{b0afdd4a-fdcd-47f8-a7be-1a1037266264}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="copy_dll\x64">
+      <UniqueIdentifier>{1ce182ad-26a7-4783-8196-5e28ba79eec3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="copy_dll\x86">
+      <UniqueIdentifier>{3022da4d-7617-453c-9245-ea62c338f927}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\Main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Utils\SDL_Utils.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Utils\SDL_Utils.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\libjpeg-9.dll">
+      <Filter>copy_dll\x64</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\libpng16-16.dll">
+      <Filter>copy_dll\x64</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\libtiff-5.dll">
+      <Filter>copy_dll\x64</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\libwebp-7.dll">
+      <Filter>copy_dll\x64</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2-2.0.14\lib\x64\SDL2.dll">
+      <Filter>copy_dll\x64</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\SDL2_image.dll">
+      <Filter>copy_dll\x64</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\zlib1.dll">
+      <Filter>copy_dll\x64</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\libjpeg-9.dll">
+      <Filter>copy_dll\x86</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\libpng16-16.dll">
+      <Filter>copy_dll\x86</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\libtiff-5.dll">
+      <Filter>copy_dll\x86</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\libwebp-7.dll">
+      <Filter>copy_dll\x86</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2-2.0.14\lib\x86\SDL2.dll">
+      <Filter>copy_dll\x86</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\SDL2_image.dll">
+      <Filter>copy_dll\x86</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\zlib1.dll">
+      <Filter>copy_dll\x86</Filter>
+    </CopyFileToFolders>
+  </ItemGroup>
+</Project>
