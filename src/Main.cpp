@@ -1,5 +1,5 @@
  
-#include "Utils/SDL_Utils.h"
+#include "SDL_Utils.h"
 
 #include <GL/glew.h>
 

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="gtest">
+      <UniqueIdentifier>{0b495799-e4af-4ead-907f-c29e70ea62af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{563446a0-f654-428e-8d12-cdca4fa1dadb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest_main.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-death-test.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-filepath.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-matchers.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-port.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-printers.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-test-part.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-typed-test.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tests\Array2DTests.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tests\MathTests.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-internal-inl.h">
+      <Filter>gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\tests\TestUtils.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

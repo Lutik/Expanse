@@ -21,17 +21,14 @@
     <ClCompile Include="..\src\Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Utils\SDL_Utils.cpp">
-      <Filter>src\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Utils\Random.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\SDL_Utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Utils\SDL_Utils.h">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Utils\Array2D.h">
       <Filter>src\Utils</Filter>
     </ClInclude>
@@ -43,6 +40,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Utils\RectPoints.h">
       <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SDL_Utils.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -162,15 +162,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Main.cpp" />
+    <ClCompile Include="..\src\SDL_Utils.cpp" />
     <ClCompile Include="..\src\Utils\Random.cpp" />
-    <ClCompile Include="..\src\Utils\SDL_Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\SDL_Utils.h" />
     <ClInclude Include="..\src\Utils\Array2D.h" />
     <ClInclude Include="..\src\Utils\Math.h" />
     <ClInclude Include="..\src\Utils\Random.h" />
     <ClInclude Include="..\src\Utils\RectPoints.h" />
-    <ClInclude Include="..\src\Utils\SDL_Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\thidrparty\SDL2-2.0.14\lib\x64\SDL2.dll">
@@ -273,6 +273,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Utils\Utils.vcxproj">
+      <Project>{ff31b5f0-e166-40f4-bbcf-67be83d6889e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,7 +2,7 @@
 
 #include <random>
 
-#include "Utils/Math.h"
+#include "Math.h"
 
 namespace Expanse
 {
