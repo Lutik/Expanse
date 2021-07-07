@@ -18,7 +18,7 @@ namespace SDL
 	class Window
 	{
 	public:
-		Window(const char* title, int width, int height);
+		Window(const char* title, int width, int height, Uint32 Flags = 0);
 		~Window();
 
 		Window(const Window& other) = delete;
@@ -27,6 +27,25 @@ namespace SDL
 		operator bool() const { return window != nullptr; }
 
 	protected:
-		SDL_Window* window = nullptr;
+		SDL_Window* window = nullptr;		
+	};
+
+	struct OpenGLWindowParams
+	{
+		int majorVersion = 3;
+		int minorVersion = 1;
+		int swapInterval = 1;
+	};
+	class WindowOpenGL : public Window
+	{
+	public:
+		WindowOpenGL(const char* title, int width, int height, const OpenGLWindowParams& params = {});
+		~WindowOpenGL();
+
+		operator bool() const { return window && context; }
+
+		void SwapBuffers();
+	protected:
+		SDL_GLContext context;
 	};
 }
