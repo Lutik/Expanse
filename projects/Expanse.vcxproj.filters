@@ -4,9 +4,6 @@
     <Filter Include="src">
       <UniqueIdentifier>{a4d38c3f-1cee-465a-8aa9-89d9e37afd06}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Utils">
-      <UniqueIdentifier>{880989f2-aab1-4ebd-acc3-540c1a7e3d0d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="copy_dll">
       <UniqueIdentifier>{b0afdd4a-fdcd-47f8-a7be-1a1037266264}</UniqueIdentifier>
     </Filter>
@@ -21,26 +18,11 @@
     <ClCompile Include="..\src\Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Utils\Random.cpp">
-      <Filter>src\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\SDL_Utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Utils\Array2D.h">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Utils\Math.h">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Utils\Random.h">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Utils\RectPoints.h">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\SDL_Utils.h">
       <Filter>src</Filter>
     </ClInclude>

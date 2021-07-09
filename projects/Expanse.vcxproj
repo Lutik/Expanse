@@ -163,14 +163,9 @@
   <ItemGroup>
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\SDL_Utils.cpp" />
-    <ClCompile Include="..\src\Utils\Random.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\SDL_Utils.h" />
-    <ClInclude Include="..\src\Utils\Array2D.h" />
-    <ClInclude Include="..\src\Utils\Math.h" />
-    <ClInclude Include="..\src\Utils\Random.h" />
-    <ClInclude Include="..\src\Utils\RectPoints.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\thidrparty\SDL2-2.0.14\lib\x64\SDL2.dll">
