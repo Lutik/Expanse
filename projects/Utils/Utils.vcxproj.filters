@@ -16,6 +16,9 @@
     <ClInclude Include="..\..\src\Utils\Logger\Logger.h">
       <Filter>Utils\Logger</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Utils\Utils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utils">
@@ -31,6 +34,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Utils\Logger\Logger.cpp">
       <Filter>Utils\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Utils\Utils.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
