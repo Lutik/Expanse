@@ -1,31 +1,33 @@
  
 #include "SDL_Utils.h"
 
-#include <GL/glew.h>
+#include "Render/Renderer.h"
 
-void InitRender()
+SDL::WindowOpenGL CreateWindow()
 {
-    glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
-}
-
-void Draw()
-{
-    glClear(GL_COLOR_BUFFER_BIT);
+    const SDL::GLContextParams params{
+        .version = {3, 3},
+        .swap_interval = 1,
+    };
+    return SDL::WindowOpenGL{ "Expanse", 1440, 810, params };
 }
 
 int main(int argc, char* args[])
 {
+    using namespace Expanse;
+
 	// Init SDL
     SDL::System sdl;
 	if (!sdl)
 		return 0;
 
 	// Create main window
-	SDL::WindowOpenGL window{ "Expanse", 1440, 810 };
+    auto window = CreateWindow();
 	if (!window)
 		return 0;
 
-    InitRender();
+    OpenGLRenderer renderer;
+    renderer.Init();
 
     // Main loop
     bool quit = false;
@@ -39,7 +41,7 @@ int main(int argc, char* args[])
             }
         }
 
-        Draw();
+        renderer.ClearFrame();
 
         window.SwapBuffers();
     }

@@ -4,6 +4,8 @@
 #include <SDL_image.h>
 #include <GL/glew.h>
 
+#include <utility>
+
 namespace SDL
 {
 	System::System()
@@ -27,36 +29,77 @@ namespace SDL
 		SDL_Quit();
 	}
 
+	/**********************************************************************************/
+
 	Window::Window(const char* title, int width, int height, Uint32 flags)
 	{
 		window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | flags);		
 	}
 
 	Window::~Window()
-	{	
-		SDL_DestroyWindow(window);
+	{
+		if (window) {
+			SDL_DestroyWindow(window);
+		}
 	}
 
-	WindowOpenGL::WindowOpenGL(const char* title, int width, int height, const OpenGLWindowParams& params)
+	Window::Window(Window&& other)
+	{
+		window = std::exchange(other.window, nullptr);
+	}
+
+	Window& Window::operator=(Window&& other)
+	{
+		window = std::exchange(other.window, nullptr);
+		return *this;
+	}
+
+	/**********************************************************************************/
+
+	WindowOpenGL::WindowOpenGL(const char* title, int width, int height, const GLContextParams& params)
 		: Window(title, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL)
 	{
 		if (window)
 		{
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, params.majorVersion);
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, params.minorVersion);
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-			context = SDL_GL_CreateContext(window);
-			if (context)
-			{
-				SDL_GL_SetSwapInterval(params.swapInterval); // use VSync
-			}
+			context = CreateContext(params);
 		}
 	}
 
 	WindowOpenGL::~WindowOpenGL()
 	{
 		SDL_GL_DeleteContext(context);
+	}
+
+	WindowOpenGL::WindowOpenGL(WindowOpenGL&& other)
+		: Window(std::move(other))
+	{
+		context = std::exchange(other.context, nullptr);
+	}
+
+	WindowOpenGL& WindowOpenGL::operator=(WindowOpenGL&& other)
+	{
+		Window::operator=(std::move(other));
+		context = std::exchange(other.context, nullptr);
+		return *this;
+	}
+
+	SDL_GLContext WindowOpenGL::CreateContext(const GLContextParams& params)
+	{
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, params.version.major);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, params.version.minor);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, params.depth_size);
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+		SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+		if (gl_context)
+		{
+			SDL_GL_SetSwapInterval(params.swap_interval); // use VSync
+		}
+
+		return gl_context;
 	}
 
 	void WindowOpenGL::SwapBuffers()

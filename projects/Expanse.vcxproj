@@ -275,6 +275,9 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Render\Render.vcxproj">
+      <Project>{9e16341a-c487-4909-9536-79b7a5a0f8d8}</Project>
+    </ProjectReference>
     <ProjectReference Include="Utils\Utils.vcxproj">
       <Project>{ff31b5f0-e166-40f4-bbcf-67be83d6889e}</Project>
     </ProjectReference>
