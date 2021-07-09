@@ -1,12 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="..\..\src\Utils\Array2D.h" />
-    <ClInclude Include="..\..\src\Utils\Math.h" />
-    <ClInclude Include="..\..\src\Utils\Random.h" />
-    <ClInclude Include="..\..\src\Utils\RectPoints.h" />
+    <ClInclude Include="..\..\src\Utils\RectPoints.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utils\Array2D.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utils\Math.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utils\Random.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utils\Logger\Logger.h">
+      <Filter>Utils\Logger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Utils\Random.cpp" />
+    <Filter Include="Utils">
+      <UniqueIdentifier>{4e2e5d67-d861-4cd2-b76f-d66b40d668d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Logger">
+      <UniqueIdentifier>{8546defa-2596-485a-a891-a1d04d4ca199}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\Utils\Random.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Utils\Logger\Logger.cpp">
+      <Filter>Utils\Logger</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

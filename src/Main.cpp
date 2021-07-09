@@ -2,6 +2,7 @@
 #include "SDL_Utils.h"
 
 #include "Render/Renderer.h"
+#include "Utils/Logger/Logger.h"
 
 SDL::WindowOpenGL CreateWindow()
 {
@@ -15,6 +16,8 @@ SDL::WindowOpenGL CreateWindow()
 int main(int argc, char* args[])
 {
     using namespace Expanse;
+
+    Log::init();
 
 	// Init SDL
     SDL::System sdl;
