@@ -43,17 +43,6 @@ namespace SDL
 		}
 	}
 
-	Window::Window(Window&& other)
-	{
-		window = std::exchange(other.window, nullptr);
-	}
-
-	Window& Window::operator=(Window&& other)
-	{
-		window = std::exchange(other.window, nullptr);
-		return *this;
-	}
-
 	/**********************************************************************************/
 
 	WindowOpenGL::WindowOpenGL(const char* title, int width, int height, const GLContextParams& params)
@@ -68,19 +57,6 @@ namespace SDL
 	WindowOpenGL::~WindowOpenGL()
 	{
 		SDL_GL_DeleteContext(context);
-	}
-
-	WindowOpenGL::WindowOpenGL(WindowOpenGL&& other)
-		: Window(std::move(other))
-	{
-		context = std::exchange(other.context, nullptr);
-	}
-
-	WindowOpenGL& WindowOpenGL::operator=(WindowOpenGL&& other)
-	{
-		Window::operator=(std::move(other));
-		context = std::exchange(other.context, nullptr);
-		return *this;
 	}
 
 	SDL_GLContext WindowOpenGL::CreateContext(const GLContextParams& params)

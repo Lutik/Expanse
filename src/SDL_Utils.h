@@ -25,8 +25,6 @@ namespace SDL
 
 		Window(const Window& other) = delete;
 		Window& operator=(const Window& other) = delete;
-		Window(Window&& other);
-		Window& operator=(Window&& other);
 
 		operator bool() const { return window != nullptr; }
 
@@ -57,8 +55,6 @@ namespace SDL
 
 		WindowOpenGL(const WindowOpenGL& other) = delete;
 		WindowOpenGL& operator=(const WindowOpenGL& other) = delete;
-		WindowOpenGL(WindowOpenGL&& other);
-		WindowOpenGL& operator=(WindowOpenGL&& other);
 
 		operator bool() const { return window && context; }
 
