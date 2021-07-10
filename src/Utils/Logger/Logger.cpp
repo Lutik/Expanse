@@ -1,31 +1,27 @@
 #include "Utils/Logger/Logger.h"
 
 #include <fstream>
+#include <type_traits>
 
 namespace Expanse::Log
 {
-	struct ILogOutput
+	struct ILogSink
 	{
-		virtual ~ILogOutput() = default;
+		virtual ~ILogSink() = default;
 		virtual void Write(const std::string& msg) = 0;
 	};
 
-	class TextFileLogOutput : public ILogOutput
+	class TextFileSink : public ILogSink
 	{
 	public:
-		TextFileLogOutput(const std::string& filename)
+		TextFileSink(const std::string& filename)
+			: out(filename, std::ios::out)
 		{
-			out.open(filename, std::ios::out);
-		}
-
-		~TextFileLogOutput()
-		{
-			out.close();
 		}
 
 		void Write(const std::string& msg) override
 		{
-			out << msg;
+			out << msg << std::endl;
 		}
 
 	private:
@@ -38,21 +34,21 @@ namespace Expanse::Log
 	{
 	public:
 
-		template<typename Output, typename... Args>
-		void AddOutput(Args&&... args)
+		template<typename Sink, typename... Args> requires std::is_base_of_v<ILogSink, Sink>
+		void AddSink(Args&&... args)
 		{
-			outputs.push_back(std::make_unique<Output>(std::forward<Args>(args)...));
+			sinks.push_back(std::make_unique<Sink>(std::forward<Args>(args)...));
 		}
 
 		void Write(const std::string& msg)
 		{
-			for (auto& out : outputs) {
-				out->Write(msg);
+			for (auto& sink : sinks) {
+				sink->Write(msg);
 			}
 		}
 
 	private:
-		std::vector<std::unique_ptr<ILogOutput>> outputs;
+		std::vector<std::unique_ptr<ILogSink>> sinks;
 	};
 
 	/**********************************************************************************/
@@ -61,7 +57,7 @@ namespace Expanse::Log
 
 	void init()
 	{
-		logger.AddOutput<TextFileLogOutput>("log.txt");
+		logger.AddSink<TextFileSink>("log.txt");
 	}
 
 	void message(const std::string& msg)
