@@ -21,9 +21,15 @@
     <ClCompile Include="..\src\SDL_Utils.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Application.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\SDL_Utils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Application.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
