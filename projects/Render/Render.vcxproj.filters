@@ -9,9 +9,30 @@
     <ClCompile Include="..\..\src\Render\Renderer.cpp">
       <Filter>Render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Render\ShaderProgram.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Render\VertexArrayObject.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Render\pch.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Render\Renderer.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\ShaderProgram.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\VertexArrayObject.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\pch.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\VertexAttributes.h">
       <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>

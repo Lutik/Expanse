@@ -1,8 +1,16 @@
  
 #include "SDL_Utils.h"
 
+#include <GL/glew.h>
+
 #include "Render/Renderer.h"
 #include "Utils/Logger/Logger.h"
+
+#include "Render/ShaderProgram.h"
+#include "Render/VertexArrayObject.h"
+
+constexpr int WindowWidth = 1440;
+constexpr int WindowHeight = 810;
 
 SDL::WindowOpenGL CreateWindow()
 {
@@ -10,7 +18,38 @@ SDL::WindowOpenGL CreateWindow()
         .version = {3, 3},
         .swap_interval = 1,
     };
-    return SDL::WindowOpenGL{ "Expanse", 1440, 810, params };
+    return SDL::WindowOpenGL{ "Expanse", WindowWidth, WindowHeight, params };
+}
+
+namespace Expanse
+{
+    class Application
+    {
+    public:
+        void Init()
+        {
+            shader = { "content/shaders/basic.vs", "content/shaders/basic.fs" };
+
+            const std::vector<Render::VertexP2> verts = {
+                {{-1.0f, -1.0f}}, {{1.0f, -1.0f}}, {{0.0f, 1.0f}}
+            };
+            vao.SetVertices(verts);
+        }
+
+        void Tick()
+        {
+            renderer.ClearFrame();
+
+            shader.Bind();
+            vao.Draw();
+        }
+
+    private:
+        OpenGLRenderer renderer;
+
+        Render::ShaderProgram shader;
+        Render::VertexArray vao;
+    };
 }
 
 int main(int argc, char* args[])
@@ -29,8 +68,8 @@ int main(int argc, char* args[])
 	if (!window)
 		return 0;
 
-    OpenGLRenderer renderer;
-    renderer.Init();
+    Application app;
+    app.Init();
 
     // Main loop
     bool quit = false;
@@ -44,7 +83,7 @@ int main(int argc, char* args[])
             }
         }
 
-        renderer.ClearFrame();
+        app.Tick();
 
         window.SwapBuffers();
     }

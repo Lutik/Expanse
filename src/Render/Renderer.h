@@ -5,8 +5,11 @@ namespace Expanse
 	class OpenGLRenderer
 	{
 	public:
-		void Init();
+		OpenGLRenderer();
 
 		void ClearFrame();
+
+	private:
+		void LogOpenGLInfo();
 	};
 }
