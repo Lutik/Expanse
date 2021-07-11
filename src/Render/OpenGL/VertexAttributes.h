@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Utils/Math.h"
+#include "Render/VertexTypes.h"
 
-namespace Expanse::Render
+namespace Expanse::Render::GL
 {
 	enum VertexAttributeLocation : int
 	{
@@ -50,10 +50,6 @@ namespace Expanse::Render
 	/*
 	* Built-in vertex types descriptions
 	*/
-
-	struct VertexP2 {
-		FPoint position;
-	};
 
 	VERTEX_FORMAT(VertexP2) {
 		VERT_ATTR(VertexP2, position, POSITION)

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Render/VertexAttributes.h"
+#include "VertexAttributes.h"
 
-namespace Expanse::Render
+namespace Expanse::Render::GL
 {
 	class VertexArray
 	{

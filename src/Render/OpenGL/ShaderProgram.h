@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Expanse::Render
+namespace Expanse::Render::GL
 {
 	class ShaderProgram
 	{

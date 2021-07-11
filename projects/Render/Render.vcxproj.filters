@@ -4,35 +4,47 @@
     <Filter Include="Render">
       <UniqueIdentifier>{632f9f84-ea35-431b-b8a6-b5ab685dce4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\OpenGL">
+      <UniqueIdentifier>{3eb14e12-16c3-4ded-a7bc-8b1db07dea49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Render\Renderer.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Render\ShaderProgram.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Render\VertexArrayObject.cpp">
+    <ClCompile Include="..\..\src\Render\IRenderer.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Render\pch.cpp">
       <Filter>Render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Render\OpenGL\Renderer.cpp">
+      <Filter>Render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Render\OpenGL\ShaderProgram.cpp">
+      <Filter>Render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Render\OpenGL\VertexArrayObject.cpp">
+      <Filter>Render\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Render\Renderer.h">
-      <Filter>Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Render\ShaderProgram.h">
-      <Filter>Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Render\VertexArrayObject.h">
+    <ClInclude Include="..\..\src\Render\IRenderer.h">
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Render\pch.h">
       <Filter>Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Render\VertexAttributes.h">
+    <ClInclude Include="..\..\src\Render\OpenGL\Renderer.h">
+      <Filter>Render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\OpenGL\ShaderProgram.h">
+      <Filter>Render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\OpenGL\VertexArrayObject.h">
+      <Filter>Render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\OpenGL\VertexAttributes.h">
+      <Filter>Render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\VertexTypes.h">
       <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,11 +1,11 @@
 #include "pch.h"
 
-#include "Render/Renderer.h"
+#include "Render/OpenGL/Renderer.h"
 #include "Utils/Logger/Logger.h"
 
-namespace Expanse
+namespace Expanse::Render::GL
 {
-	OpenGLRenderer::OpenGLRenderer()
+	Renderer::Renderer()
 	{
 		glewInit();
 
@@ -14,12 +14,12 @@ namespace Expanse
 		glClearColor(0.0f, 0.6f, 0.4f, 1.0f);
 	}
 
-	void OpenGLRenderer::ClearFrame()
+	void Renderer::ClearFrame()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRenderer::LogOpenGLInfo()
+	void Renderer::LogOpenGLInfo()
 	{
 		const auto vendor = (const char*)glGetString(GL_VENDOR);
 		const auto renderer = (const char*)glGetString(GL_RENDERER);

@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "Render/ShaderProgram.h"
-#include "Render/VertexAttributes.h"
+#include "ShaderProgram.h"
+#include "VertexAttributes.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
@@ -9,7 +9,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace Expanse::Render
+namespace Expanse::Render::GL
 {
 	class ShaderProgramBuilder
 	{

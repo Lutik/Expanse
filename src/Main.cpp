@@ -3,11 +3,11 @@
 
 #include <GL/glew.h>
 
-#include "Render/Renderer.h"
+#include "Render/IRenderer.h"
 #include "Utils/Logger/Logger.h"
 
-#include "Render/ShaderProgram.h"
-#include "Render/VertexArrayObject.h"
+#include "Render/OpenGL/ShaderProgram.h"
+#include "Render/OpenGL/VertexArrayObject.h"
 
 constexpr int WindowWidth = 1440;
 constexpr int WindowHeight = 810;
@@ -28,6 +28,7 @@ namespace Expanse
     public:
         void Init()
         {
+            renderer = Render::CreateOpenGLRenderer();
             shader = { "content/shaders/basic.vs", "content/shaders/basic.fs" };
 
             const std::vector<Render::VertexP2> verts = {
@@ -38,17 +39,17 @@ namespace Expanse
 
         void Tick()
         {
-            renderer.ClearFrame();
+            renderer->ClearFrame();
 
             shader.Bind();
             vao.Draw();
         }
 
     private:
-        OpenGLRenderer renderer;
+        std::unique_ptr<Render::IRenderer> renderer;
 
-        Render::ShaderProgram shader;
-        Render::VertexArray vao;
+        Render::GL::ShaderProgram shader;
+        Render::GL::VertexArray vao;
     };
 }
 

@@ -182,23 +182,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Render\OpenGL\Renderer.cpp" />
+    <ClCompile Include="..\..\src\Render\OpenGL\ShaderProgram.cpp" />
+    <ClCompile Include="..\..\src\Render\OpenGL\VertexArrayObject.cpp" />
     <ClCompile Include="..\..\src\Render\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\src\Render\Renderer.cpp" />
-    <ClCompile Include="..\..\src\Render\ShaderProgram.cpp" />
-    <ClCompile Include="..\..\src\Render\VertexArrayObject.cpp" />
+    <ClCompile Include="..\..\src\Render\IRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Render\OpenGL\Renderer.h" />
+    <ClInclude Include="..\..\src\Render\OpenGL\ShaderProgram.h" />
+    <ClInclude Include="..\..\src\Render\OpenGL\VertexArrayObject.h" />
+    <ClInclude Include="..\..\src\Render\OpenGL\VertexAttributes.h" />
     <ClInclude Include="..\..\src\Render\pch.h" />
-    <ClInclude Include="..\..\src\Render\Renderer.h" />
-    <ClInclude Include="..\..\src\Render\ShaderProgram.h" />
-    <ClInclude Include="..\..\src\Render\VertexArrayObject.h" />
-    <ClInclude Include="..\..\src\Render\VertexAttributes.h" />
+    <ClInclude Include="..\..\src\Render\IRenderer.h" />
+    <ClInclude Include="..\..\src\Render\VertexTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utils\Utils.vcxproj">

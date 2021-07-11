@@ -1,8 +1,8 @@
 #include "pch.h"
 
-#include "Render/VertexArrayObject.h"
+#include "VertexArrayObject.h"
 
-namespace Expanse::Render
+namespace Expanse::Render::GL
 {
 	VertexArray::~VertexArray()
 	{
