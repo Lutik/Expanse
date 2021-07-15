@@ -11,37 +11,16 @@
 
 namespace Expanse::Render::GL
 {
-	class ShaderProgramBuilder
+	namespace
 	{
-	public:
-		~ShaderProgramBuilder()
+		GLenum GLShaderTypeFromString(std::string_view type_str)
 		{
-			for (auto shader : shaders) {
-				glDeleteShader(shader);
-			}
-		}
-
-		void AddShader(GLenum type, const std::string& source_file)
-		{
-			// load shader source code
-			const std::string source = File::LoadContents(source_file);
-			if (source.empty()) {
-				Log::message("Shader source not found: {}", source_file);
-				return;
-			}
-
-			// compile shader
-			auto handle = glCreateShader(type);
-			const char* source_ptr = source.data();
-			const auto source_length = static_cast<GLint>(source.size());
-			glShaderSource(handle, 1, &source_ptr, &source_length);
-			glCompileShader(handle);
-
-			// check compile status
-			if (!CheckShaderCompileStatus(handle))
-				return;
-
-			shaders.push_back(handle);
+			GLenum shader_type = GL_VERTEX_SHADER;
+			if (type_str == "vertex")
+				shader_type = GL_VERTEX_SHADER;
+			else if (type_str == "fragment")
+				shader_type = GL_FRAGMENT_SHADER;
+			return shader_type;
 		}
 
 		bool CheckShaderCompileStatus(GLuint handle)
@@ -59,7 +38,7 @@ namespace Expanse::Render::GL
 			return (compileStatus == GL_TRUE);
 		}
 
-		bool CheckLinkStatus(GLuint program)
+		bool CheckProgramLinkStatus(GLuint program)
 		{
 			GLint linkStatus = GL_FALSE;
 			glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
@@ -74,9 +53,64 @@ namespace Expanse::Render::GL
 			return (linkStatus == GL_TRUE);
 		}
 
-		bool Link()
+		struct ShaderSourceBlock {
+			std::string_view type;
+			std::string_view source;
+		};
+
+		ShaderSourceBlock SplitShaderProgramSourceBlock(std::string_view block)
 		{
-			program = glCreateProgram();
+			const auto type_end = block.find(' ', 1);
+			if (type_end != std::string_view::npos) {
+				const auto type = block.substr(1, type_end - 1);
+				const auto source = block.substr(type_end + 1);
+				return { type, source };
+			}
+			return {};
+		}
+
+		std::vector<ShaderSourceBlock> SplitShaderProgramSource(std::string_view program_source)
+		{
+			std::vector<ShaderSourceBlock> shader_sources;
+
+			auto block_start = program_source.find('$', 0);
+			while (block_start != std::string_view::npos)
+			{
+				const auto block_end = program_source.find('$', block_start + 1);
+				const auto block_view = program_source.substr(block_start, block_end - block_start);
+
+				shader_sources.push_back(SplitShaderProgramSourceBlock(block_view));
+
+				block_start = block_end;
+			}
+
+			return shader_sources;
+		}
+
+		GLuint CreateShader(GLenum type, std::string_view source)
+		{
+			// compile shader
+			auto handle = glCreateShader(type);
+			const char* source_ptr = source.data();
+			const auto source_length = static_cast<GLint>(source.size());
+			glShaderSource(handle, 1, &source_ptr, &source_length);
+			glCompileShader(handle);
+
+			// check compile status
+			if (CheckShaderCompileStatus(handle))
+			{
+				return handle;
+			}
+			else
+			{
+				glDeleteShader(handle);
+				return 0;
+			}
+		}
+
+		GLuint LinkProgram(const std::vector<GLuint>& shaders)
+		{
+			GLuint program = glCreateProgram();
 
 			// attach all shaders
 			for (auto shader : shaders) {
@@ -88,43 +122,59 @@ namespace Expanse::Render::GL
 				glBindAttribLocation(program, loc, name);
 			}
 
-			// setup uniform locations
-
-			// link
 			glLinkProgram(program);
-			const bool linked = CheckLinkStatus(program);
 
-			// detach shaders
 			for (auto shader : shaders) {
 				glDetachShader(program, shader);
 			}
 
-			// cleanup if link unsuccessful
-			if (!linked) {
+			if (!CheckProgramLinkStatus(program))
+			{
 				glDeleteProgram(program);
 				program = 0;
 			}
 
-			return linked;
+			return program;
 		}
 
-		GLuint GetProgram() const { return program; }
-	private:
-		GLuint program;
-		std::vector<GLuint> shaders;
-	};
+		GLuint LoadShaderProgramFromFile(const std::string& source_file)
+		{
+			const std::string program_source = File::LoadContents(source_file);
+			if (program_source.empty()) {
+				Log::message("Shader program source not found: {}", source_file);
+				return 0;
+			}
+
+			// split program source
+			const auto shader_sources = SplitShaderProgramSource(program_source);
+
+			// compile individual shaders
+			std::vector<GLuint> shaders;
+			for (auto [type, source] : shader_sources)
+			{
+				GLuint shader = CreateShader(GLShaderTypeFromString(type), source);
+				if (shader) {
+					shaders.push_back(shader);
+				}
+			}
+
+			// create and link program
+			GLuint program = LinkProgram(shaders);
+
+			for (auto shader : shaders) {
+				glDeleteShader(shader);
+			}
+
+			return program;
+		}
+	}
+
 
 	/**********************************************************************************/
 
-	ShaderProgram::ShaderProgram(const std::string& vs_file, const std::string& fs_file)
+	ShaderProgram::ShaderProgram(const std::string& source_file)
 	{
-		ShaderProgramBuilder builder;
-
-		builder.AddShader(GL_VERTEX_SHADER, vs_file);
-		builder.AddShader(GL_FRAGMENT_SHADER, fs_file);
-		builder.Link();
-
-		program = builder.GetProgram();
+		program = LoadShaderProgramFromFile(source_file);
 	}
 
 	ShaderProgram::~ShaderProgram()

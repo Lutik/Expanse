@@ -1,0 +1,19 @@
+$vertex #version 330 core
+
+in vec2 position;
+
+void main()
+{
+  gl_Position = vec4(position, 0, 1);
+}
+
+$fragment #version 330 core
+
+uniform vec4 u_color = vec4(0.0, 0.4, 0.6, 1.0);
+
+out vec4 fragment_color;
+
+void main()
+{
+  fragment_color = u_color;
+}

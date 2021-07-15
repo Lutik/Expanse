@@ -6,7 +6,7 @@ namespace Expanse::Render::GL
 	{
 	public:
 		ShaderProgram() = default;
-		ShaderProgram(const std::string& vs_file, const std::string& fs_file);
+		ShaderProgram(const std::string& source_file);
 
 		~ShaderProgram();
 
