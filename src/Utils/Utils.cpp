@@ -9,16 +9,24 @@ namespace Expanse
 		std::string LoadContents(const std::string& path)
 		{
 			std::string contents;
-			std::ifstream in{ path, std::ios::in };
-			if (in)
-			{
-				in.seekg(0, std::ios::end);
-				contents.resize(in.tellg());
-				in.seekg(0, std::ios::beg);
-				in.read(contents.data(), contents.size());
-				in.close();			
+			std::ifstream file{ path.data() };
+
+			char buffer[256];
+			while (file.read(buffer, std::size(buffer))) {
+				contents.append(buffer, file.gcount());
 			}
+			contents.append(buffer, file.gcount());
+
 			return contents;
+		}
+
+		void WriteContents(const std::string& path, std::string_view content)
+		{
+			std::ofstream file{ path };
+			if (file) {
+				file << content;
+				file.close();
+			}
 		}
 	}
 }
