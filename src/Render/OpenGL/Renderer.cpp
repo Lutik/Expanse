@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "Render/OpenGL/Renderer.h"
+
 #include "Utils/Logger/Logger.h"
 
 namespace Expanse::Render::GL
@@ -31,4 +32,39 @@ namespace Expanse::Render::GL
 		Log::message("GL version: {}", gl_version);
 		Log::message("GLSL version: {}", glsl_version);
 	}
+
+
+	Material Renderer::CreateMaterial(const std::string& file)
+	{
+		const auto shader = shaders.Create(file);
+		return { shader.index };
+	}
+
+	void Renderer::FreeMaterial(Material material)
+	{
+		shaders.Free({ material.index });
+	}
+
+	Mesh Renderer::CreateMesh()
+	{
+		return vertex_arrays.Create();
+	}
+
+	void Renderer::FreeMesh(Mesh mesh)
+	{
+		vertex_arrays.Free(mesh);
+	}
+
+	void Renderer::SetMeshVertices(Mesh mesh, VertexData data, const VertexLayout& layout)
+	{
+		vertex_arrays.SetVertices(mesh, data, layout);
+	}
+
+	void Renderer::Draw(Mesh mesh, Material material)
+	{
+		shaders.Use({ material.index });
+
+		vertex_arrays.Draw(mesh);
+	}
+	
 }

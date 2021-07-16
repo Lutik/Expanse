@@ -1,25 +1,25 @@
 #pragma once
 
+#include "Render/ResourceHandles.h"
+
 namespace Expanse::Render::GL
 {
-	class ShaderProgram
+	struct ShaderProgram : public Handle {};
+
+	class ShaderProgramsManager
 	{
 	public:
-		ShaderProgram() = default;
-		ShaderProgram(const std::string& source_file);
-
-		~ShaderProgram();
-
-		ShaderProgram(const ShaderProgram& other) = delete;
-		ShaderProgram& operator=(const ShaderProgram& other) = delete;
-		ShaderProgram(ShaderProgram&& other);
-		ShaderProgram& operator=(ShaderProgram&& other);
-
-		bool IsValid() const { return program != 0; }
-
-		void Bind();
+		ShaderProgram Create(const std::string& file);
+		void Free(ShaderProgram program);
+		void Use(ShaderProgram program);
 
 	private:
-		GLuint program = 0;
+		struct ShaderProgramResource {
+			GLuint id = 0;
+			size_t use_count = 0;
+			std::string name;
+		};
+		std::vector<ShaderProgramResource> shader_programs;
+		GLuint current_shader_program = 0;
 	};
 }

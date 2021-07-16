@@ -95,7 +95,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Render;$(SolutionDir)src;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\glm</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -118,7 +118,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Render;$(SolutionDir)src;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\glm</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -141,7 +141,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Render;$(SolutionDir)src;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\glm</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -164,7 +164,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Render;$(SolutionDir)src;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\glm</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -196,9 +196,9 @@
     <ClInclude Include="..\..\src\Render\OpenGL\Renderer.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\ShaderProgram.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\VertexArrayObject.h" />
-    <ClInclude Include="..\..\src\Render\OpenGL\VertexAttributes.h" />
     <ClInclude Include="..\..\src\Render\pch.h" />
     <ClInclude Include="..\..\src\Render\IRenderer.h" />
+    <ClInclude Include="..\..\src\Render\ResourceHandles.h" />
     <ClInclude Include="..\..\src\Render\VertexTypes.h" />
   </ItemGroup>
   <ItemGroup>

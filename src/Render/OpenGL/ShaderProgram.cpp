@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "ShaderProgram.h"
-#include "VertexAttributes.h"
+#include "VertexTypes.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
@@ -13,6 +13,20 @@ namespace Expanse::Render::GL
 {
 	namespace
 	{
+		struct VertexAttributePair
+		{
+			VertexElementUsage usage;
+			const char* name;
+		};
+
+		constexpr VertexAttributePair VertexAttributes[] = {
+			{ VertexElementUsage::POSITION, "position" },
+			{ VertexElementUsage::COLOR, "color" },
+			{ VertexElementUsage::TEXCOORD0, "uv" },
+			{ VertexElementUsage::TEXCOORD0, "uv0" },
+			{ VertexElementUsage::TEXCOORD1, "uv1" },
+		};
+
 		GLenum GLShaderTypeFromString(std::string_view type_str)
 		{
 			GLenum shader_type = GL_VERTEX_SHADER;
@@ -118,7 +132,8 @@ namespace Expanse::Render::GL
 			}
 
 			// setup attribute locations
-			for (auto [loc, name] : VertexAttributes) {
+			for (auto [usage, name] : VertexAttributes) {
+				const auto loc = static_cast<int>(usage);
 				glBindAttribLocation(program, loc, name);
 			}
 
@@ -135,6 +150,32 @@ namespace Expanse::Render::GL
 			}
 
 			return program;
+		}
+
+		std::vector<std::string> GetUniformNames(GLuint program)
+		{
+			std::vector<std::string> result;
+
+			GLint uniform_count = 0;
+			glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniform_count);
+			result.reserve(uniform_count);
+
+			GLint max_uniform_name_length = 0;
+			glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_uniform_name_length);
+
+			std::vector<char> buffer(max_uniform_name_length, 0);
+
+			for (GLint idx = 0; idx < uniform_count; ++idx)
+			{
+				GLsizei length = 0;
+				GLint size = 0;
+				GLenum type;
+				glGetActiveUniform(program, idx, max_uniform_name_length, &length, &size, &type, buffer.data());
+
+				result.emplace_back(buffer.data(), length);
+			}
+
+			return result;
 		}
 
 		GLuint LoadShaderProgramFromFile(const std::string& source_file)
@@ -161,6 +202,7 @@ namespace Expanse::Render::GL
 			// create and link program
 			GLuint program = LinkProgram(shaders);
 
+			// free shaders after program is built
 			for (auto shader : shaders) {
 				glDeleteShader(shader);
 			}
@@ -169,32 +211,68 @@ namespace Expanse::Render::GL
 		}
 	}
 
-
 	/**********************************************************************************/
 
-	ShaderProgram::ShaderProgram(const std::string& source_file)
+	void ShaderProgramsManager::Use(ShaderProgram program)
 	{
-		program = LoadShaderProgramFromFile(source_file);
+		if (!program.Valid()) return;
+
+		const GLuint id = shader_programs[program.index].id;
+		if (id != current_shader_program) {
+			glUseProgram(id);
+			current_shader_program = id;
+		}
 	}
 
-	ShaderProgram::~ShaderProgram()
+	template<class T, class Pred>
+	size_t FindFreeIndex(std::vector<T>& vec, Pred pred)
 	{
-		glDeleteProgram(program);
+		auto itr = std::find_if(vec.begin(), vec.end(), pred);
+		if (itr == vec.end())
+		{
+			vec.emplace_back();
+			return vec.size() - 1;
+		}
+		else
+		{
+			return std::distance(vec.begin(), itr);
+		}
 	}
 
-	ShaderProgram::ShaderProgram(ShaderProgram&& other)
+	ShaderProgram ShaderProgramsManager::Create(const std::string& file)
 	{
-		std::swap(program, other.program);
+		auto itr = std::find_if(shader_programs.begin(), shader_programs.end(), [&file](const auto& res) {
+			return res.name == file;
+		});
+
+		if (itr != shader_programs.end())
+		{
+			itr->use_count++;
+			const size_t index = itr - shader_programs.begin();
+			return { index };
+		}
+		else
+		{
+			const size_t index = FindFreeIndex(shader_programs, [](const auto& res) { return res.use_count == 0; });
+			auto& res = shader_programs[index];
+			res.id = LoadShaderProgramFromFile(file);
+			res.use_count = 1;
+			res.name = file;
+			return { index };
+		}
 	}
 
-	ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other)
+	void ShaderProgramsManager::Free(ShaderProgram handle)
 	{
-		std::swap(program, other.program);
-		return *this;
-	}
+		if (!handle.Valid()) return;
 
-	void ShaderProgram::Bind()
-	{
-		glUseProgram(program);
+		auto& res = shader_programs[handle.index];
+		res.use_count--;
+		if (res.use_count == 0)
+		{
+			glDeleteShader(res.id);
+			res.id = 0;
+			res.name.clear();
+		}
 	}
 }

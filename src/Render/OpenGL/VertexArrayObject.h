@@ -1,37 +1,33 @@
 #pragma once
 
-#include "VertexAttributes.h"
+#include "Render/VertexTypes.h"
+#include "Render/ResourceHandles.h"
 
 namespace Expanse::Render::GL
 {
-	class VertexArray
+	class VertexArrayManager
 	{
 	public:
-		VertexArray() = default;
-		~VertexArray();
+		Mesh Create();
+		void Free(Mesh handle);
+		void SetVertices(Mesh mesh, VertexData vertex_data, const VertexLayout& format);
+		void Draw(Mesh mesh);
 
-		VertexArray(const VertexArray& other) = delete;
-		VertexArray& operator=(const VertexArray& other) = delete;
-		VertexArray(VertexArray&& other);
-		VertexArray& operator=(VertexArray&& other);
-
-		template<typename Vertex> //requires(VertexFormat<Vertex>)
-		void SetVertices(const std::vector<Vertex>& vertices)
+	private:
+		struct VertexArray
 		{
-			SetVertices(vertices.data(), vertices.size(), sizeof(Vertex), VertexFormat<Vertex>);
-		}
+			GLuint vbo;
+			GLuint vao;
+			GLsizei vertex_count;
 
-		bool IsValid() const { return vao != 0; }
+			void Create();
+			void Free();
+			void SetVertices(VertexData vertex_data, const VertexLayout& format);
+			void Draw();
 
-		void Draw();
+			bool IsValid() const { return vao != 0; }
+		};
 
-	private:
-
-		void SetVertices(const void* vertices_data, size_t vertices_count, size_t vertex_size, const std::vector<VertexAttribDesc>& format);
-
-	private:
-		GLuint vao = 0;
-		GLuint vbo = 0;
-		GLsizei vertices = 0;
+		std::vector<VertexArray> vertex_arrays;
 	};
 }

@@ -5,19 +5,19 @@ namespace Expanse
     void Application::Init()
     {
         renderer = Render::CreateOpenGLRenderer();
-        shader = { "content/shaders/basic.txt" };
+
+        material = renderer->CreateMaterial("content/shaders/basic.txt");
+        mesh = renderer->CreateMesh();
 
         const std::vector<Render::VertexP2> verts = {
-            {{-1.0f, -1.0f}}, {{1.0f, -1.0f}}, {{0.0f, 1.0f}}
+            {{-0.8f, -0.9f}}, {{0.8f, -0.9f}}, {{0.0f, 0.9f}}
         };
-        vao.SetVertices(verts);
+        renderer->SetMeshVertices(mesh, verts);
     }
 
     void Application::Tick()
     {
         renderer->ClearFrame();
-
-        shader.Bind();
-        vao.Draw();
+        renderer->Draw(mesh, material);
     }
 }
