@@ -36,13 +36,22 @@ namespace Expanse::Render::GL
 
 	Material Renderer::CreateMaterial(const std::string& file)
 	{
-		const auto shader = shaders.Create(file);
-		return { shader.index };
+		return materials.Create(file);
+	}
+
+	Material Renderer::CreateMaterial(Material material)
+	{
+		return materials.Create(material);
 	}
 
 	void Renderer::FreeMaterial(Material material)
 	{
-		shaders.Free({ material.index });
+		materials.Free(material);
+	}
+
+	void Renderer::SetMaterialParameter(Material material, std::string_view name, const MaterialParameterValue& value)
+	{
+		materials.SetParameter(material, name, value);
 	}
 
 	Mesh Renderer::CreateMesh()
@@ -62,8 +71,7 @@ namespace Expanse::Render::GL
 
 	void Renderer::Draw(Mesh mesh, Material material)
 	{
-		shaders.Use({ material.index });
-
+		materials.Bind(material);
 		vertex_arrays.Draw(mesh);
 	}
 	

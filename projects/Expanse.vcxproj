@@ -94,7 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -130,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -148,7 +148,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>

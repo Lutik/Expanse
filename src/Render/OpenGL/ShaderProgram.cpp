@@ -2,6 +2,7 @@
 
 #include "ShaderProgram.h"
 #include "VertexTypes.h"
+#include "Utils.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
@@ -215,27 +216,12 @@ namespace Expanse::Render::GL
 
 	void ShaderProgramsManager::Use(ShaderProgram program)
 	{
-		if (!program.Valid()) return;
+		if (!program.IsValid()) return;
 
 		const GLuint id = shader_programs[program.index].id;
 		if (id != current_shader_program) {
 			glUseProgram(id);
 			current_shader_program = id;
-		}
-	}
-
-	template<class T, class Pred>
-	size_t FindFreeIndex(std::vector<T>& vec, Pred pred)
-	{
-		auto itr = std::find_if(vec.begin(), vec.end(), pred);
-		if (itr == vec.end())
-		{
-			vec.emplace_back();
-			return vec.size() - 1;
-		}
-		else
-		{
-			return std::distance(vec.begin(), itr);
 		}
 	}
 
@@ -253,7 +239,7 @@ namespace Expanse::Render::GL
 		}
 		else
 		{
-			const size_t index = FindFreeIndex(shader_programs, [](const auto& res) { return res.use_count == 0; });
+			const size_t index = GetFreeIndexInVector(shader_programs, [](const auto& res) { return res.IsFree(); });
 			auto& res = shader_programs[index];
 			res.id = LoadShaderProgramFromFile(file);
 			res.use_count = 1;
@@ -264,7 +250,7 @@ namespace Expanse::Render::GL
 
 	void ShaderProgramsManager::Free(ShaderProgram handle)
 	{
-		if (!handle.Valid()) return;
+		if (!handle.IsValid()) return;
 
 		auto& res = shader_programs[handle.index];
 		res.use_count--;
@@ -274,5 +260,39 @@ namespace Expanse::Render::GL
 			res.id = 0;
 			res.name.clear();
 		}
+	}
+
+	std::vector<ShaderUniformInfo> ShaderProgramsManager::GetShaderUnifromsInfo(ShaderProgram shader)
+	{
+		std::vector<ShaderUniformInfo> result;
+
+		if (!shader.IsValid()) return result;
+
+		const GLuint program = shader_programs[shader.index].id;
+
+		GLint uniform_count = 0;
+		glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniform_count);
+		result.reserve(uniform_count);
+
+		GLint max_uniform_name_length = 0;
+		glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_uniform_name_length);
+
+		std::vector<char> buffer(max_uniform_name_length + 1, 0);
+
+		for (GLint idx = 0; idx < uniform_count; ++idx)
+		{
+			GLsizei name_length = 0;
+			GLint size = 0;
+			GLenum type;
+			glGetActiveUniform(program, idx, max_uniform_name_length, &name_length, &size, &type, buffer.data());
+
+			const GLint loc = glGetUniformLocation(program, buffer.data());
+			
+			auto& uniform_info = result.emplace_back();
+			uniform_info.name = std::string(buffer.data(), name_length);
+			uniform_info.location = loc;
+		}
+
+		return result;
 	}
 }

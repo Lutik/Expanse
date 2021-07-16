@@ -2,8 +2,8 @@
 
 #include "Render/IRenderer.h"
 
-#include "Render/OpenGL/ShaderProgram.h"
 #include "Render/OpenGL/VertexArrayObject.h"
+#include "Render/OpenGL/MaterialManager.h"
 
 namespace Expanse::Render::GL
 {
@@ -15,7 +15,9 @@ namespace Expanse::Render::GL
 		void ClearFrame() override;
 
 		Material CreateMaterial(const std::string& file) override;
+		Material CreateMaterial(Material material) override;
 		void FreeMaterial(Material material) override;
+		void SetMaterialParameter(Material material, std::string_view name, const MaterialParameterValue& value) override;
 
 		Mesh CreateMesh() override;
 		void FreeMesh(Mesh mesh) override;
@@ -26,7 +28,7 @@ namespace Expanse::Render::GL
 	private:
 		void LogOpenGLInfo();
 
-		ShaderProgramsManager shaders;
 		VertexArrayManager vertex_arrays;
+		MaterialManager materials;
 	};
 }

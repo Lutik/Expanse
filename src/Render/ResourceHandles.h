@@ -6,7 +6,7 @@ namespace Expanse::Render
 	struct Handle
 	{
 		size_t index = InvalidHandleIndex;
-		bool Valid() const noexcept { return index != InvalidHandleIndex; }
+		bool IsValid() const noexcept { return index != InvalidHandleIndex; }
 	};
 
 	struct Material : public Handle {};

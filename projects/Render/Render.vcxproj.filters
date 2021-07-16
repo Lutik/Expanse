@@ -24,6 +24,12 @@
     <ClCompile Include="..\..\src\Render\OpenGL\VertexArrayObject.cpp">
       <Filter>Render\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Render\OpenGL\MaterialManager.cpp">
+      <Filter>Render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Render\MaterialParameters.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Render\IRenderer.h">
@@ -45,6 +51,15 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Render\ResourceHandles.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\OpenGL\Utils.h">
+      <Filter>Render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\OpenGL\MaterialManager.h">
+      <Filter>Render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\MaterialParameters.h">
       <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>

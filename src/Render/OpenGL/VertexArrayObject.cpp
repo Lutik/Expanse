@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "VertexArrayObject.h"
+#include "Utils.h"
 
 namespace Expanse::Render::GL
 {
@@ -62,41 +63,32 @@ namespace Expanse::Render::GL
 
 
 	Mesh VertexArrayManager::Create()
-	{
+	{		
 		auto isFree = [](const VertexArray& va) { return va.vao == 0; };
-		auto itr = std::find_if(vertex_arrays.begin(), vertex_arrays.end(), isFree);
+		const auto index = GetFreeIndexInVector(vertex_arrays, [](const VertexArray& va) { return va.vao == 0; });
 
-		if (itr == vertex_arrays.end())
-		{		
-			auto& va = vertex_arrays.emplace_back();
-			va.Create();
-			const size_t index = vertex_arrays.size() - 1;
-			return { index };
-		}
-		else
-		{
-			const size_t index = itr - vertex_arrays.begin();
-			return { index };
-		}
+		vertex_arrays[index].Create();
+
+		return { index };
 	}
 
 	void VertexArrayManager::Free(Mesh handle)
 	{
-		if (!handle.Valid()) return;
+		if (!handle.IsValid()) return;
 
 		vertex_arrays[handle.index].Free();
 	}
 
 	void VertexArrayManager::SetVertices(Mesh handle, VertexData vertex_data, const VertexLayout& format)
 	{
-		if (!handle.Valid()) return;
+		if (!handle.IsValid()) return;
 
 		vertex_arrays[handle.index].SetVertices(vertex_data, format);
 	}
 
 	void VertexArrayManager::Draw(Mesh handle)
 	{
-		if (!handle.Valid()) return;
+		if (!handle.IsValid()) return;
 
 		vertex_arrays[handle.index].Draw();
 	}
