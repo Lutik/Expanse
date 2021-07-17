@@ -214,33 +214,33 @@ namespace Expanse::Render::GL
 
 	/**********************************************************************************/
 
-	void ShaderProgramsManager::Use(ShaderProgram program)
+	void ShaderManager::Use(Shader program)
 	{
 		if (!program.IsValid()) return;
 
-		const GLuint id = shader_programs[program.index].id;
-		if (id != current_shader_program) {
+		const GLuint id = shaders[program.index].id;
+		if (id != current_shader) {
 			glUseProgram(id);
-			current_shader_program = id;
+			current_shader = id;
 		}
 	}
 
-	ShaderProgram ShaderProgramsManager::Create(const std::string& file)
+	Shader ShaderManager::Create(const std::string& file)
 	{
-		auto itr = std::find_if(shader_programs.begin(), shader_programs.end(), [&file](const auto& res) {
+		auto itr = std::find_if(shaders.begin(), shaders.end(), [&file](const auto& res) {
 			return res.name == file;
 		});
 
-		if (itr != shader_programs.end())
+		if (itr != shaders.end())
 		{
 			itr->use_count++;
-			const size_t index = itr - shader_programs.begin();
+			const size_t index = itr - shaders.begin();
 			return { index };
 		}
 		else
 		{
-			const size_t index = GetFreeIndexInVector(shader_programs, [](const auto& res) { return res.IsFree(); });
-			auto& res = shader_programs[index];
+			const size_t index = GetFreeIndexInVector(shaders, [](const auto& res) { return res.IsFree(); });
+			auto& res = shaders[index];
 			res.id = LoadShaderProgramFromFile(file);
 			res.use_count = 1;
 			res.name = file;
@@ -248,11 +248,11 @@ namespace Expanse::Render::GL
 		}
 	}
 
-	void ShaderProgramsManager::Free(ShaderProgram handle)
+	void ShaderManager::Free(Shader handle)
 	{
 		if (!handle.IsValid()) return;
 
-		auto& res = shader_programs[handle.index];
+		auto& res = shaders[handle.index];
 		res.use_count--;
 		if (res.use_count == 0)
 		{
@@ -262,13 +262,13 @@ namespace Expanse::Render::GL
 		}
 	}
 
-	std::vector<ShaderUniformInfo> ShaderProgramsManager::GetShaderUnifromsInfo(ShaderProgram shader)
+	std::vector<ShaderUniformInfo> ShaderManager::GetShaderUnifromsInfo(Shader shader)
 	{
 		std::vector<ShaderUniformInfo> result;
 
 		if (!shader.IsValid()) return result;
 
-		const GLuint program = shader_programs[shader.index].id;
+		const GLuint program = shaders[shader.index].id;
 
 		GLint uniform_count = 0;
 		glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniform_count);

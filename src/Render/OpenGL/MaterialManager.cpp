@@ -29,7 +29,7 @@ namespace Expanse::Render::GL
 
 		if (jvalue.is_array())
 		{
-			// must be some kind of vector (integer or floating point)
+			// must be some kind of vector
 			if (jvalue[0].is_number_float())
 			{
 				float buf[4];
@@ -78,7 +78,7 @@ namespace Expanse::Render::GL
 			param.location = loc;
 		}
 
-		// TODO: read and set initial parameter values
+		// read and set initial parameter values
 		const auto jparams = json_mat["parameters"];
 		for (auto& [name, jvalue] : jparams.items())
 		{

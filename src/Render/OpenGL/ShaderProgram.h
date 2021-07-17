@@ -4,7 +4,7 @@
 
 namespace Expanse::Render::GL
 {
-	struct ShaderProgram : public Handle {};
+	struct Shader : public Handle {};
 
 	struct ShaderUniformInfo
 	{
@@ -12,23 +12,23 @@ namespace Expanse::Render::GL
 		GLint location;
 	};
 
-	class ShaderProgramsManager
+	class ShaderManager
 	{
 	public:
-		ShaderProgram Create(const std::string& file);
-		void Free(ShaderProgram program);
-		void Use(ShaderProgram program);
+		Shader Create(const std::string& file);
+		void Free(Shader program);
+		void Use(Shader program);
 
-		std::vector<ShaderUniformInfo> GetShaderUnifromsInfo(ShaderProgram shader);
+		std::vector<ShaderUniformInfo> GetShaderUnifromsInfo(Shader shader);
 	private:
-		struct ShaderProgramResource {
+		struct ShaderResource {
 			GLuint id = 0;
 			size_t use_count = 0;
 			std::string name;
 
 			bool IsFree() const { return use_count == 0; }
 		};
-		std::vector<ShaderProgramResource> shader_programs;
-		GLuint current_shader_program = 0;
+		std::vector<ShaderResource> shaders;
+		GLuint current_shader = 0;
 	};
 }

@@ -18,7 +18,7 @@ namespace Expanse::Render::GL
 		void Bind(Material material);
 
 	private:
-		ShaderProgramsManager shaders;
+		ShaderManager shaders;
 
 		struct MaterialParameter
 		{
@@ -31,7 +31,7 @@ namespace Expanse::Render::GL
 
 		struct MaterialResource
 		{
-			ShaderProgram shader;
+			Shader shader;
 			std::vector<MaterialParameter> parameters;
 
 			bool IsFree() const { return !shader.IsValid(); }
