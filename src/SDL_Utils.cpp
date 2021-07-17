@@ -1,11 +1,6 @@
 
 #include "SDL_Utils.h"
 
-#include <SDL_image.h>
-#include <GL/glew.h>
-
-#include <utility>
-
 namespace SDL
 {
 	System::System()
@@ -14,18 +9,11 @@ namespace SDL
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 			return;
 
-		// Init SDL_image
-		constexpr int RequiredFlags = IMG_INIT_PNG;
-		const int initFlags = IMG_Init(RequiredFlags);
-		if ((initFlags & RequiredFlags) != RequiredFlags)
-			return;
-
 		init = true;
 	}
 
 	System::~System()
 	{
-		IMG_Quit();
 		SDL_Quit();
 	}
 

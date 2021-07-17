@@ -34,46 +34,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\libjpeg-9.dll">
-      <Filter>copy_dll\x64</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\libpng16-16.dll">
-      <Filter>copy_dll\x64</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\libtiff-5.dll">
-      <Filter>copy_dll\x64</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\libwebp-7.dll">
-      <Filter>copy_dll\x64</Filter>
-    </CopyFileToFolders>
     <CopyFileToFolders Include="..\thidrparty\SDL2-2.0.14\lib\x64\SDL2.dll">
       <Filter>copy_dll\x64</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\SDL2_image.dll">
-      <Filter>copy_dll\x64</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x64\zlib1.dll">
-      <Filter>copy_dll\x64</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\libjpeg-9.dll">
-      <Filter>copy_dll\x86</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\libpng16-16.dll">
-      <Filter>copy_dll\x86</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\libtiff-5.dll">
-      <Filter>copy_dll\x86</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\libwebp-7.dll">
-      <Filter>copy_dll\x86</Filter>
-    </CopyFileToFolders>
     <CopyFileToFolders Include="..\thidrparty\SDL2-2.0.14\lib\x86\SDL2.dll">
-      <Filter>copy_dll\x86</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\SDL2_image.dll">
-      <Filter>copy_dll\x86</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\thidrparty\SDL2_image-2.0.5\lib\x86\zlib1.dll">
       <Filter>copy_dll\x86</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="..\thidrparty\glew-2.2.0\bin\Release\x64\glew32.dll">
