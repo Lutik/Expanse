@@ -188,6 +188,9 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Image\Image.vcxproj">
+      <Project>{a754237e-7c77-469b-b681-7306624820b9}</Project>
+    </ProjectReference>
     <ProjectReference Include="Render\Render.vcxproj">
       <Project>{9e16341a-c487-4909-9536-79b7a5a0f8d8}</Project>
     </ProjectReference>

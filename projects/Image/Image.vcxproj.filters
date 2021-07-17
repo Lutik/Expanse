@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Image">
+      <UniqueIdentifier>{b2c9a5a3-2538-4e7f-a6df-e9e04bb8e4f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty">
+      <UniqueIdentifier>{3d1a21be-8ab8-4cb8-8d38-acf6df2a1b5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\zlib">
+      <UniqueIdentifier>{bd37576e-6e62-468f-9f92-09589ba6f2c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\libpng">
+      <UniqueIdentifier>{f40b37b1-8aba-49cb-bf87-bfd3b04b1d4f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\thidrparty\zlib\adler32.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\compress.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\crc32.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\deflate.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\infback.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\inffast.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\inflate.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\inftrees.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\trees.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\uncompr.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\zlib\zutil.c">
+      <Filter>thirdparty\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\png.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngerror.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngget.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngmem.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngpread.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngread.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngrio.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngrtran.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngrutil.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngset.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngtrans.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngwio.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngwrite.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngwtran.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\libpng\pngwutil.c">
+      <Filter>thirdparty\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Image\Image.cpp">
+      <Filter>Image</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\thidrparty\zlib\crc32.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\zlib\deflate.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\zlib\inffast.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\zlib\inffixed.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\zlib\inflate.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\zlib\inftrees.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\zlib\trees.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\zlib\zconf.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\zlib\zlib.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\zlib\zutil.h">
+      <Filter>thirdparty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\libpng\png.h">
+      <Filter>thirdparty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\libpng\pngconf.h">
+      <Filter>thirdparty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\libpng\pngdebug.h">
+      <Filter>thirdparty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\libpng\pnginfo.h">
+      <Filter>thirdparty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\libpng\pnglibconf.h">
+      <Filter>thirdparty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\libpng\pngpriv.h">
+      <Filter>thirdparty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\libpng\pngstruct.h">
+      <Filter>thirdparty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Image\Image.h">
+      <Filter>Image</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
