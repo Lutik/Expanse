@@ -25,6 +25,9 @@ namespace Expanse::Render::GL
 
 		void Draw(Mesh mesh, Material material) override;
 
+		Texture CreateTexture(const std::string& file);
+		void FreeTexture(Texture texture);
+
 	private:
 		void LogOpenGLInfo();
 

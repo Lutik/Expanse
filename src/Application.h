@@ -15,7 +15,7 @@ namespace Expanse
     private:
         std::unique_ptr<Render::IRenderer> renderer;
 
-        Render::Material material;
-        Render::Mesh mesh;
+        Render::Material material[2];
+        Render::Mesh mesh[2];
     };
 }

@@ -50,6 +50,18 @@ namespace Expanse::Render
 	VERTEX_END()
 
 
+	struct VertexP2T2
+	{
+		FPoint position;
+		FPoint uv;
+	};
+
+	VERTEX_LAYOUT(VertexP2T2)
+		VERTEX_ELEM(VertexP2T2, position, POSITION)
+		VERTEX_ELEM(VertexP2T2, uv, TEXCOORD0)
+	VERTEX_END()
+
+
 
 #undef VERTEX_LAYOUT
 #undef VERTEX_ELEM

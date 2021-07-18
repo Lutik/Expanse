@@ -75,4 +75,13 @@ namespace Expanse::Render::GL
 		vertex_arrays.Draw(mesh);
 	}
 	
+	Texture Renderer::CreateTexture(const std::string& file)
+	{
+		return materials.CreateTexture(file);
+	}
+
+	void Renderer::FreeTexture(Texture texture)
+	{
+		materials.FreeTexture(texture);
+	}
 }

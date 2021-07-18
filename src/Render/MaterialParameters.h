@@ -8,7 +8,9 @@
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 
+#include "ResourceHandles.h"
+
 namespace Expanse::Render
 {
-	using MaterialParameterValue = std::variant<float, glm::vec2, glm::vec3, glm::vec4>;
+	using MaterialParameterValue = std::variant<float, glm::vec2, glm::vec3, glm::vec4, Texture>;
 }

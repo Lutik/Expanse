@@ -153,32 +153,6 @@ namespace Expanse::Render::GL
 			return program;
 		}
 
-		std::vector<std::string> GetUniformNames(GLuint program)
-		{
-			std::vector<std::string> result;
-
-			GLint uniform_count = 0;
-			glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniform_count);
-			result.reserve(uniform_count);
-
-			GLint max_uniform_name_length = 0;
-			glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_uniform_name_length);
-
-			std::vector<char> buffer(max_uniform_name_length, 0);
-
-			for (GLint idx = 0; idx < uniform_count; ++idx)
-			{
-				GLsizei length = 0;
-				GLint size = 0;
-				GLenum type;
-				glGetActiveUniform(program, idx, max_uniform_name_length, &length, &size, &type, buffer.data());
-
-				result.emplace_back(buffer.data(), length);
-			}
-
-			return result;
-		}
-
 		GLuint LoadShaderProgramFromFile(const std::string& source_file)
 		{
 			const std::string program_source = File::LoadContents(source_file);

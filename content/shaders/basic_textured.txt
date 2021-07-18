@@ -1,0 +1,26 @@
+$vertex #version 330 core
+
+in vec2 position;
+in vec2 uv0;
+
+out vec2 frag_uv;
+
+void main()
+{
+  frag_uv = uv0;
+  gl_Position = vec4(position, 0, 1);
+}
+
+$fragment #version 330 core
+
+uniform vec4 color;
+uniform sampler2D tex0;
+
+in vec2 frag_uv;
+
+out vec4 fragment_color;
+
+void main()
+{
+  fragment_color = color * texture(tex0, frag_uv);
+}

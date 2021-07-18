@@ -15,11 +15,13 @@ namespace Expanse::Render::GL
 	struct UniformSetterVisitor
 	{
 		GLint loc;
+		GLint tex_unit = 0;
 
 		void operator()(float value) { glUniform1f(loc, value); }
 		void operator()(const glm::vec2& value) { glUniform2fv(loc, 1, glm::value_ptr(value)); }
 		void operator()(const glm::vec3& value) { glUniform3fv(loc, 1, glm::value_ptr(value)); }
 		void operator()(const glm::vec4& value) { glUniform4fv(loc, 1, glm::value_ptr(value)); }
+		void operator()(Texture tex) { glUniform1i(loc, tex_unit); }
 	};
 
 
@@ -76,6 +78,7 @@ namespace Expanse::Render::GL
 			auto& param = mat.parameters.emplace_back();
 			param.name = name;
 			param.location = loc;
+			Log::message("Material param '{}'", name);
 		}
 
 		// read and set initial parameter values
@@ -135,10 +138,29 @@ namespace Expanse::Render::GL
 		// bind shader
 		shaders.Use(mat.shader);
 
-		// set uniforms
-		for (const auto& param : mat.parameters) {
-			UniformSetterVisitor set_param{ param.location };
+		// set uniforms and bind textures
+		UniformSetterVisitor set_param;
+		for (const auto& param : mat.parameters)
+		{
+			set_param.loc = param.location;		
 			std::visit(set_param, param.value);
+
+			// if parameter is texture, bind it and increment texture unit
+			if (auto* tex = std::get_if<Texture>(&param.value))
+			{
+				textures.Bind(*tex, set_param.tex_unit);
+				set_param.tex_unit++;
+			}
 		}
+	}
+
+	Texture MaterialManager::CreateTexture(const std::string& file)
+	{
+		return textures.Create(file);
+	}
+
+	void MaterialManager::FreeTexture(Texture texture)
+	{
+		textures.Free(texture);
 	}
 }

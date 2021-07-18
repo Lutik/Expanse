@@ -11,22 +11,18 @@ namespace Expanse::Image
 		ColorFormat ConvertPNGColorFormat(int png_color_type, int bit_depth)
 		{
 			switch (png_color_type) {
-			case 0:
-				// grayscale
+			case PNG_COLOR_TYPE_GRAY:
 				break;
-			case 2:
+			case PNG_COLOR_TYPE_RGB:
 				// RGB
 				if (bit_depth == 8) return ColorFormat::RGB_8;
 				if (bit_depth == 16) return ColorFormat::RGB_16;
 				break;
-			case 3:
-				// palette format
+			case PNG_COLOR_TYPE_PALETTE:
 				break;
-			case 4:
-				// grayscale + alpha
+			case PNG_COLOR_TYPE_GRAY_ALPHA:
 				break;
-			case 6:
-				// RGBA
+			case PNG_COLOR_TYPE_RGBA:
 				if (bit_depth == 8) return ColorFormat::RGBA_8;
 				if (bit_depth == 16) return ColorFormat::RGBA_16;
 				break;
@@ -72,21 +68,26 @@ namespace Expanse::Image
 			png_get_IHDR(read_ptr, info_ptr, &image.width, &image.height, &bit_depth, &color_type, nullptr, nullptr, nullptr);
 			image.format = ConvertPNGColorFormat(color_type, bit_depth);
 
-
 			// read image information
 			const auto row_size = png_get_rowbytes(read_ptr, info_ptr);
 
-			image.data.reset(new uint8_t[image.height * row_size]); // alloc image
-
-			std::vector<png_bytep> row_pointers; // setup row pointers (flipped upside-down for opengl)
+			// allocate memory for our image, setup pointers to rows in this memory
+			image.data.reset(new uint8_t[image.height * row_size]);
+			std::vector<png_bytep> row_pointers;
 			row_pointers.reserve(image.height);
 			for (size_t row = image.height; row > 0; --row) {
 				row_pointers.push_back(image.data.get() + (row - 1) * row_size);
-			}		
+			}
 
+			// when reading 16 bit images, convert endianness from BE to LE
+			if (bit_depth == 16) {
+				png_set_swap(read_ptr);
+			}
+
+			// read image data
 			png_read_image(read_ptr, row_pointers.data());
 
-
+			// cleanup
 			png_destroy_read_struct(&read_ptr, &info_ptr, nullptr);
 			fclose(file);
 
@@ -98,7 +99,6 @@ namespace Expanse::Image
 
 	ImageData Load(const std::string& file)
 	{
-		PNG::Load(file);
-		return {};
+		return PNG::Load(file);
 	}
 }

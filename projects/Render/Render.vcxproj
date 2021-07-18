@@ -185,6 +185,7 @@
     <ClCompile Include="..\..\src\Render\OpenGL\MaterialManager.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\Renderer.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\ShaderProgram.cpp" />
+    <ClCompile Include="..\..\src\Render\OpenGL\TextureManager.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\VertexArrayObject.cpp" />
     <ClCompile Include="..\..\src\Render\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -199,6 +200,7 @@
     <ClInclude Include="..\..\src\Render\OpenGL\MaterialManager.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\Renderer.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\ShaderProgram.h" />
+    <ClInclude Include="..\..\src\Render\OpenGL\TextureManager.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\Utils.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\VertexArrayObject.h" />
     <ClInclude Include="..\..\src\Render\pch.h" />

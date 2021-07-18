@@ -1,8 +1,10 @@
 #pragma once
 
 #include "ShaderProgram.h"
+#include "TextureManager.h"
 #include "Render/ResourceHandles.h"
 #include "Render/MaterialParameters.h"
+
 
 namespace Expanse::Render::GL
 {
@@ -17,8 +19,13 @@ namespace Expanse::Render::GL
 
 		void Bind(Material material);
 
+
+		Texture CreateTexture(const std::string& file);
+		void FreeTexture(Texture texture);
+
 	private:
 		ShaderManager shaders;
+		TextureManager textures;
 
 		struct MaterialParameter
 		{
