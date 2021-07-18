@@ -5,6 +5,15 @@
 
 namespace Expanse
 {
+    struct GameObject
+    {
+        GameObject(Render::IRenderer* renderer, const std::string& mat_file, const std::vector<Render::VertexP2T2>& verts);
+
+        Render::Material material;
+        Render::Mesh mesh;
+        FPoint position;
+    };
+
     class Application
     {
     public:
@@ -15,7 +24,6 @@ namespace Expanse
     private:
         std::unique_ptr<Render::IRenderer> renderer;
 
-        Render::Material material[2];
-        Render::Mesh mesh[2];
+        std::vector<GameObject> objects;
     };
 }

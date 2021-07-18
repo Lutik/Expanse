@@ -15,36 +15,51 @@ namespace Expanse::Render::GL
 		GLint loc;
 		GLint tex_unit = 0;
 
+		void operator()(NoValue value) {}
 		void operator()(float value) { glUniform1f(loc, value); }
 		void operator()(const glm::vec2& value) { glUniform2fv(loc, 1, glm::value_ptr(value)); }
 		void operator()(const glm::vec3& value) { glUniform3fv(loc, 1, glm::value_ptr(value)); }
 		void operator()(const glm::vec4& value) { glUniform4fv(loc, 1, glm::value_ptr(value)); }
+		void operator()(const glm::mat4& value) { glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value)); }
 		void operator()(Texture tex) { glUniform1i(loc, tex_unit); }
 	};
 
 
+	MaterialParameterValue FloatVectorValueFromJson(nlohmann::json jvalue)
+	{
+		MaterialParameterValue value;
+
+		float buf[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		const size_t value_size = std::min(std::size(buf), jvalue.size());
+		for (size_t i = 0; i < value_size; ++i) {
+			buf[i] = jvalue[i].get<float>();
+		}
+
+		switch (value_size) {
+			case 1: value = buf[0]; break;
+			case 2: value = glm::vec2{ buf[0], buf[1] }; break;
+			case 3: value = glm::vec3{ buf[0], buf[1], buf[2] }; break;
+			case 4: value = glm::vec4{ buf[0], buf[1], buf[2], buf[3] }; break;
+			default: value = 0.0f;
+		}
+
+		return value;
+	}
+
 	MaterialParameterValue MaterialManager::ParamValueFromJson(nlohmann::json jvalue)
 	{
-		MaterialParameterValue value = 0.0f;
+		MaterialParameterValue value;
 
 		if (jvalue.is_array())
-		{
-			// must be some kind of vector
+		{			
 			if (jvalue[0].is_number_float())
 			{
-				float buf[4];
-				const size_t value_size = std::min(std::size(buf), jvalue.size());
-				for (size_t i = 0; i < value_size; ++i) {
-					buf[i] = jvalue[i].get<float>();
-				}
-
-				switch (value_size) {
-					case 1: value = buf[0]; break;
-					case 2: value = glm::vec2{ buf[0], buf[1] }; break;
-					case 3: value = glm::vec3{ buf[0], buf[1], buf[2] }; break;
-					case 4: value = glm::vec4{ buf[0], buf[1], buf[2], buf[3] }; break;
-					default: value = 0.0f;
-				}
+				// must be some kind of vector
+				value = FloatVectorValueFromJson(jvalue);
+			}
+			else if (jvalue[0].is_array())
+			{
+				// TODO: read matrix values
 			}
 		}
 		else if (jvalue.is_string())
@@ -65,6 +80,11 @@ namespace Expanse::Render::GL
 	Material MaterialManager::Create(const std::string& file)
 	{
 		const auto file_content = File::LoadContents(file);
+		if (file_content.empty()) {
+			Log::message("Could not load material '{}', file not found", file);
+			return Material{};
+		}
+
 		auto json_mat = nlohmann::json::parse(file_content);
 
 		const auto handle = CreateEmpty();
@@ -96,6 +116,8 @@ namespace Expanse::Render::GL
 
 	Material MaterialManager::Create(Material material)
 	{
+		if (!material.IsValid()) return material;
+
 		const auto handle = CreateEmpty();
 
 		materials[handle.index] = materials[material.index];
