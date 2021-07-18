@@ -8,15 +8,8 @@ namespace Expanse
     {
         renderer = Render::CreateOpenGLRenderer();
 
-        material[0] = renderer->CreateMaterial("content/materials/basic_textured.json");
-        material[1] = renderer->CreateMaterial(material[0]); // duplicate material to use other set of parameters
-
-        auto tex1 = renderer->CreateTexture("content/textures/wood.png");
-        renderer->SetMaterialParameter(material[0], "tex0", tex1);
-
-        auto tex2 = renderer->CreateTexture("content/textures/concrete.png");
-        renderer->SetMaterialParameter(material[1], "tex0", tex2);
-
+        material[0] = renderer->CreateMaterial("content/materials/wood.json");
+        material[1] = renderer->CreateMaterial("content/materials/concrete.json");        
 
         const std::vector<Render::VertexP2T2> verts1 = {
             {{-0.8f, -0.9f}, {0.0f, 0.0f}},
@@ -26,7 +19,7 @@ namespace Expanse
         const std::vector<Render::VertexP2T2> verts2 = {
             {{-0.8f, -0.9f}, {0.0f, 0.0f}},
             {{0.0f, 0.9f}, {0.5f, 1.0f}},
-            {{-0.8, 0.9f}, {0.0f, 1.0f}},
+            {{-0.8f, 0.9f}, {0.0f, 1.0f}},
         };
         mesh[0] = renderer->CreateMesh(verts1);
         mesh[1] = renderer->CreateMesh(verts2);

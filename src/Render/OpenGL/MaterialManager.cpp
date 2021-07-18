@@ -10,8 +10,6 @@
 
 namespace Expanse::Render::GL
 {
-	using namespace nlohmann;
-
 	struct UniformSetterVisitor
 	{
 		GLint loc;
@@ -25,7 +23,7 @@ namespace Expanse::Render::GL
 	};
 
 
-	MaterialParameterValue ParamValueFromJson(json jvalue)
+	MaterialParameterValue MaterialManager::ParamValueFromJson(nlohmann::json jvalue)
 	{
 		MaterialParameterValue value = 0.0f;
 
@@ -49,6 +47,11 @@ namespace Expanse::Render::GL
 				}
 			}
 		}
+		else if (jvalue.is_string())
+		{
+			// must be texture
+			value = CreateTexture(jvalue.get<std::string>());
+		}
 
 		return value;
 	}
@@ -62,7 +65,7 @@ namespace Expanse::Render::GL
 	Material MaterialManager::Create(const std::string& file)
 	{
 		const auto file_content = File::LoadContents(file);
-		auto json_mat = json::parse(file_content);
+		auto json_mat = nlohmann::json::parse(file_content);
 
 		const auto handle = CreateEmpty();
 
@@ -106,7 +109,15 @@ namespace Expanse::Render::GL
 
 		auto& mat = materials[material.index];
 
-		shaders.Free(mat.shader);	
+		// free shader
+		shaders.Free(mat.shader);
+
+		// free textures
+		for (auto& param : mat.parameters) {
+			if (auto* tex = std::get_if<Texture>(&param.value)) {
+				textures.Free(*tex);
+			}
+		}
 
 		mat = {};
 	}

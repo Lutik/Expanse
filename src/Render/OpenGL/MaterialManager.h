@@ -46,7 +46,7 @@ namespace Expanse::Render::GL
 
 		std::vector<MaterialResource> materials;
 
-
 		Material CreateEmpty();
+		MaterialParameterValue ParamValueFromJson(nlohmann::json jvalue);
 	};
 }
