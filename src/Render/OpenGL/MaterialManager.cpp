@@ -96,12 +96,17 @@ namespace Expanse::Render::GL
 		mat.shader = shaders.Create(shader_file);
 
 		// fill valid parameter names and locations from shader
-		for (const auto& [name, loc] : shaders.GetShaderUnifromsInfo(mat.shader))
+		for (const auto& [name, loc] : shaders.GetShaderUniformsInfo(mat.shader))
 		{		
 			auto& param = mat.parameters.emplace_back();
 			param.name = name;
 			param.location = loc;
-			Log::message("Material param '{}'", name);
+		}
+
+		// setup uniform blocks bindings
+		for (size_t bp = 0; bp < globals.size(); ++bp)
+		{
+			shaders.BindUniformBlock(mat.shader, static_cast<GLuint>(bp), globals[bp].name);
 		}
 
 		// read and set initial parameter values
@@ -195,5 +200,26 @@ namespace Expanse::Render::GL
 	void MaterialManager::FreeTexture(Texture texture)
 	{
 		textures.Free(texture);
+	}
+
+	void MaterialManager::SetGlobalParam(std::string_view name, const void* data_ptr, size_t data_size)
+	{
+		auto itr = std::ranges::find_if(globals, [=](const auto& gp) { return gp.name == name; });
+		if (itr == globals.end())
+		{
+			auto& param = globals.emplace_back();
+			param.name = name;
+
+			glGenBuffers(1, &param.buffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, param.buffer);
+			glBufferData(GL_UNIFORM_BUFFER, data_size, data_ptr, GL_STATIC_DRAW);
+
+			glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(globals.size() - 1), param.buffer);
+		}
+		else
+		{
+			glBindBuffer(GL_UNIFORM_BUFFER, itr->buffer);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, data_size, data_ptr);
+		}
 	}
 }

@@ -45,6 +45,9 @@ namespace Expanse::Render
 		/***********************************************************************************/
 		virtual Texture CreateTexture(const std::string& file) = 0;
 		virtual void FreeTexture(Texture texture) = 0;
+
+		/***********************************************************************************/
+		virtual void Set2DMode(int width, int height) = 0;
 	};
 
 	std::unique_ptr<IRenderer> CreateOpenGLRenderer();

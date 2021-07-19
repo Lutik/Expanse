@@ -26,10 +26,6 @@ namespace Expanse
         objects.emplace_back(renderer.get(), "content/materials/wood.json", verts);
         objects.emplace_back(renderer.get(), "content/materials/concrete.json", verts);
 
-        auto proj = glm::orthoLH_NO(0.0f, 1440.0f, 0.0f, 800.0f, -1.0f, 1.0f);
-        renderer->SetMaterialParameter(objects[0].material, "proj", proj);
-        renderer->SetMaterialParameter(objects[1].material, "proj", proj);
-
         objects[0].position = { 400.0f, 200.0f };
         objects[1].position = { 1000.0f, 600.0f };
     }
@@ -38,6 +34,7 @@ namespace Expanse
     {
         renderer->ClearFrame();
 
+        renderer->Set2DMode(1440, 800);
         for (const auto& obj : objects)
         {
             auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ obj.position.x, obj.position.y, 0.0f });

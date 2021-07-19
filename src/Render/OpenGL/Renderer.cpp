@@ -4,8 +4,13 @@
 
 #include "Utils/Logger/Logger.h"
 
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
+
 namespace Expanse::Render::GL
 {
+	static constexpr const char* ViewProjGlobalName = "ViewProjection";
+
 	Renderer::Renderer()
 	{
 		glewInit();
@@ -13,6 +18,8 @@ namespace Expanse::Render::GL
 		LogOpenGLInfo();
 
 		glClearColor(0.0f, 0.6f, 0.4f, 1.0f);
+
+		materials.SetGlobalParam(ViewProjGlobalName, &matrices);
 	}
 
 	void Renderer::ClearFrame()
@@ -83,5 +90,16 @@ namespace Expanse::Render::GL
 	void Renderer::FreeTexture(Texture texture)
 	{
 		materials.FreeTexture(texture);
+	}
+
+	void Renderer::Set2DMode(int width, int height)
+	{
+		matrices.view = glm::mat4{ 1.0f };
+
+		const auto fwidth = static_cast<float>(width);
+		const auto fheight = static_cast<float>(height);
+		matrices.proj = glm::orthoLH_NO(0.0f, fwidth, 0.0f, fheight, -1.0f, 1.0f);
+
+		materials.SetGlobalParam(ViewProjGlobalName, &matrices);
 	}
 }

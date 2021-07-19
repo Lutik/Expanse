@@ -1,17 +1,23 @@
 $vertex #version 330 core
 
-uniform mat4 proj;
+//uniform mat4 proj;
 uniform mat4 model;
 
-in vec2 position;
-in vec2 uv0;
+layout(std140) uniform GlobalMatrices
+{
+  mat4 view;
+  mat4 proj;
+};
+
+in vec2 a_position;
+in vec2 a_uv;
 
 out vec2 frag_uv;
 
 void main()
 {
-  frag_uv = uv0;
-  gl_Position = proj * model * vec4(position, 0, 1);
+  frag_uv = a_uv;
+  gl_Position = proj * view * model * vec4(a_position, 0, 1);
 }
 
 $fragment #version 330 core

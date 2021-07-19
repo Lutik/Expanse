@@ -10,7 +10,7 @@ namespace Expanse::Render::GL
 {
 	class MaterialManager
 	{
-	public:		
+	public:
 		Material Create(const std::string& file);
 		Material Create(Material material);
 		void Free(Material material);
@@ -19,10 +19,15 @@ namespace Expanse::Render::GL
 
 		void Bind(Material material);
 
-
 		Texture CreateTexture(const std::string& file);
 		void FreeTexture(Texture texture);
 
+		void SetGlobalParam(std::string_view name, const void* ptr, size_t size);
+
+		template<class Param>
+		void SetGlobalParam(std::string_view name, const Param* param) {
+			SetGlobalParam(name, param, sizeof(Param));
+		}
 	private:
 		ShaderManager shaders;
 		TextureManager textures;
@@ -48,5 +53,13 @@ namespace Expanse::Render::GL
 
 		Material CreateEmpty();
 		MaterialParameterValue ParamValueFromJson(nlohmann::json jvalue);
+
+
+		struct GlobalMaterialParameter
+		{
+			std::string name;
+			GLuint buffer;
+		};
+		std::vector<GlobalMaterialParameter> globals;
 	};
 }

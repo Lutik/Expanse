@@ -25,13 +25,21 @@ namespace Expanse::Render::GL
 
 		void Draw(Mesh mesh, Material material) override;
 
-		Texture CreateTexture(const std::string& file);
-		void FreeTexture(Texture texture);
+		Texture CreateTexture(const std::string& file) override;
+		void FreeTexture(Texture texture) override;
 
+		void Set2DMode(int width, int height) override;
 	private:
 		void LogOpenGLInfo();
 
 		VertexArrayManager vertex_arrays;
 		MaterialManager materials;
+
+		struct ViewProjMatrices
+		{
+			glm::mat4 view{ 1.0f };
+			glm::mat4 proj{ 1.0f };
+		};
+		ViewProjMatrices matrices;
 	};
 }

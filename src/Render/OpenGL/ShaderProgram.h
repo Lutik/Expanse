@@ -19,7 +19,10 @@ namespace Expanse::Render::GL
 		void Free(Shader program);
 		void Use(Shader program);
 
-		std::vector<ShaderUniformInfo> GetShaderUnifromsInfo(Shader shader);
+		std::vector<ShaderUniformInfo> GetShaderUniformsInfo(Shader shader);
+		std::vector<std::string> GetShaderUniformBlocks(Shader shader);
+
+		void BindUniformBlock(Shader shader, GLuint binding_point, const std::string& name);
 	private:
 		struct ShaderResource {
 			GLuint id = 0;

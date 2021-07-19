@@ -21,11 +21,11 @@ namespace Expanse::Render::GL
 		};
 
 		constexpr VertexAttributePair VertexAttributes[] = {
-			{ VertexElementUsage::POSITION, "position" },
-			{ VertexElementUsage::COLOR, "color" },
-			{ VertexElementUsage::TEXCOORD0, "uv" },
-			{ VertexElementUsage::TEXCOORD0, "uv0" },
-			{ VertexElementUsage::TEXCOORD1, "uv1" },
+			{ VertexElementUsage::POSITION, "a_position" },
+			{ VertexElementUsage::COLOR, "a_color" },
+			{ VertexElementUsage::TEXCOORD0, "a_uv" },
+			{ VertexElementUsage::TEXCOORD0, "a_uv0" },
+			{ VertexElementUsage::TEXCOORD1, "a_uv1" },
 		};
 
 		GLenum GLShaderTypeFromString(std::string_view type_str)
@@ -236,7 +236,7 @@ namespace Expanse::Render::GL
 		}
 	}
 
-	std::vector<ShaderUniformInfo> ShaderManager::GetShaderUnifromsInfo(Shader shader)
+	std::vector<ShaderUniformInfo> ShaderManager::GetShaderUniformsInfo(Shader shader)
 	{
 		std::vector<ShaderUniformInfo> result;
 
@@ -261,12 +261,57 @@ namespace Expanse::Render::GL
 			glGetActiveUniform(program, idx, max_uniform_name_length, &name_length, &size, &type, buffer.data());
 
 			const GLint loc = glGetUniformLocation(program, buffer.data());
-			
-			auto& uniform_info = result.emplace_back();
-			uniform_info.name = std::string(buffer.data(), name_length);
-			uniform_info.location = loc;
+
+			// some uniforms will have negative location and are unassignable (those belonging to uniform blocks for example)
+			if (loc >= 0)
+			{
+				auto& uniform_info = result.emplace_back();
+				uniform_info.name = std::string(buffer.data(), name_length);;
+				uniform_info.location = glGetUniformLocation(program, buffer.data());
+			}
 		}
 
 		return result;
+	}
+
+	std::vector<std::string> ShaderManager::GetShaderUniformBlocks(Shader shader)
+	{
+		std::vector<std::string> result;
+
+		if (!shader.IsValid()) return result;
+
+		const GLuint program = shaders[shader.index].id;
+
+		GLint block_count = 0;
+		glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &block_count);
+		result.reserve(block_count);
+
+		GLint max_block_name_length = 0;
+		glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &max_block_name_length);
+
+		std::vector<char> buffer(max_block_name_length + 1, 0);
+
+		for (GLint idx = 0; idx < block_count; ++idx)
+		{
+			GLsizei name_length = 0;
+			glGetActiveUniformBlockName(program, idx, max_block_name_length, &name_length, buffer.data());
+
+			result.emplace_back(buffer.data(), name_length);
+		}
+
+		return result;
+	}
+
+	void ShaderManager::BindUniformBlock(Shader shader, GLuint binding_point, const std::string& name)
+	{
+		if (!shader.IsValid()) return;
+
+		const GLuint program = shaders[shader.index].id;
+
+		const GLuint block_index = glGetUniformBlockIndex(program, name.c_str());
+		if (block_index != GL_INVALID_INDEX)
+		{
+			glUniformBlockBinding(program, block_index, binding_point);
+		}
 	}
 }
