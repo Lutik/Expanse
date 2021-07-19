@@ -27,15 +27,21 @@ namespace Expanse::Render
 		virtual Mesh CreateMesh() = 0;
 		virtual void FreeMesh(Mesh mesh) = 0;
 		virtual void SetMeshVertices(Mesh mesh, VertexData data, const VertexLayout& layout) = 0;
+		virtual void SetMeshIndices(Mesh mesh, VertexData data, size_t index_size) = 0;
 
 		template<class Vertex>
 		void SetMeshVertices(Mesh mesh, const std::vector<Vertex>& vertices) {
 			SetMeshVertices(mesh, VertexData{ vertices }, VertexFormat<Vertex>);
 		}
-		template<class Vertex>
-		Mesh CreateMesh(const std::vector<Vertex>& vertices) {
+		template<class Index>
+		void SetMeshIndices(Mesh mesh, const std::vector<Index>& indices) {
+			SetMeshIndices(mesh, VertexData{ indices }, sizeof(Index));
+		}
+		template<class Vertex, class Index>
+		Mesh CreateMesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices) {
 			auto mesh = CreateMesh();
 			SetMeshVertices(mesh, vertices);
+			SetMeshIndices(mesh, indices);
 			return mesh;
 		}
 

@@ -7,27 +7,26 @@
 
 namespace Expanse
 {
-    GameObject::GameObject(Render::IRenderer* renderer, const std::string& mat_file, const std::vector<Render::VertexP2T2>& verts)
-    {
-        material = renderer->CreateMaterial(mat_file);
-        mesh = renderer->CreateMesh(verts);
-    }
-
     void Application::Init()
     {
         const std::vector<Render::VertexP2T2> verts = {
-            {{-100.0f, -60.0f}, {0.0f, 0.0f}},
-            {{100.0f, -60.0f}, {1.0f, 0.0f}},
-            {{0.0f, 120.0f}, {0.5f, 1.0f}},
+            {{-50.0f, -50.0f}, {0.0f, 0.0f}},
+            {{-50.0f, 50.0f}, {0.0f, 1.0f}},
+            {{50.0f, 50.0f}, {1.0f, 1.0f}},
+            {{50.0f, -50.0f}, {1.0f, 0.0f}},
         };
+        const std::vector<uint16_t> indices = { 0, 2, 1, 0, 3, 2 };
 
         renderer = Render::CreateOpenGLRenderer();
 
-        objects.emplace_back(renderer.get(), "content/materials/wood.json", verts);
-        objects.emplace_back(renderer.get(), "content/materials/concrete.json", verts);
+        auto mesh = renderer->CreateMesh(verts, indices);
+        auto mat0 = renderer->CreateMaterial("content/materials/wood.json");
+        auto mat1 = renderer->CreateMaterial("content/materials/concrete.json");
 
-        objects[0].position = { 400.0f, 200.0f };
-        objects[1].position = { 1000.0f, 600.0f };
+        objects = {
+            { mesh, mat0, { 400.0f, 200.0f }},
+            { mesh, mat1, { 1000.0f, 600.0f}},
+        };
     }
 
     void Application::Tick()

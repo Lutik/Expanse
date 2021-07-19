@@ -2,6 +2,7 @@
 
 #include "VertexArrayObject.h"
 #include "Utils.h"
+#include "Utils/Logger/Logger.h"
 
 namespace Expanse::Render::GL
 {
@@ -15,16 +16,22 @@ namespace Expanse::Render::GL
 	void VertexArrayManager::VertexArray::Free()
 	{
 		glDeleteBuffers(1, &vbo);
+		glDeleteBuffers(1, &ibo);
 		glDeleteVertexArrays(1, &vao);
 		vbo = 0;
 		vao = 0;
+		ibo = 0;
 	}
 
 	void VertexArrayManager::VertexArray::Draw()
 	{
 		glBindVertexArray(vao);
 
-		glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+		if (ibo == 0) {
+			glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+		} else {
+			glDrawElements(GL_TRIANGLES, index_count, index_type, nullptr);
+		}	
 	}
 
 	void VertexArrayManager::VertexArray::SetVertices(VertexData vertex_data, const VertexLayout& format)
@@ -33,6 +40,7 @@ namespace Expanse::Render::GL
 
 		if (!vertex_data.ptr) {
 			glDeleteBuffers(1, &vbo);
+			vbo = 0;
 			vertex_count = 0;
 			return;
 		}
@@ -60,6 +68,33 @@ namespace Expanse::Render::GL
 		vertex_count = static_cast<GLsizei>(vertex_data.size / format.vertex_size);
 	}
 
+	void VertexArrayManager::VertexArray::SetIndices(VertexData index_data, size_t index_size)
+	{
+		if (!index_data.ptr) {
+			glDeleteBuffers(1, &ibo);
+			ibo = 0;
+			index_count = 0;
+			return;
+		}
+
+		glBindVertexArray(vao);
+		if (ibo == 0) {
+			glGenBuffers(1, &ibo);
+		}
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_data.size, index_data.ptr, GL_STATIC_DRAW);
+
+		index_count = static_cast<GLsizei>(index_data.size / index_size);
+
+		switch (index_size) {
+			case 1: index_type = GL_UNSIGNED_BYTE; break;
+			case 2: index_type = GL_UNSIGNED_SHORT; break;
+			case 4: index_type = GL_UNSIGNED_INT; break;
+			default: Log::message("Incorrect index size for index buffer");
+		}
+	}
+
 
 
 	Mesh VertexArrayManager::Create()
@@ -84,6 +119,13 @@ namespace Expanse::Render::GL
 		if (!handle.IsValid()) return;
 
 		vertex_arrays[handle.index].SetVertices(vertex_data, format);
+	}
+
+	void VertexArrayManager::SetIndices(Mesh handle, VertexData indices_data, size_t index_size)
+	{
+		if (!handle.IsValid()) return;
+
+		vertex_arrays[handle.index].SetIndices(indices_data, index_size);
 	}
 
 	void VertexArrayManager::Draw(Mesh handle)

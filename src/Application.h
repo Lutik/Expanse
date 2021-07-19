@@ -6,11 +6,9 @@
 namespace Expanse
 {
     struct GameObject
-    {
-        GameObject(Render::IRenderer* renderer, const std::string& mat_file, const std::vector<Render::VertexP2T2>& verts);
-
-        Render::Material material;
+    {    
         Render::Mesh mesh;
+        Render::Material material;
         FPoint position;
     };
 

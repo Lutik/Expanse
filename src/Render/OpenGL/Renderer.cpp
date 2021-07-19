@@ -76,6 +76,11 @@ namespace Expanse::Render::GL
 		vertex_arrays.SetVertices(mesh, data, layout);
 	}
 
+	void Renderer::SetMeshIndices(Mesh mesh, VertexData data, size_t index_size)
+	{
+		vertex_arrays.SetIndices(mesh, data, index_size);
+	}
+
 	void Renderer::Draw(Mesh mesh, Material material)
 	{
 		materials.Bind(material);
