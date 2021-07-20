@@ -66,18 +66,4 @@ namespace Expanse::Render
 #undef VERTEX_LAYOUT
 #undef VERTEX_ELEM
 #undef VERTEX_END
-
-	struct VertexData
-	{
-		VertexData() = default;
-
-		template<class Vertex>
-		VertexData(const std::vector<Vertex>& vec)
-			: ptr(vec.data())
-			, size(vec.size() * sizeof(Vertex))
-		{}
-
-		const void* ptr = nullptr;
-		size_t size = 0;
-	};
 }

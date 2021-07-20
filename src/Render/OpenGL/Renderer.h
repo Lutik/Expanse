@@ -21,8 +21,8 @@ namespace Expanse::Render::GL
 
 		Mesh CreateMesh() override;
 		void FreeMesh(Mesh mesh) override;
-		void SetMeshVertices(Mesh mesh, VertexData data, const VertexLayout& layout) override;
-		void SetMeshIndices(Mesh mesh, VertexData data, size_t index_size) override;
+		void SetMeshVertices(Mesh mesh, BufferData data, const VertexLayout& layout) override;
+		void SetMeshIndices(Mesh mesh, BufferData data, size_t index_size) override;
 
 		void Draw(Mesh mesh, Material material) override;
 

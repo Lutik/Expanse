@@ -188,6 +188,14 @@ namespace Expanse::Render::GL
 
 	/**********************************************************************************/
 
+	ShaderManager::~ShaderManager()
+	{
+		for (const auto& shader : shaders)
+		{
+			glDeleteProgram(shader.id);
+		}
+	}
+
 	void ShaderManager::Use(Shader program)
 	{
 		if (!program.IsValid()) return;
@@ -213,7 +221,7 @@ namespace Expanse::Render::GL
 		}
 		else
 		{
-			const size_t index = GetFreeIndexInVector(shaders, [](const auto& res) { return res.IsFree(); });
+			const size_t index = GetFreeIndexInVector(shaders, [](const auto& res) { return res.use_count == 0; });
 			auto& res = shaders[index];
 			res.id = LoadShaderProgramFromFile(file);
 			res.use_count = 1;
@@ -230,7 +238,7 @@ namespace Expanse::Render::GL
 		res.use_count--;
 		if (res.use_count == 0)
 		{
-			glDeleteShader(res.id);
+			glDeleteProgram(res.id);
 			res.id = 0;
 			res.name.clear();
 		}

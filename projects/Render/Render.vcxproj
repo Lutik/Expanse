@@ -196,6 +196,7 @@
     <ClCompile Include="..\..\src\Render\IRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Render\BufferData.h" />
     <ClInclude Include="..\..\src\Render\MaterialParameters.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\MaterialManager.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\Renderer.h" />

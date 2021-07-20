@@ -12,6 +12,13 @@
 
 namespace Expanse::Render::GL
 {
+	TextureManager::~TextureManager()
+	{
+		for (const auto& tex : textures) {
+			glDeleteTextures(1, &tex.id);
+		}
+	}
+
 	Texture TextureManager::Create(const std::string& file)
 	{
 		// look if texture already exists
@@ -42,7 +49,7 @@ namespace Expanse::Render::GL
 		tex.use_count--;
 		if (tex.use_count == 0)
 		{
-			tex.Free();
+			glDeleteTextures(1, &tex.id);
 			tex.name.clear();
 		}
 	}
@@ -105,15 +112,9 @@ namespace Expanse::Render::GL
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 
-	void TextureManager::TextureResource::Free()
-	{
-		glDeleteTextures(1, &id);
-	}
-
 	void TextureManager::TextureResource::Bind(int texture_unit)
 	{
 		glActiveTexture(GL_TEXTURE0 + texture_unit);
 		glBindTexture(GL_TEXTURE_2D, id);
 	}
-
 }

@@ -15,6 +15,11 @@ namespace Expanse::Render::GL
 	class ShaderManager
 	{
 	public:
+		ShaderManager() = default;
+		~ShaderManager();
+		ShaderManager(const ShaderManager&) = delete;
+		ShaderManager& operator=(const ShaderManager&) = delete;
+
 		Shader Create(const std::string& file);
 		void Free(Shader program);
 		void Use(Shader program);
@@ -24,12 +29,11 @@ namespace Expanse::Render::GL
 
 		void BindUniformBlock(Shader shader, GLuint binding_point, const std::string& name);
 	private:
-		struct ShaderResource {
+		struct ShaderResource
+		{
 			GLuint id = 0;
 			size_t use_count = 0;
 			std::string name;
-
-			bool IsFree() const { return use_count == 0; }
 		};
 		std::vector<ShaderResource> shaders;
 		GLuint current_shader = 0;

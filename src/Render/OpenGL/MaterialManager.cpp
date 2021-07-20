@@ -222,4 +222,12 @@ namespace Expanse::Render::GL
 			glBufferSubData(GL_UNIFORM_BUFFER, 0, data_size, data_ptr);
 		}
 	}
+
+	MaterialManager::~MaterialManager()
+	{
+		for (const auto& gp : globals)
+		{
+			glDeleteBuffers(1, &gp.buffer);
+		}
+	}
 }

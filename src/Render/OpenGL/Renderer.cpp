@@ -71,12 +71,12 @@ namespace Expanse::Render::GL
 		vertex_arrays.Free(mesh);
 	}
 
-	void Renderer::SetMeshVertices(Mesh mesh, VertexData data, const VertexLayout& layout)
+	void Renderer::SetMeshVertices(Mesh mesh, BufferData data, const VertexLayout& layout)
 	{
 		vertex_arrays.SetVertices(mesh, data, layout);
 	}
 
-	void Renderer::SetMeshIndices(Mesh mesh, VertexData data, size_t index_size)
+	void Renderer::SetMeshIndices(Mesh mesh, BufferData data, size_t index_size)
 	{
 		vertex_arrays.SetIndices(mesh, data, index_size);
 	}

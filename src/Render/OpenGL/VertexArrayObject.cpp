@@ -34,7 +34,7 @@ namespace Expanse::Render::GL
 		}	
 	}
 
-	void VertexArrayManager::VertexArray::SetVertices(VertexData vertex_data, const VertexLayout& format)
+	void VertexArrayManager::VertexArray::SetVertices(BufferData vertex_data, const VertexLayout& format)
 	{
 		if (vao == 0) return;
 
@@ -68,7 +68,7 @@ namespace Expanse::Render::GL
 		vertex_count = static_cast<GLsizei>(vertex_data.size / format.vertex_size);
 	}
 
-	void VertexArrayManager::VertexArray::SetIndices(VertexData index_data, size_t index_size)
+	void VertexArrayManager::VertexArray::SetIndices(BufferData index_data, size_t index_size)
 	{
 		if (!index_data.ptr) {
 			glDeleteBuffers(1, &ibo);
@@ -95,7 +95,13 @@ namespace Expanse::Render::GL
 		}
 	}
 
-
+	VertexArrayManager::~VertexArrayManager()
+	{
+		for (auto& mesh : vertex_arrays)
+		{
+			mesh.Free();
+		}
+	}
 
 	Mesh VertexArrayManager::Create()
 	{		
@@ -114,14 +120,14 @@ namespace Expanse::Render::GL
 		vertex_arrays[handle.index].Free();
 	}
 
-	void VertexArrayManager::SetVertices(Mesh handle, VertexData vertex_data, const VertexLayout& format)
+	void VertexArrayManager::SetVertices(Mesh handle, BufferData vertex_data, const VertexLayout& format)
 	{
 		if (!handle.IsValid()) return;
 
 		vertex_arrays[handle.index].SetVertices(vertex_data, format);
 	}
 
-	void VertexArrayManager::SetIndices(Mesh handle, VertexData indices_data, size_t index_size)
+	void VertexArrayManager::SetIndices(Mesh handle, BufferData indices_data, size_t index_size)
 	{
 		if (!handle.IsValid()) return;
 

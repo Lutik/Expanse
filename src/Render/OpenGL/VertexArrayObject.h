@@ -2,16 +2,22 @@
 
 #include "Render/VertexTypes.h"
 #include "Render/ResourceHandles.h"
+#include "Render/BufferData.h"
 
 namespace Expanse::Render::GL
 {
 	class VertexArrayManager
 	{
 	public:
+		VertexArrayManager() = default;
+		~VertexArrayManager();
+		VertexArrayManager(const VertexArrayManager&) = delete;
+		VertexArrayManager& operator=(const VertexArrayManager&) = delete;
+
 		Mesh Create();
 		void Free(Mesh handle);
-		void SetVertices(Mesh mesh, VertexData vertex_data, const VertexLayout& format);
-		void SetIndices(Mesh mesh, VertexData indices_data, size_t index_size);
+		void SetVertices(Mesh mesh, BufferData vertex_data, const VertexLayout& format);
+		void SetIndices(Mesh mesh, BufferData indices_data, size_t index_size);
 		void Draw(Mesh mesh);
 
 	private:
@@ -28,11 +34,9 @@ namespace Expanse::Render::GL
 
 			void Create();
 			void Free();
-			void SetVertices(VertexData vertex_data, const VertexLayout& format);
-			void SetIndices(VertexData indices_data, size_t index_size);
+			void SetVertices(BufferData vertex_data, const VertexLayout& format);
+			void SetIndices(BufferData indices_data, size_t index_size);
 			void Draw();
-
-			bool IsValid() const { return vao != 0; }
 		};
 
 		std::vector<VertexArray> vertex_arrays;

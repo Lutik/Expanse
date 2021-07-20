@@ -11,6 +11,11 @@ namespace Expanse::Render::GL
 	class MaterialManager
 	{
 	public:
+		MaterialManager() = default;
+		~MaterialManager();
+		MaterialManager(const MaterialManager&) = delete;
+		MaterialManager& operator=(const MaterialManager&) = delete;
+
 		Material Create(const std::string& file);
 		Material Create(Material material);
 		void Free(Material material);
