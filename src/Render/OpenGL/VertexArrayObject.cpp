@@ -28,9 +28,9 @@ namespace Expanse::Render::GL
 		glBindVertexArray(vao);
 
 		if (ibo == 0) {
-			glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+			glDrawArrays(prim_type, 0, vertex_count);
 		} else {
-			glDrawElements(GL_TRIANGLES, index_count, index_type, nullptr);
+			glDrawElements(prim_type, index_count, index_type, nullptr);
 		}	
 	}
 
@@ -95,6 +95,17 @@ namespace Expanse::Render::GL
 		}
 	}
 
+	void VertexArrayManager::VertexArray::SetPrimitiveType(PrimitiveType prim)
+	{
+		switch (prim) {
+			case PrimitiveType::Points: prim_type = GL_POINTS; break;
+			case PrimitiveType::Lines: prim_type = GL_LINES; break;
+			case PrimitiveType::LineStrip: prim_type = GL_LINE_STRIP; break;
+			case PrimitiveType::Triangles: prim_type = GL_TRIANGLES; break;
+			case PrimitiveType::TriangleStrip: prim_type = GL_TRIANGLE_STRIP; break;
+		}
+	}
+
 	VertexArrayManager::~VertexArrayManager()
 	{
 		for (auto& mesh : vertex_arrays)
@@ -132,6 +143,13 @@ namespace Expanse::Render::GL
 		if (!handle.IsValid()) return;
 
 		vertex_arrays[handle.index].SetIndices(indices_data, index_size);
+	}
+
+	void VertexArrayManager::SetPrimitiveType(Mesh handle, PrimitiveType prim)
+	{
+		if (!handle.IsValid()) return;
+
+		vertex_arrays[handle.index].SetPrimitiveType(prim);
 	}
 
 	void VertexArrayManager::Draw(Mesh handle)

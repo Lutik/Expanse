@@ -15,11 +15,11 @@ namespace Expanse
             {{50.0f, 50.0f}, {1.0f, 1.0f}},
             {{50.0f, -50.0f}, {1.0f, 0.0f}},
         };
-        const std::vector<uint16_t> indices = { 0, 2, 1, 0, 3, 2 };
+        const std::vector<uint16_t> indices = { 1, 0, 2, 3 };
 
         renderer = Render::CreateOpenGLRenderer();
 
-        auto mesh = renderer->CreateMesh(verts, indices);
+        auto mesh = renderer->CreateMesh(verts, indices, Render::PrimitiveType::TriangleStrip);
         auto mat0 = renderer->CreateMaterial("content/materials/wood.json");
         auto mat1 = renderer->CreateMaterial("content/materials/concrete.json");
 

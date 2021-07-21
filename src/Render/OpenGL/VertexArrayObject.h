@@ -3,6 +3,7 @@
 #include "Render/VertexTypes.h"
 #include "Render/ResourceHandles.h"
 #include "Render/BufferData.h"
+#include "Render/RenderTypes.h"
 
 namespace Expanse::Render::GL
 {
@@ -18,6 +19,7 @@ namespace Expanse::Render::GL
 		void Free(Mesh handle);
 		void SetVertices(Mesh mesh, BufferData vertex_data, const VertexLayout& format);
 		void SetIndices(Mesh mesh, BufferData indices_data, size_t index_size);
+		void SetPrimitiveType(Mesh mesh, PrimitiveType prim);
 		void Draw(Mesh mesh);
 
 	private:
@@ -32,10 +34,13 @@ namespace Expanse::Render::GL
 			GLsizei index_count = 0;
 			GLenum index_type = GL_UNSIGNED_SHORT;
 
+			GLenum prim_type = GL_TRIANGLES;
+
 			void Create();
 			void Free();
 			void SetVertices(BufferData vertex_data, const VertexLayout& format);
 			void SetIndices(BufferData indices_data, size_t index_size);
+			void SetPrimitiveType(PrimitiveType prim);
 			void Draw();
 		};
 

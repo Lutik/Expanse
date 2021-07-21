@@ -71,5 +71,8 @@
     <ClInclude Include="..\..\src\Render\BufferData.h">
       <Filter>Render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Render\RenderTypes.h">
+      <Filter>Render</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

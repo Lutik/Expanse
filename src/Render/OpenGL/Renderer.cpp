@@ -81,6 +81,11 @@ namespace Expanse::Render::GL
 		vertex_arrays.SetIndices(mesh, data, index_size);
 	}
 
+	void Renderer::SetMeshPrimitiveType(Mesh mesh, PrimitiveType prim_type)
+	{
+		vertex_arrays.SetPrimitiveType(mesh, prim_type);
+	}
+
 	void Renderer::Draw(Mesh mesh, Material material)
 	{
 		materials.Bind(material);

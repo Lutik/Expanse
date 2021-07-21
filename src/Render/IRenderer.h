@@ -7,6 +7,7 @@
 #include "VertexTypes.h"
 #include "BufferData.h"
 #include "MaterialParameters.h"
+#include "RenderTypes.h"
 
 namespace Expanse::Render
 {
@@ -29,6 +30,7 @@ namespace Expanse::Render
 		virtual void FreeMesh(Mesh mesh) = 0;
 		virtual void SetMeshVertices(Mesh mesh, BufferData data, const VertexLayout& layout) = 0;
 		virtual void SetMeshIndices(Mesh mesh, BufferData data, size_t index_size) = 0;
+		virtual void SetMeshPrimitiveType(Mesh mesh, PrimitiveType prim_type) = 0;
 
 		template<class Vertex>
 		void SetMeshVertices(Mesh mesh, const std::vector<Vertex>& vertices) {
@@ -39,10 +41,11 @@ namespace Expanse::Render
 			SetMeshIndices(mesh, indices, sizeof(Index));
 		}
 		template<class Vertex, class Index>
-		Mesh CreateMesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices) {
+		Mesh CreateMesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, PrimitiveType prim_type = PrimitiveType::Triangles) {
 			auto mesh = CreateMesh();
 			SetMeshVertices(mesh, vertices);
 			SetMeshIndices(mesh, indices);
+			SetMeshPrimitiveType(mesh, prim_type);
 			return mesh;
 		}
 

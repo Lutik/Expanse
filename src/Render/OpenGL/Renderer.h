@@ -23,6 +23,7 @@ namespace Expanse::Render::GL
 		void FreeMesh(Mesh mesh) override;
 		void SetMeshVertices(Mesh mesh, BufferData data, const VertexLayout& layout) override;
 		void SetMeshIndices(Mesh mesh, BufferData data, size_t index_size) override;
+		void SetMeshPrimitiveType(Mesh mesh, PrimitiveType prim_type) override;
 
 		void Draw(Mesh mesh, Material material) override;
 
