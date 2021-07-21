@@ -24,19 +24,25 @@ namespace Expanse
         auto mat1 = renderer->CreateMaterial("content/materials/concrete.json");
 
         objects = {
-            { mesh, mat0, { 400.0f, 200.0f }},
-            { mesh, mat1, { 1000.0f, 600.0f}},
+            { mesh, mat0, { 400.0f, 200.0f }, 80.0f, 1.0f, 0.0f },
+            { mesh, mat1, { 1000.0f, 600.0f}, 120.0f, -1.0f, 0.0f },
         };
     }
 
     void Application::Tick()
     {
+        const float dt = timer.Elapsed(true);
+
         renderer->ClearFrame();
 
         renderer->Set2DMode(1440, 800);
-        for (const auto& obj : objects)
+        for (auto& obj : objects)
         {
-            auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ obj.position.x, obj.position.y, 0.0f });
+            obj.angle += obj.speed * dt;
+
+            const FPoint pos = obj.position + FPoint{ std::sin(obj.angle), std::cos(obj.angle) } * obj.radius;
+
+            auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ pos.x, pos.y, 0.0f });
             renderer->SetMaterialParameter(obj.material, "model", model);
             renderer->Draw(obj.mesh, obj.material);
         }
