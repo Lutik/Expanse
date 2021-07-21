@@ -1,0 +1,68 @@
+$vertex #version 330 core
+
+uniform mat4 model;
+
+layout(std140) uniform GlobalMatrices
+{
+  mat4 view;
+  mat4 proj;
+};
+
+in vec2 a_position;
+in vec2 a_uv;
+
+out VertexOutput {
+  vec2 v_uv;
+} vs_out;
+
+void main()
+{
+  vs_out.v_uv = a_uv;
+  gl_Position = proj * view * model * vec4(a_position, 0, 1);
+}
+
+$geometry #version 330 core
+
+layout (triangles) in;
+layout (triangle_strip, max_vertices = 3) out;
+
+in VertexOutput {
+  vec2 v_uv;
+} gs_in[];
+
+out GeometryOutput {
+  vec2 v_uv;
+} gs_out;
+
+void main()
+{
+  gl_Position = gl_in[0].gl_Position;
+  gs_out.v_uv = gs_in[0].v_uv;
+  EmitVertex();
+
+  gl_Position = gl_in[1].gl_Position;
+  gs_out.v_uv = gs_in[1].v_uv;
+  EmitVertex();
+
+  gl_Position = gl_in[2].gl_Position;
+  gs_out.v_uv = gs_in[2].v_uv;
+  EmitVertex();
+    
+  EndPrimitive();
+}
+
+$fragment #version 330 core
+
+uniform vec4 color;
+uniform sampler2D tex0;
+
+in GeometryOutput {
+  vec2 v_uv;
+} f_in;
+
+out vec4 fragment_color;
+
+void main()
+{
+  fragment_color = color * texture(tex0, f_in.v_uv);
+}

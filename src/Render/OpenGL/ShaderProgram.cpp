@@ -35,6 +35,10 @@ namespace Expanse::Render::GL
 				shader_type = GL_VERTEX_SHADER;
 			else if (type_str == "fragment")
 				shader_type = GL_FRAGMENT_SHADER;
+			else if (type_str == "geometry")
+				shader_type = GL_GEOMETRY_SHADER;
+			else
+				Log::message("Unknown shader type '{}'", type_str);
 			return shader_type;
 		}
 
