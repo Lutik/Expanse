@@ -5,6 +5,10 @@
 
 #include "Utils/Timers.h"
 
+#include "Input/Input.h"
+
+#include <SDL.h>
+
 namespace Expanse
 {
     struct GameObject
@@ -13,9 +17,7 @@ namespace Expanse
         Render::Material material;
         FPoint position;
      
-        float radius = 100.0;
         float speed = 1.0f;
-        float angle = 0.0f;
     };
 
     class Application
@@ -25,11 +27,14 @@ namespace Expanse
 
         void Tick();
 
+        void ProcessSystemEvent(const SDL_Event& evt);
     private:
         std::unique_ptr<Render::IRenderer> renderer;
 
         std::vector<GameObject> objects;
 
         Timer timer;
+
+        Input::InputState input;
     };
 }

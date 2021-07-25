@@ -24,27 +24,42 @@ namespace Expanse
         auto mat1 = renderer->CreateMaterial("content/materials/concrete.json");
 
         objects = {
-            { mesh, mat0, { 400.0f, 200.0f }, 80.0f, 1.0f, 0.0f },
-            { mesh, mat1, { 1000.0f, 600.0f}, 120.0f, -1.0f, 0.0f },
+            { mesh, mat0, { 400.0f, 200.0f }, 100.0f },
+            { mesh, mat1, { 1000.0f, 600.0f}, 150.0f },
         };
     }
 
     void Application::Tick()
     {
+        // uodate input
+        Input::UpdateState(input);
+
+        // calculate dt
         const float dt = timer.Elapsed(true);
 
-        renderer->ClearFrame();
+        // move objects
+        FPoint offset{ 0.0f, 0.0f };
+        if (input.IsKeyDown(Input::Key::Up)) offset += { 0.0f, 1.0f };
+        if (input.IsKeyDown(Input::Key::Down)) offset += { 0.0f, -1.0f };
+        if (input.IsKeyDown(Input::Key::Left)) offset += { -1.0f, 0.0f };
+        if (input.IsKeyDown(Input::Key::Right)) offset += { 1.0f, 0.0f };
+        for (auto& obj : objects) {
+            obj.position += offset * (obj.speed * dt);
+        }
 
+        // render objects
+        renderer->ClearFrame();
         renderer->Set2DMode(1440, 800);
         for (auto& obj : objects)
         {
-            obj.angle += obj.speed * dt;
-
-            const FPoint pos = obj.position + FPoint{ std::sin(obj.angle), std::cos(obj.angle) } * obj.radius;
-
-            auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ pos.x, pos.y, 0.0f });
+            auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ obj.position.x, obj.position.y, 0.0f });
             renderer->SetMaterialParameter(obj.material, "model", model);
             renderer->Draw(obj.mesh, obj.material);
         }
+    }
+
+    void Application::ProcessSystemEvent(const SDL_Event& evt)
+    {
+        Input::ProcessEvent(evt, input);
     }
 }

@@ -13,6 +13,9 @@
     <Filter Include="copy_dll\x86">
       <UniqueIdentifier>{3022da4d-7617-453c-9245-ea62c338f927}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Input">
+      <UniqueIdentifier>{be295b09-8406-4c09-a09d-7a2ad2cfc6b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Main.cpp">
@@ -24,6 +27,9 @@
     <ClCompile Include="..\src\Application.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Input\Input.cpp">
+      <Filter>src\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\SDL_Utils.h">
@@ -31,6 +37,12 @@
     </ClInclude>
     <ClInclude Include="..\src\Application.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Input\Input.h">
+      <Filter>src\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Input\KeyCodes.h">
+      <Filter>src\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
