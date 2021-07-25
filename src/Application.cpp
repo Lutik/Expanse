@@ -37,7 +37,7 @@ namespace Expanse
             if (renderer)
             {
                 renderer->ClearFrame();
-                renderer->Set2DMode(1440, 800);
+                renderer->Set2DMode();
                 for (auto& obj : world.objects)
                 {
                     auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ obj.position.x, obj.position.y, 0.0f });
@@ -56,10 +56,10 @@ namespace Expanse
         systems = std::make_unique<Game::SystemCollection>(world);
     }
 
-    void Application::Init()
+    void Application::Init(Point window_size, Point framebuffer_size)
     {
         // Create renderer
-        renderer = Render::CreateOpenGLRenderer();
+        renderer = Render::CreateOpenGLRenderer(window_size, framebuffer_size);
 
         // Init game objects
         const std::vector<Render::VertexP2T2> verts = {

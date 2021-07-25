@@ -16,7 +16,7 @@ namespace Expanse
     public:
         Application();
 
-        void Init();
+        void Init(Point window_size, Point framebuffer_size);
 
         void Tick();
 

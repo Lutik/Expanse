@@ -2,6 +2,8 @@
 
 #include <SDL.h>
 
+#include "Utils/Math.h"
+
 namespace SDL
 {
 	class System final
@@ -28,7 +30,6 @@ namespace SDL
 
 		operator bool() const { return window != nullptr; }
 
-	protected:
 		SDL_Window* window = nullptr;		
 	};
 
@@ -60,9 +61,9 @@ namespace SDL
 
 		void SwapBuffers();
 
-	protected:
 		SDL_GLContext context;
 
+	protected:
 		SDL_GLContext CreateContext(const GLContextParams& params);
 	};
 }

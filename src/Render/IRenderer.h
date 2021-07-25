@@ -9,12 +9,20 @@
 
 namespace Expanse::Render
 {
-	struct IRenderer
+	class IRenderer
 	{
+	public:
+		IRenderer(Point wnd_size, Point fb_size)
+			: window_size(wnd_size)
+			, framebuffer_size(fb_size)
+		{}
+
 		virtual ~IRenderer() = default;
 
 		/***********************************************************************************/
 		virtual void ClearFrame() = 0;
+
+		virtual void SetViewport(const Rect& rect) = 0;
 
 		/***********************************************************************************/
 
@@ -73,10 +81,17 @@ namespace Expanse::Render
 		virtual void FreeTexture(Texture texture) = 0;
 
 		/***********************************************************************************/
-		virtual void Set2DMode(int width, int height) = 0;
+		virtual void Set2DMode() = 0;
+
+		Point GetWindowSize() const { return window_size; }
+		Point GetFramebufferSize() const { return framebuffer_size; }
+
+	protected:
+		Point window_size;
+		Point framebuffer_size;
 	};
 
 	using RendererPtr = std::unique_ptr<IRenderer>;
 
-	RendererPtr CreateOpenGLRenderer();
+	RendererPtr CreateOpenGLRenderer(Point window_size, Point framebuffer_size);
 }

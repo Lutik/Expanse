@@ -10,9 +10,10 @@ namespace Expanse::Render::GL
 	class Renderer : public IRenderer
 	{
 	public:
-		Renderer();
+		Renderer(Point window_size, Point framebuffer_size);
 
 		void ClearFrame() override;
+		void SetViewport(const Rect& rect) override;
 
 		Material CreateMaterial(const std::string& file) override;
 		Material CreateMaterial(Material material) override;
@@ -30,7 +31,7 @@ namespace Expanse::Render::GL
 		Texture CreateTexture(const std::string& file) override;
 		void FreeTexture(Texture texture) override;
 
-		void Set2DMode(int width, int height) override;
+		void Set2DMode() override;
 	private:
 		void LogOpenGLInfo();
 

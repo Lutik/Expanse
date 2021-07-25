@@ -6,8 +6,8 @@
 
 namespace Expanse::Render
 {
-	RendererPtr CreateOpenGLRenderer()
+	RendererPtr CreateOpenGLRenderer(Point window_size, Point framebuffer_size)
 	{
-		return std::make_unique<GL::Renderer>();
+		return std::make_unique<GL::Renderer>(window_size, framebuffer_size);
 	}
 }

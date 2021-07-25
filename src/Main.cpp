@@ -32,8 +32,13 @@ int main(int argc, char* args[])
 	if (!window)
 		return 0;
 
+    Expanse::Point wnd_size;
+    SDL_GetWindowSize(window.window, &wnd_size.x, &wnd_size.y);
+    Expanse::Point fb_size;
+    SDL_GL_GetDrawableSize(window.window, &fb_size.x, &fb_size.y);
+
     Application app;
-    app.Init();
+    app.Init(wnd_size, fb_size);
 
     // Main loop
     bool quit = false;

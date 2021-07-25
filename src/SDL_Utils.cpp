@@ -69,5 +69,6 @@ namespace SDL
 	void WindowOpenGL::SwapBuffers()
 	{
 		SDL_GL_SwapWindow(window);
+		
 	}
 }
