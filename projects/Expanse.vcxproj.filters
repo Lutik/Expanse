@@ -16,6 +16,9 @@
     <Filter Include="src\Input">
       <UniqueIdentifier>{be295b09-8406-4c09-a09d-7a2ad2cfc6b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Game">
+      <UniqueIdentifier>{a75d6122-2f6c-48b0-8c47-bf7fd585ce2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Main.cpp">
@@ -43,6 +46,12 @@
     </ClInclude>
     <ClInclude Include="..\src\Input\KeyCodes.h">
       <Filter>src\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Game\ISystem.h">
+      <Filter>src\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Game\World.h">
+      <Filter>src\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

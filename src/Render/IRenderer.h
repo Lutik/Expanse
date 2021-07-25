@@ -76,5 +76,7 @@ namespace Expanse::Render
 		virtual void Set2DMode(int width, int height) = 0;
 	};
 
-	std::unique_ptr<IRenderer> CreateOpenGLRenderer();
+	using RendererPtr = std::unique_ptr<IRenderer>;
+
+	RendererPtr CreateOpenGLRenderer();
 }

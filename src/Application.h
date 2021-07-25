@@ -1,28 +1,21 @@
 #pragma once
 
 #include "Render/IRenderer.h"
-#include "Render/VertexTypes.h"
 
 #include "Utils/Timers.h"
 
-#include "Input/Input.h"
+#include "Game/World.h"
+#include "Game/ISystem.h"
 
 #include <SDL.h>
 
 namespace Expanse
 {
-    struct GameObject
-    {    
-        Render::Mesh mesh;
-        Render::Material material;
-        FPoint position;
-     
-        float speed = 1.0f;
-    };
-
     class Application
     {
     public:
+        Application();
+
         void Init();
 
         void Tick();
@@ -30,11 +23,9 @@ namespace Expanse
         void ProcessSystemEvent(const SDL_Event& evt);
     private:
         std::unique_ptr<Render::IRenderer> renderer;
-
-        std::vector<GameObject> objects;
-
         Timer timer;
-
-        Input::InputState input;
+        
+        Game::World world;
+        std::unique_ptr<Game::SystemCollection> systems;    
     };
 }

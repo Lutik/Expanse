@@ -6,7 +6,7 @@
 
 namespace Expanse::Render
 {
-	std::unique_ptr<IRenderer> CreateOpenGLRenderer()
+	RendererPtr CreateOpenGLRenderer()
 	{
 		return std::make_unique<GL::Renderer>();
 	}
