@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Render/RenderTypes.h"
+#include "Render/Common/ResourceDescriptions.h"
 
 namespace Expanse::Render::GL
 {
@@ -23,7 +24,7 @@ namespace Expanse::Render::GL
 			std::string name;
 			size_t use_count = 0;
 
-			void Create(const std::string& file);
+			void Create(const TextureDescription& desc);
 			void Bind(int texture_unit);
 		};
 

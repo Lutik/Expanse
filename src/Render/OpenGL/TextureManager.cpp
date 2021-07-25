@@ -34,10 +34,15 @@ namespace Expanse::Render::GL
 			const size_t index = GetFreeIndexInVector(textures, [](const auto& tex) { return tex.use_count == 0; });
 			auto& tex = textures[index];
 
-			tex.Create(file);
-			tex.name = file;
-			tex.use_count = 1;
-			return { index };
+			const auto desc = LoadTextureDescription(file);
+			if (!desc) {
+				return Texture{};
+			} else {
+				tex.Create(*desc);
+				tex.name = file;
+				tex.use_count = 1;
+				return { index };
+			}
 		}
 	}
 
@@ -63,53 +68,75 @@ namespace Expanse::Render::GL
 
 	struct TextureFormat
 	{
-		GLint texture_format; // format to use to store texture on OpenGL side
-		GLenum pixel_format;   // image data pixel format (rgb, rgba, etc.)
-		GLenum component_type; // image data single pixel component type (byte, int, float, etc.)
+		// format to use to store texture on OpenGL side
+		GLint texture_format = GL_RGB; 
+
+		// image data pixel format (rgb, rgba, etc.)
+		GLenum pixel_format = GL_RGB;
+
+		// image data single pixel component type (byte, int, float, etc.)
+		GLenum component_type = GL_UNSIGNED_BYTE;
 	};
 
-	std::optional<TextureFormat> ImageFormatToGL(Image::ColorFormat format)
+	TextureFormat ImageFormatToGL(Image::ColorFormat format)
 	{
 		using namespace Image;
 
-		static constexpr std::pair<ColorFormat, TextureFormat> Formats[] = {
-			{ ColorFormat::RGB_8,  { GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE }},
-			{ ColorFormat::RGBA_8,  { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE }},
-			{ ColorFormat::RGB_16,  { GL_RGB16, GL_RGB, GL_UNSIGNED_SHORT }},
-			{ ColorFormat::RGBA_16, { GL_RGBA16, GL_RGBA, GL_UNSIGNED_SHORT }},
-		};
-
-		auto itr = std::ranges::find_if(Formats, [=](const auto& p) { return p.first == format; });
-		
-		std::optional<TextureFormat> result;
-		if (itr != std::end(Formats)) {
-			result = itr->second;
+		switch (format)
+		{
+			case ColorFormat::RGB_8: return { GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE };
+			case ColorFormat::RGBA_8: return { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE };
+			case ColorFormat::RGB_16: return { GL_RGB16, GL_RGB, GL_UNSIGNED_SHORT };
+			case ColorFormat::RGBA_16: return { GL_RGBA16, GL_RGBA, GL_UNSIGNED_SHORT };
+			default: return {};
 		}
-		return result;
 	}
 
-	void TextureManager::TextureResource::Create(const std::string& file)
+	std::pair<GLint, GLint> FilterTypeToGL(TextureFilterType filter, bool use_mipmaps)
+	{
+		switch (filter)
+		{
+		case TextureFilterType::Nearest:
+			return { GL_NEAREST, GL_NEAREST };
+		case TextureFilterType::Linear:
+			if (use_mipmaps)
+				return { GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR };
+			else
+				return { GL_LINEAR, GL_LINEAR };
+		default:
+			return { GL_NEAREST, GL_NEAREST };
+		}
+	}
+
+	GLint AddressModeToGL(TextureAddressMode mode)
+	{
+		switch (mode) {
+			case TextureAddressMode::Clamp: return GL_CLAMP_TO_EDGE;
+			case TextureAddressMode::Repeat: return GL_REPEAT;
+			default: return GL_REPEAT;
+		}
+	}
+
+	void TextureManager::TextureResource::Create(const TextureDescription& desc)
 	{
 		glGenTextures(1, &id);
 
-		const auto img = Image::Load(file);
-
-		if (!img.data) {
-			Log::message("Texture could not be loaded ({})", file);
-			return;
-		}
-
-		auto format = ImageFormatToGL(img.format);
-		if (!format) {
-			Log::message("Unsupported texture format ({})", file);
-			return;
-		}
+		auto format = ImageFormatToGL(desc.image.format);
 
 		glBindTexture(GL_TEXTURE_2D, id);
-		glTexImage2D(GL_TEXTURE_2D, 0, format->texture_format, img.width, img.height, 0, format->pixel_format, format->component_type, img.data.get());
+		glTexImage2D(GL_TEXTURE_2D, 0, format.texture_format, desc.image.width, desc.image.height, 0, format.pixel_format, format.component_type, desc.image.data.get());
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		if (desc.use_mipmaps) {
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+
+		const auto [min_filter, mag_filter] = FilterTypeToGL(desc.filter_type, desc.use_mipmaps);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
+
+		const auto wrap_mode = AddressModeToGL(desc.address_mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_mode);
 	}
 
 	void TextureManager::TextureResource::Bind(int texture_unit)

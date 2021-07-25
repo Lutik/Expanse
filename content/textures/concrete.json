@@ -1,0 +1,6 @@
+{
+    "image":"content/textures/concrete.png",
+    "filter":"linear",
+    "address":"repeat",
+    "mipmaps":true
+}

@@ -81,4 +81,55 @@ namespace Expanse::Render
 
 		return desc;
 	}
+
+	/***********************************************************************************/
+
+	namespace
+	{
+		TextureFilterType FilterTypeFromString(std::string_view filter_str)
+		{
+			if (filter_str == "linear")
+				return TextureFilterType::Linear;
+			else //if (filter_str == "nearest")
+				return TextureFilterType::Nearest;
+		}
+
+		TextureAddressMode AddressModeFromString(std::string_view address_str)
+		{
+			if (address_str == "clamp")
+				return TextureAddressMode::Clamp;
+			else //if(address_str == "repeat")
+				return TextureAddressMode::Repeat;
+		}
+	}
+
+	std::optional<TextureDescription> LoadTextureDescription(const std::string& file)
+	{
+		if (file.ends_with(".png"))
+		{
+			TextureDescription desc;
+			desc.image = Image::Load(file);
+			return desc;
+		}
+		else if (file.ends_with(".json"))
+		{
+			const auto file_content = File::LoadContents(file);
+			if (file_content.empty()) {
+				Log::message("Could not load texture '{}', file not found", file);
+				return std::nullopt;
+			}
+
+			auto json = nlohmann::json::parse(file_content);
+
+			TextureDescription desc;
+			desc.image = Image::Load(json["image"].get<std::string>());
+
+			desc.filter_type = FilterTypeFromString(json["filter"].get<std::string>());
+			desc.address_mode = AddressModeFromString(json["address"].get<std::string>());
+			desc.use_mipmaps = json["mipmaps"].get<bool>();
+			return desc;
+		}
+
+		return std::nullopt;
+	}
 }

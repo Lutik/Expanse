@@ -17,6 +17,16 @@ namespace Expanse::Render
 		Triangles,
 		TriangleStrip
 	};
+	enum class TextureFilterType
+	{
+		Nearest,
+		Linear
+	};
+	enum class TextureAddressMode
+	{
+		Clamp,
+		Repeat
+	};
 
 	/*
 	* Different resource handles
