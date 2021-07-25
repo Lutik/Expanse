@@ -181,7 +181,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Render\MaterialParameters.cpp" />
+    <ClCompile Include="..\..\src\Render\Common\ResourceDescriptions.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\MaterialManager.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\Renderer.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\ShaderProgram.cpp" />
@@ -197,7 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Render\BufferData.h" />
-    <ClInclude Include="..\..\src\Render\MaterialParameters.h" />
+    <ClInclude Include="..\..\src\Render\Common\ResourceDescriptions.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\MaterialManager.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\Renderer.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\ShaderProgram.h" />
@@ -207,7 +207,6 @@
     <ClInclude Include="..\..\src\Render\pch.h" />
     <ClInclude Include="..\..\src\Render\IRenderer.h" />
     <ClInclude Include="..\..\src\Render\RenderTypes.h" />
-    <ClInclude Include="..\..\src\Render\ResourceHandles.h" />
     <ClInclude Include="..\..\src\Render\VertexTypes.h" />
   </ItemGroup>
   <ItemGroup>

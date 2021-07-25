@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Render/ResourceHandles.h"
+#include "Render/RenderTypes.h"
 
 namespace Expanse::Render::GL
 {
@@ -24,8 +24,11 @@ namespace Expanse::Render::GL
 		void Free(Shader program);
 		void Use(Shader program);
 
-		std::vector<ShaderUniformInfo> GetShaderUniformsInfo(Shader shader);
-		std::vector<std::string> GetShaderUniformBlocks(Shader shader);
+		// Retrieve names and locations of all uniforms in shader program
+		std::vector<ShaderUniformInfo> GetShaderUniformsInfo(Shader shader) const;
+
+		// Retrieve names of all uniform blocks in shader program
+		std::vector<std::string> GetShaderUniformBlocks(Shader shader) const;
 
 		void BindUniformBlock(Shader shader, GLuint binding_point, const std::string& name);
 	private:

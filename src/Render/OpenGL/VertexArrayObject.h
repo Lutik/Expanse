@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Render/VertexTypes.h"
-#include "Render/ResourceHandles.h"
 #include "Render/BufferData.h"
 #include "Render/RenderTypes.h"
 

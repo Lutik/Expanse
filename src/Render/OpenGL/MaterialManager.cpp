@@ -2,6 +2,8 @@
 
 #include "MaterialManager.h"
 
+#include "Common/ResourceDescriptions.h"
+
 #include "Utils.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
@@ -12,8 +14,9 @@ namespace Expanse::Render::GL
 {
 	struct UniformSetterVisitor
 	{
+		TextureManager& tex_mgr;
 		GLint loc;
-		GLint tex_unit = 0;
+		GLint tex_unit = 0;	
 
 		void operator()(NoValue value) {}
 		void operator()(float value) { glUniform1f(loc, value); }
@@ -22,54 +25,8 @@ namespace Expanse::Render::GL
 		void operator()(const glm::vec4& value) { glUniform4fv(loc, 1, glm::value_ptr(value)); }
 		void operator()(const glm::mat4& value) { glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value)); }
 		void operator()(Texture tex) { glUniform1i(loc, tex_unit); }
+		void operator()(const TextureName& tex_name) { operator()(tex_mgr.Create(tex_name)); }
 	};
-
-
-	MaterialParameterValue FloatVectorValueFromJson(nlohmann::json jvalue)
-	{
-		MaterialParameterValue value;
-
-		float buf[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		const size_t value_size = std::min(std::size(buf), jvalue.size());
-		for (size_t i = 0; i < value_size; ++i) {
-			buf[i] = jvalue[i].get<float>();
-		}
-
-		switch (value_size) {
-			case 1: value = buf[0]; break;
-			case 2: value = glm::vec2{ buf[0], buf[1] }; break;
-			case 3: value = glm::vec3{ buf[0], buf[1], buf[2] }; break;
-			case 4: value = glm::vec4{ buf[0], buf[1], buf[2], buf[3] }; break;
-			default: value = 0.0f;
-		}
-
-		return value;
-	}
-
-	MaterialParameterValue MaterialManager::ParamValueFromJson(nlohmann::json jvalue)
-	{
-		MaterialParameterValue value;
-
-		if (jvalue.is_array())
-		{			
-			if (jvalue[0].is_number_float())
-			{
-				// must be some kind of vector
-				value = FloatVectorValueFromJson(jvalue);
-			}
-			else if (jvalue[0].is_array())
-			{
-				// TODO: read matrix values
-			}
-		}
-		else if (jvalue.is_string())
-		{
-			// must be texture
-			value = CreateTexture(jvalue.get<std::string>());
-		}
-
-		return value;
-	}
 
 	Material MaterialManager::CreateEmpty()
 	{
@@ -79,21 +36,17 @@ namespace Expanse::Render::GL
 
 	Material MaterialManager::Create(const std::string& file)
 	{
-		const auto file_content = File::LoadContents(file);
-		if (file_content.empty()) {
-			Log::message("Could not load material '{}', file not found", file);
+		auto desc = LoadMaterialDescription(file);
+		if (!desc) {
 			return Material{};
 		}
-
-		auto json_mat = nlohmann::json::parse(file_content);
 
 		const auto handle = CreateEmpty();
 
 		auto& mat = materials[handle.index];
 
 		// create shader
-		const auto shader_file = json_mat["shader"].get<std::string>();
-		mat.shader = shaders.Create(shader_file);
+		mat.shader = shaders.Create(desc->shader_file);
 
 		// fill valid parameter names and locations from shader
 		for (const auto& [name, loc] : shaders.GetShaderUniformsInfo(mat.shader))
@@ -110,10 +63,14 @@ namespace Expanse::Render::GL
 		}
 
 		// read and set initial parameter values
-		const auto jparams = json_mat["parameters"];
-		for (auto& [name, jvalue] : jparams.items())
+		for (auto& [name, value] : desc->params)
 		{
-			SetParameter(handle, name, ParamValueFromJson(jvalue));
+			// optional optimization: convert string parameter to texture handle in advance
+			if (auto tex_name = std::get_if<std::string>(&value)) {
+				value = textures.Create(*tex_name);
+			}
+
+			SetParameter(handle, name, value);
 		}
 
 		return handle;
@@ -177,7 +134,7 @@ namespace Expanse::Render::GL
 		shaders.Use(mat.shader);
 
 		// set uniforms and bind textures
-		UniformSetterVisitor set_param;
+		UniformSetterVisitor set_param{ textures };
 		for (const auto& param : mat.parameters)
 		{
 			set_param.loc = param.location;		

@@ -2,9 +2,7 @@
 
 #include "ShaderProgram.h"
 #include "TextureManager.h"
-#include "Render/ResourceHandles.h"
-#include "Render/MaterialParameters.h"
-
+#include "Render/RenderTypes.h"
 
 namespace Expanse::Render::GL
 {

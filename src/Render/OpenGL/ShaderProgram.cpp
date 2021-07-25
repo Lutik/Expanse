@@ -88,6 +88,8 @@ namespace Expanse::Render::GL
 			return {};
 		}
 
+		// Splits whole shader program source into parts, representing different shader stages.
+		// Beginning of each part must be marked with $<shader type> in source
 		std::vector<ShaderSourceBlock> SplitShaderProgramSource(std::string_view program_source)
 		{
 			std::vector<ShaderSourceBlock> shader_sources;
@@ -248,7 +250,7 @@ namespace Expanse::Render::GL
 		}
 	}
 
-	std::vector<ShaderUniformInfo> ShaderManager::GetShaderUniformsInfo(Shader shader)
+	std::vector<ShaderUniformInfo> ShaderManager::GetShaderUniformsInfo(Shader shader) const
 	{
 		std::vector<ShaderUniformInfo> result;
 
@@ -286,7 +288,7 @@ namespace Expanse::Render::GL
 		return result;
 	}
 
-	std::vector<std::string> ShaderManager::GetShaderUniformBlocks(Shader shader)
+	std::vector<std::string> ShaderManager::GetShaderUniformBlocks(Shader shader) const
 	{
 		std::vector<std::string> result;
 
