@@ -19,6 +19,15 @@
     <Filter Include="src\Game">
       <UniqueIdentifier>{a75d6122-2f6c-48b0-8c47-bf7fd585ce2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="thirdparty">
+      <UniqueIdentifier>{e9eb5b88-6ed0-4d9d-840b-8566f527e86b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\ImGui">
+      <UniqueIdentifier>{f53ec586-01ee-4e06-b280-54a73dcbc967}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\ImGui\backends">
+      <UniqueIdentifier>{6819c7bb-e6d2-4a34-93aa-c56ff9b024a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Main.cpp">
@@ -32,6 +41,27 @@
     </ClCompile>
     <ClCompile Include="..\src\Input\Input.cpp">
       <Filter>src\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thidrparty\imgui-1.83\imgui.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_demo.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_draw.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_tables.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_widgets.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thidrparty\imgui-1.83\backends\imgui_impl_opengl3.cpp">
+      <Filter>thirdparty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.cpp">
+      <Filter>thirdparty\ImGui\backends</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +82,30 @@
     </ClInclude>
     <ClInclude Include="..\src\Game\World.h">
       <Filter>src\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thidrparty\imgui-1.83\imconfig.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thidrparty\imgui-1.83\imgui.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thidrparty\imgui-1.83\imgui_internal.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thidrparty\imgui-1.83\imstb_rectpack.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thidrparty\imgui-1.83\imstb_textedit.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thidrparty\imgui-1.83\imstb_truetype.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thidrparty\imgui-1.83\backends\imgui_impl_opengl3.h">
+      <Filter>thirdparty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.h">
+      <Filter>thirdparty\ImGui\backends</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

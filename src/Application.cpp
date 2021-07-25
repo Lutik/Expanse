@@ -3,6 +3,9 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
+#include "backends/imgui_impl_sdl.h"
+#include "backends/imgui_impl_opengl3.h"
+
 namespace Expanse
 {
     class MoveObjectsSystem final : public Game::ISystem
@@ -93,11 +96,29 @@ namespace Expanse
 
         systems->Update();
 
+        ImGuiFrame();
+
         Input::UpdateState(world.input);
     }
 
     void Application::ProcessSystemEvent(const SDL_Event& evt)
     {
         Input::ProcessEvent(evt, world.input);
+
+        ImGui_ImplSDL2_ProcessEvent(&evt);
+    }
+
+    void Application::ImGuiFrame()
+    {
+        ImGui::NewFrame();
+
+        ImGui::ShowDemoWindow();
+
+        ImGui::Render();
+
+        //glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+        //glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 }

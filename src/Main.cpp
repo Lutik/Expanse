@@ -4,6 +4,9 @@
 #include "Application.h"
 #include "Utils/Logger/Logger.h"
 
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_sdl.h"
+
 constexpr int WindowWidth = 1440;
 constexpr int WindowHeight = 810;
 
@@ -40,6 +43,13 @@ int main(int argc, char* args[])
     Application app;
     app.Init(wnd_size, fb_size);
 
+    // Init ImGui bindings
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplSDL2_InitForOpenGL(window.window, window.context);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
     // Main loop
     bool quit = false;
     while (!quit)
@@ -51,6 +61,12 @@ int main(int argc, char* args[])
                 quit = true;
             }
             app.ProcessSystemEvent(e);
+        }
+
+        {
+            // Start the Dear ImGui frame
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplSDL2_NewFrame(window.window);
         }
 
         app.Tick();

@@ -26,6 +26,9 @@ namespace Expanse
         Timer timer;
         
         Game::World world;
-        std::unique_ptr<Game::SystemCollection> systems;    
+        std::unique_ptr<Game::SystemCollection> systems;
+
+
+        void ImGuiFrame();
     };
 }
