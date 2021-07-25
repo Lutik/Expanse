@@ -6,6 +6,26 @@
 
 namespace Expanse::Render::GL
 {
+	namespace
+	{
+		GLenum VertexElementTypeToGL(const VertexElementLayout& elem)
+		{
+			if (elem.is_integral)
+			{
+				assert(elem.comp_size == 1 || elem.comp_size == 2 || elem.comp_size == 4);
+
+				const GLenum signed_types[] = { GL_BYTE, GL_SHORT, 0, GL_INT };
+				const GLenum unsigned_types[] = { GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, 0, GL_UNSIGNED_INT };
+				return elem.is_signed ? signed_types[elem.comp_size] : unsigned_types[elem.comp_size];
+			}
+			else
+			{
+				assert(elem.comp_size == 4);
+				return GL_FLOAT;
+			}
+		}
+	}
+
 	void VertexArrayManager::VertexArray::Create()
 	{
 		if (vao == 0) {
@@ -55,12 +75,16 @@ namespace Expanse::Render::GL
 
 		for (const auto& attr : format.elements)
 		{
-			const int location = static_cast<int>(attr.usage);
+			const auto location = static_cast<GLuint>(attr.usage);
+			const auto components = static_cast<GLint>(attr.size / attr.comp_size);
+			const auto need_normalize = attr.is_integral ? GL_TRUE : GL_FALSE;
+			const auto elem_type = VertexElementTypeToGL(attr);
+
 			glEnableVertexAttribArray(location);
 			glVertexAttribPointer(location,
-				static_cast<GLint>(attr.size / 4),
-				GL_FLOAT,
-				GL_FALSE,
+				components,
+				elem_type,
+				need_normalize,
 				static_cast<GLsizei>(format.vertex_size),
 				(const void*)attr.offset);
 		}

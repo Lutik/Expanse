@@ -19,6 +19,9 @@ namespace Expanse::Render
 		VertexElementUsage usage;
 		size_t size;
 		size_t offset;
+		size_t comp_size;
+		bool is_integral;
+		bool is_signed;
 	};
 
 	struct VertexLayout
@@ -33,7 +36,7 @@ namespace Expanse::Render
 	
 
 #define VERTEX_LAYOUT(vertex) template<> inline static const VertexLayout VertexFormat<vertex> = { sizeof(vertex), {
-#define VERTEX_ELEM(vertex, attrib, usage) { VertexElementUsage::usage, sizeof(vertex::attrib), offsetof(vertex, attrib) },
+#define VERTEX_ELEM(vertex, usage, attrib, comp_type) { VertexElementUsage::usage, sizeof(vertex::attrib), offsetof(vertex, attrib), sizeof(comp_type), std::is_integral_v<comp_type>, std::is_signed_v<comp_type> },
 #define VERTEX_END() }};
 
 	/*
@@ -46,7 +49,7 @@ namespace Expanse::Render
 	};
 
 	VERTEX_LAYOUT(VertexP2)
-		VERTEX_ELEM(VertexP2, position, POSITION)
+		VERTEX_ELEM(VertexP2, POSITION, position, float)
 	VERTEX_END()
 
 
@@ -57,8 +60,8 @@ namespace Expanse::Render
 	};
 
 	VERTEX_LAYOUT(VertexP2T2)
-		VERTEX_ELEM(VertexP2T2, position, POSITION)
-		VERTEX_ELEM(VertexP2T2, uv, TEXCOORD0)
+		VERTEX_ELEM(VertexP2T2, POSITION, position, float)
+		VERTEX_ELEM(VertexP2T2, TEXCOORD0, uv, float)
 	VERTEX_END()
 
 
