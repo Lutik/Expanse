@@ -19,10 +19,8 @@ namespace Expanse
     struct OpenGLState
     {
         GLenum last_active_texture;
-        GLuint last_program;
         GLuint last_texture;
         GLuint last_array_buffer;
-        GLuint last_vertex_array_object;
         GLint last_polygon_mode[2];
         GLint last_viewport[4];
         GLint last_scissor_box[4];
@@ -41,15 +39,7 @@ namespace Expanse
 
         OpenGLState()
         {
-            glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint*)&last_active_texture);
-            glActiveTexture(GL_TEXTURE0);
-            glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&last_program);
-            glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint*)&last_texture);
-            glGetIntegerv(GL_ARRAY_BUFFER_BINDING, (GLint*)&last_array_buffer);
-            glGetIntegerv(GL_VERTEX_ARRAY_BINDING, (GLint*)&last_vertex_array_object);
-    #ifdef GL_POLYGON_MODE
             glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode);
-    #endif
             glGetIntegerv(GL_VIEWPORT, last_viewport);
             glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);
             glGetIntegerv(GL_BLEND_SRC_RGB, (GLint*)&last_blend_src_rgb);
@@ -68,11 +58,6 @@ namespace Expanse
 
         ~OpenGLState()
         {
-            glUseProgram(last_program);
-            glBindTexture(GL_TEXTURE_2D, last_texture);
-            glActiveTexture(last_active_texture);
-            glBindVertexArray(last_vertex_array_object);
-            glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
             glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
             glBlendFuncSeparate(last_blend_src_rgb, last_blend_dst_rgb, last_blend_src_alpha, last_blend_dst_alpha);
             if (last_enable_blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
