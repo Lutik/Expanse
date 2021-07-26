@@ -162,10 +162,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Application.cpp" />
+    <ClCompile Include="..\src\GUI\ImGuiRenderer.cpp" />
     <ClCompile Include="..\src\Input\Input.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\SDL_Utils.cpp" />
-    <ClCompile Include="..\thidrparty\imgui-1.83\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.cpp" />
     <ClCompile Include="..\thidrparty\imgui-1.83\imgui.cpp" />
     <ClCompile Include="..\thidrparty\imgui-1.83\imgui_demo.cpp" />
@@ -177,10 +177,10 @@
     <ClInclude Include="..\src\Application.h" />
     <ClInclude Include="..\src\Game\ISystem.h" />
     <ClInclude Include="..\src\Game\World.h" />
+    <ClInclude Include="..\src\GUI\ImGuiRenderer.h" />
     <ClInclude Include="..\src\Input\Input.h" />
     <ClInclude Include="..\src\Input\KeyCodes.h" />
     <ClInclude Include="..\src\SDL_Utils.h" />
-    <ClInclude Include="..\thidrparty\imgui-1.83\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.h" />
     <ClInclude Include="..\thidrparty\imgui-1.83\imconfig.h" />
     <ClInclude Include="..\thidrparty\imgui-1.83\imgui.h" />

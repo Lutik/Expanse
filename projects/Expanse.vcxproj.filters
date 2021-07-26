@@ -28,6 +28,9 @@
     <Filter Include="thirdparty\ImGui\backends">
       <UniqueIdentifier>{6819c7bb-e6d2-4a34-93aa-c56ff9b024a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\UI">
+      <UniqueIdentifier>{c51208df-966b-4e7f-8807-71c678a9b314}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Main.cpp">
@@ -57,11 +60,11 @@
     <ClCompile Include="..\thidrparty\imgui-1.83\imgui_widgets.cpp">
       <Filter>thirdparty\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\thidrparty\imgui-1.83\backends\imgui_impl_opengl3.cpp">
-      <Filter>thirdparty\ImGui\backends</Filter>
-    </ClCompile>
     <ClCompile Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.cpp">
       <Filter>thirdparty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GUI\ImGuiRenderer.cpp">
+      <Filter>src\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,11 +104,11 @@
     <ClInclude Include="..\thidrparty\imgui-1.83\imstb_truetype.h">
       <Filter>thirdparty\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\thidrparty\imgui-1.83\backends\imgui_impl_opengl3.h">
-      <Filter>thirdparty\ImGui\backends</Filter>
-    </ClInclude>
     <ClInclude Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.h">
       <Filter>thirdparty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GUI\ImGuiRenderer.h">
+      <Filter>src\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

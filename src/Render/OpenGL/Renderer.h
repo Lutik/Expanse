@@ -32,6 +32,7 @@ namespace Expanse::Render::GL
 		Texture CreateTexture(std::string_view name, const TextureDescription& tex_data) override;
 		void FreeTexture(Texture texture) override;
 
+		void SetViewProjection(const glm::mat4& view, const glm::mat4& proj);
 		void Set2DMode() override;
 	private:
 		void LogOpenGLInfo();

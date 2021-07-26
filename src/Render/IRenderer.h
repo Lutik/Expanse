@@ -85,6 +85,8 @@ namespace Expanse::Render
 		virtual void FreeTexture(Texture texture) = 0;
 
 		/***********************************************************************************/
+		virtual void SetViewProjection(const glm::mat4& view, const glm::mat4& proj) = 0;
+
 		virtual void Set2DMode() = 0;
 
 		Point GetWindowSize() const { return window_size; }

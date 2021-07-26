@@ -115,6 +115,13 @@ namespace Expanse::Render::GL
 		materials.FreeTexture(texture);
 	}
 
+	void Renderer::SetViewProjection(const glm::mat4& view, const glm::mat4& proj)
+	{
+		matrices.view = view;
+		matrices.proj = proj;
+		materials.SetGlobalParam(ViewProjGlobalName, &matrices);
+	}
+
 	void Renderer::Set2DMode()
 	{
 		matrices.view = glm::mat4{ 1.0f };

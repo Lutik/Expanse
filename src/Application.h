@@ -9,6 +9,8 @@
 
 #include <SDL.h>
 
+#include "GUI/ImGuiRenderer.h"
+
 namespace Expanse
 {
     class Application
@@ -29,6 +31,8 @@ namespace Expanse
         std::unique_ptr<Game::SystemCollection> systems;
 
 
-        void ImGuiFrame();
+        void ImGuiFrame(float dt);
+
+        std::unique_ptr<ImGuiRenderer> imgui_render;
     };
 }

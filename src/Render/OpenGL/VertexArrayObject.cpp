@@ -16,7 +16,7 @@ namespace Expanse::Render::GL
 
 				const GLenum signed_types[] = { GL_BYTE, GL_SHORT, 0, GL_INT };
 				const GLenum unsigned_types[] = { GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, 0, GL_UNSIGNED_INT };
-				return elem.is_signed ? signed_types[elem.comp_size] : unsigned_types[elem.comp_size];
+				return elem.is_signed ? signed_types[elem.comp_size - 1] : unsigned_types[elem.comp_size - 1];
 			}
 			else
 			{

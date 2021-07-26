@@ -4,7 +4,6 @@
 #include "glm/ext/matrix_transform.hpp"
 
 #include "backends/imgui_impl_sdl.h"
-#include "backends/imgui_impl_opengl3.h"
 
 namespace Expanse
 {
@@ -88,6 +87,8 @@ namespace Expanse
 
         auto render_systems = systems->AddSystem<Game::SystemCollection>();
         render_systems->AddSystem<RenderObjectsSystem>(renderer.get());
+
+        imgui_render = std::make_unique<ImGuiRenderer>(renderer.get());
     }
 
     void Application::Tick()
@@ -96,7 +97,7 @@ namespace Expanse
 
         systems->Update();
 
-        ImGuiFrame();
+        ImGuiFrame(world.dt);
 
         Input::UpdateState(world.input);
     }
@@ -108,17 +109,14 @@ namespace Expanse
         ImGui_ImplSDL2_ProcessEvent(&evt);
     }
 
-    void Application::ImGuiFrame()
+    void Application::ImGuiFrame(float dt)
     {
-        ImGui::NewFrame();
+        ImGui_ImplSDL2_NewFrame(renderer->GetWindowSize(), renderer->GetFramebufferSize(), dt);
+
+        imgui_render->StartFrame();
 
         ImGui::ShowDemoWindow();
 
-        ImGui::Render();
-
-        //glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        //glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-        //glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        imgui_render->EndFrame();
     }
 }

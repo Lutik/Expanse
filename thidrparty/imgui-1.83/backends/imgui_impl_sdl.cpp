@@ -60,7 +60,6 @@
 
 // Data
 static SDL_Window*  g_Window = NULL;
-static Uint64       g_Time = 0;
 static bool         g_MousePressed[3] = { false, false, false };
 static SDL_Cursor*  g_MouseCursors[ImGuiMouseCursor_COUNT] = {};
 static char*        g_ClipboardTextData = NULL;
@@ -199,29 +198,7 @@ static bool ImGui_ImplSDL2_Init(SDL_Window* window)
     return true;
 }
 
-bool ImGui_ImplSDL2_InitForOpenGL(SDL_Window* window, void* sdl_gl_context)
-{
-    (void)sdl_gl_context; // Viewport branch will need this.
-    return ImGui_ImplSDL2_Init(window);
-}
-
-bool ImGui_ImplSDL2_InitForVulkan(SDL_Window* window)
-{
-#if !SDL_HAS_VULKAN
-    IM_ASSERT(0 && "Unsupported");
-#endif
-    return ImGui_ImplSDL2_Init(window);
-}
-
-bool ImGui_ImplSDL2_InitForD3D(SDL_Window* window)
-{
-#if !defined(_WIN32)
-    IM_ASSERT(0 && "Unsupported");
-#endif
-    return ImGui_ImplSDL2_Init(window);
-}
-
-bool ImGui_ImplSDL2_InitForMetal(SDL_Window* window)
+bool ImGui_ImplSDL2_InitForOpenGL(SDL_Window* window)
 {
     return ImGui_ImplSDL2_Init(window);
 }
@@ -347,27 +324,16 @@ static void ImGui_ImplSDL2_UpdateGamepads()
     #undef MAP_ANALOG
 }
 
-void ImGui_ImplSDL2_NewFrame(SDL_Window* window)
+void ImGui_ImplSDL2_NewFrame(Expanse::Point window_size, Expanse::Point frame_size, float dt)
 {
     ImGuiIO& io = ImGui::GetIO();
     IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer backend. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
 
     // Setup display size (every frame to accommodate for window resizing)
-    int w, h;
-    int display_w, display_h;
-    SDL_GetWindowSize(window, &w, &h);
-    if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED)
-        w = h = 0;
-    SDL_GL_GetDrawableSize(window, &display_w, &display_h);
-    io.DisplaySize = ImVec2((float)w, (float)h);
-    if (w > 0 && h > 0)
-        io.DisplayFramebufferScale = ImVec2((float)display_w / w, (float)display_h / h);
+    io.DisplaySize = ImVec2((float)window_size.x, (float)window_size.y);
+    io.DisplayFramebufferScale = ImVec2((float)frame_size.x / window_size.x, (float)frame_size.y / window_size.y);
 
-    // Setup time step (we don't use SDL_GetTicks() because it is using millisecond resolution)
-    static Uint64 frequency = SDL_GetPerformanceFrequency();
-    Uint64 current_time = SDL_GetPerformanceCounter();
-    io.DeltaTime = g_Time > 0 ? (float)((double)(current_time - g_Time) / frequency) : (float)(1.0f / 60.0f);
-    g_Time = current_time;
+    io.DeltaTime = dt;
 
     ImGui_ImplSDL2_UpdateMousePosAndButtons();
     ImGui_ImplSDL2_UpdateMouseCursor();
