@@ -6,6 +6,7 @@
 #include "VertexTypes.h"
 #include "BufferData.h"
 #include "RenderTypes.h"
+#include "Common/ResourceDescriptions.h"
 
 namespace Expanse::Render
 {
@@ -74,10 +75,13 @@ namespace Expanse::Render
 
 		/***********************************************************************************/
 
-		// Create texture loading image file
+		// Create texture by loading it from file
 		virtual Texture CreateTexture(const std::string& file) = 0;
 
-		// Destroy texture
+		// Create texture by loading it from memory. Overwrites texture, if the same name already exists
+		virtual Texture CreateTexture(std::string_view name, const TextureDescription& tex_data) = 0;
+
+		// Destroy texture (or rather decrement its ref count)
 		virtual void FreeTexture(Texture texture) = 0;
 
 		/***********************************************************************************/

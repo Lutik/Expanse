@@ -105,6 +105,11 @@ namespace Expanse::Render::GL
 		return materials.CreateTexture(file);
 	}
 
+	Texture Renderer::CreateTexture(std::string_view name, const TextureDescription& tex_data)
+	{
+		return materials.CreateTexture(name, tex_data);
+	}
+
 	void Renderer::FreeTexture(Texture texture)
 	{
 		materials.FreeTexture(texture);

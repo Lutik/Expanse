@@ -23,6 +23,7 @@ namespace Expanse::Render::GL
 		void Bind(Material material);
 
 		Texture CreateTexture(const std::string& file);
+		Texture CreateTexture(std::string_view name, const TextureDescription& tex_info);
 		void FreeTexture(Texture texture);
 
 		void SetGlobalParam(std::string_view name, const void* ptr, size_t size);

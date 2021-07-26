@@ -14,6 +14,8 @@ namespace Expanse::Render::GL
 		TextureManager& operator=(const TextureManager&) = delete;
 
 		Texture Create(const std::string& file);
+		Texture Create(std::string_view name, const TextureDescription& tex_data);
+
 		void Free(Texture texture);
 		void Bind(Texture texture, int unit);
 
@@ -29,5 +31,7 @@ namespace Expanse::Render::GL
 		};
 
 		std::vector<TextureResource> textures;
+
+		Texture GetOrCreateHandle(std::string_view name);
 	};
 }

@@ -21,29 +21,37 @@ namespace Expanse::Render::GL
 
 	Texture TextureManager::Create(const std::string& file)
 	{
-		// look if texture already exists
-		auto itr = std::ranges::find_if(textures, [&file](const auto& tex) { return tex.name == file; });
-		if (itr != textures.end())
-		{
-			itr->use_count++;
-			const size_t index = itr - textures.begin();
-			return { index };
-		}
-		else
-		{
-			const size_t index = GetFreeIndexInVector(textures, [](const auto& tex) { return tex.use_count == 0; });
-			auto& tex = textures[index];
+		Texture texture = GetOrCreateHandle(file);
 
+		assert(texture.IsValid());
+
+		auto& tex = textures[texture.index];
+		tex.use_count++;
+
+		if (tex.use_count == 1)
+		{
 			const auto desc = LoadTextureDescription(file);
-			if (!desc) {
-				return Texture{};
-			} else {
+			if (desc) {
 				tex.Create(*desc);
-				tex.name = file;
-				tex.use_count = 1;
-				return { index };
 			}
 		}
+
+		return texture;
+	}
+
+	Texture TextureManager::Create(std::string_view name, const TextureDescription& tex_info)
+	{
+		Texture texture = GetOrCreateHandle(name);
+
+		assert(texture.IsValid());
+
+		auto& tex = textures[texture.index];
+		tex.use_count++;
+
+		// will overwrite existing texture data
+		tex.Create(tex_info);
+
+		return texture;
 	}
 
 	void TextureManager::Free(Texture texture)
@@ -55,6 +63,7 @@ namespace Expanse::Render::GL
 		if (tex.use_count == 0)
 		{
 			glDeleteTextures(1, &tex.id);
+			tex.id = 0;
 			tex.name.clear();
 		}
 	}
@@ -64,6 +73,22 @@ namespace Expanse::Render::GL
 		if (!texture.IsValid()) return;
 
 		textures[texture.index].Bind(unit);
+	}
+
+	Texture TextureManager::GetOrCreateHandle(std::string_view name)
+	{
+		auto itr = std::ranges::find_if(textures, [name](const auto& tex) { return tex.name == name; });
+		if (itr != textures.end())
+		{
+			const size_t index = itr - textures.begin();
+			return { index };
+		}
+		else
+		{
+			const size_t index = GetFreeIndexInVector(textures, [](const auto& tex) { return tex.use_count == 0; });
+			textures[index].name = name;
+			return { index };
+		}
 	}
 
 	struct TextureFormat
@@ -119,7 +144,9 @@ namespace Expanse::Render::GL
 
 	void TextureManager::TextureResource::Create(const TextureDescription& desc)
 	{
-		glGenTextures(1, &id);
+		if (id == 0) {
+			glGenTextures(1, &id);
+		}
 
 		auto format = ImageFormatToGL(desc.image.format);
 
