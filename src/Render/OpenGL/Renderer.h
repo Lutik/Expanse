@@ -27,6 +27,8 @@ namespace Expanse::Render::GL
 		void SetMeshPrimitiveType(Mesh mesh, PrimitiveType prim_type) override;
 
 		void Draw(Mesh mesh, Material material) override;
+		void DrawVertexRange(Mesh mesh, Material material, int start_vertex, int vertex_count) override;
+		void DrawIndexRange(Mesh mesh, Material material, int start_index, int count, int base_vertex) override;
 
 		Texture CreateTexture(const std::string& file) override;
 		Texture CreateTexture(std::string_view name, const TextureDescription& tex_data) override;

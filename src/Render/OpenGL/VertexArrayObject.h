@@ -19,7 +19,10 @@ namespace Expanse::Render::GL
 		void SetVertices(Mesh mesh, BufferData vertex_data, const VertexLayout& format);
 		void SetIndices(Mesh mesh, BufferData indices_data, size_t index_size);
 		void SetPrimitiveType(Mesh mesh, PrimitiveType prim);
+
 		void Draw(Mesh mesh);
+		void DrawVertexRange(Mesh mesh, int start_vertex, int vertex_count);
+		void DrawIndexRange(Mesh mesh, int start_index, int index_count, int base_vertex);
 
 	private:
 		struct VertexArray
@@ -27,11 +30,12 @@ namespace Expanse::Render::GL
 			GLuint vao = 0;
 
 			GLuint vbo = 0;	
-			GLsizei vertex_count = 0;
+			int vertex_count = 0;
 
 			GLuint ibo = 0;
-			GLsizei index_count = 0;
+			int index_count = 0;
 			GLenum index_type = GL_UNSIGNED_SHORT;
+			int index_size = 2;
 
 			GLenum prim_type = GL_TRIANGLES;
 
@@ -40,8 +44,9 @@ namespace Expanse::Render::GL
 			void SetVertices(BufferData vertex_data, const VertexLayout& format);
 			void SetIndices(BufferData indices_data, size_t index_size);
 			void SetPrimitiveType(PrimitiveType prim);
-			void Draw();
 		};
+
+		VertexArray* Bind(Mesh mesh);
 
 		std::vector<VertexArray> vertex_arrays;
 	};

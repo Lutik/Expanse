@@ -12,6 +12,7 @@ namespace Expanse::Render
 {
 	class IRenderer
 	{
+		static constexpr int MaxElemCount = std::numeric_limits<int>::max();
 	public:
 		IRenderer(Point wnd_size, Point fb_size)
 			: window_size(wnd_size)
@@ -71,7 +72,14 @@ namespace Expanse::Render
 
 		/***********************************************************************************/
 
+		// Draws whole mesh
 		virtual void Draw(Mesh mesh, Material material) = 0;
+
+		// Draws selected range of vertices from the mesh
+		virtual void DrawVertexRange(Mesh mesh, Material material, int start_vertex, int vertex_count = MaxElemCount) = 0;
+
+		// Draws selected range of indices from the mesh. Undefined if used with unindexed mesh.
+		virtual void DrawIndexRange(Mesh mesh, Material material, int start_index, int count = MaxElemCount, int base_vertex = 0) = 0;
 
 		/***********************************************************************************/
 

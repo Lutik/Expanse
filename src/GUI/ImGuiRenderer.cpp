@@ -85,7 +85,7 @@ namespace Expanse
 
         ImGuiIO& io = ImGui::GetIO();
         io.BackendRendererName = "imgui_impl_expanse_gl330";
-        //io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
+        io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
     }
 
     ImGuiRenderer::~ImGuiRenderer()
@@ -184,8 +184,7 @@ namespace Expanse
                     clip_rect.z = (cmd.ClipRect.z - clip_off.x) * clip_scale.x;
                     clip_rect.w = (cmd.ClipRect.w - clip_off.y) * clip_scale.y;
 
-                    if (clip_rect.x < fb_width && clip_rect.
-                        y < fb_height && clip_rect.z >= 0.0f && clip_rect.w >= 0.0f)
+                    if (clip_rect.x < fb_width && clip_rect.y < fb_height && clip_rect.z >= 0.0f && clip_rect.w >= 0.0f)
                     {
                         // Apply scissor/clipping rectangle
                         glScissor((int)clip_rect.x, (int)(fb_height - clip_rect.w), (int)(clip_rect.z - clip_rect.x), (int)(clip_rect.w - clip_rect.y));
@@ -194,9 +193,7 @@ namespace Expanse
                         Render::Texture tex{ (size_t)cmd.GetTexID() };
                         renderer->SetMaterialParameter(gui_material, "tex", tex);
 
-                        renderer->Draw(gui_mesh, gui_material);
-
-                        // glDrawElementsBaseVertex(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)(pcmd->IdxOffset * sizeof(ImDrawIdx)), (GLint)pcmd->VtxOffset);
+                        renderer->DrawIndexRange(gui_mesh, gui_material, cmd.IdxOffset, cmd.ElemCount, cmd.VtxOffset);
                     }
                 }
             }

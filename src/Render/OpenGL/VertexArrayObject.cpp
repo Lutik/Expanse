@@ -43,17 +43,6 @@ namespace Expanse::Render::GL
 		ibo = 0;
 	}
 
-	void VertexArrayManager::VertexArray::Draw()
-	{
-		glBindVertexArray(vao);
-
-		if (ibo == 0) {
-			glDrawArrays(prim_type, 0, vertex_count);
-		} else {
-			glDrawElements(prim_type, index_count, index_type, nullptr);
-		}	
-	}
-
 	void VertexArrayManager::VertexArray::SetVertices(BufferData vertex_data, const VertexLayout& format)
 	{
 		if (vao == 0) return;
@@ -92,9 +81,11 @@ namespace Expanse::Render::GL
 		vertex_count = static_cast<GLsizei>(vertex_data.size / format.vertex_size);
 	}
 
-	void VertexArrayManager::VertexArray::SetIndices(BufferData index_data, size_t index_size)
+	void VertexArrayManager::VertexArray::SetIndices(BufferData index_data, size_t idx_size)
 	{
-		if (!index_data.ptr) {
+		if (!index_data.ptr || index_data.size == 0)
+		{
+			// delete indices if passed empty index data
 			glDeleteBuffers(1, &ibo);
 			ibo = 0;
 			index_count = 0;
@@ -109,6 +100,7 @@ namespace Expanse::Render::GL
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_data.size, index_data.ptr, GL_STATIC_DRAW);
 
+		index_size = static_cast<int>(idx_size);
 		index_count = static_cast<GLsizei>(index_data.size / index_size);
 
 		switch (index_size) {
@@ -176,10 +168,44 @@ namespace Expanse::Render::GL
 		vertex_arrays[handle.index].SetPrimitiveType(prim);
 	}
 
-	void VertexArrayManager::Draw(Mesh handle)
+	void VertexArrayManager::Draw(Mesh mesh)
 	{
-		if (!handle.IsValid()) return;
+		if (auto vb = Bind(mesh))
+		{
+			if (vb->ibo != 0) {
+				glDrawElements(vb->prim_type, vb->index_count, vb->index_type, nullptr);
+			} else {
+				glDrawArrays(vb->prim_type, 0, vb->vertex_count);
+			}
+		}
+	}
 
-		vertex_arrays[handle.index].Draw();
+	void VertexArrayManager::DrawVertexRange(Mesh mesh, int start_vertex, int vertex_count)
+	{
+		if (auto vb = Bind(mesh))
+		{
+			glDrawArrays(vb->prim_type, start_vertex, std::min(vb->vertex_count, vertex_count));
+		}
+	}
+
+	void VertexArrayManager::DrawIndexRange(Mesh mesh, int start_index, int index_count, int base_vertex)
+	{
+		if (auto vb = Bind(mesh))
+		{
+			const auto count = std::min(vb->index_count, index_count);
+			const auto ib_offset = static_cast<intptr_t>(start_index * vb->index_size);
+			glDrawElementsBaseVertex(vb->prim_type, count, vb->index_type, (const void*)ib_offset, base_vertex);
+		}
+	}
+
+	VertexArrayManager::VertexArray* VertexArrayManager::Bind(Mesh mesh)
+	{
+		if (mesh.IsValid())
+		{
+			auto& vb = vertex_arrays[mesh.index];
+			glBindVertexArray(vb.vao);
+			return &vb;
+		}
+		return nullptr;
 	}
 }

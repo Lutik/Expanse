@@ -99,6 +99,17 @@ namespace Expanse::Render::GL
 		materials.Bind(material);
 		vertex_arrays.Draw(mesh);
 	}
+
+	void Renderer::DrawVertexRange(Mesh mesh, Material material, int start_vertex, int vertex_count)
+	{
+		materials.Bind(material);
+		vertex_arrays.DrawVertexRange(mesh, start_vertex, vertex_count);
+	}
+	void Renderer::DrawIndexRange(Mesh mesh, Material material, int start_index, int index_count, int base_vertex)
+	{
+		materials.Bind(material);
+		vertex_arrays.DrawIndexRange(mesh, start_index, index_count, base_vertex);
+	}
 	
 	Texture Renderer::CreateTexture(const std::string& file)
 	{
