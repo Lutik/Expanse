@@ -4,9 +4,6 @@
 
 #include "Utils/Logger/Logger.h"
 
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_transform.hpp"
-
 namespace Expanse::Render::GL
 {
 	static constexpr const char* ViewProjGlobalName = "ViewProjection";
@@ -18,9 +15,10 @@ namespace Expanse::Render::GL
 
 		LogOpenGLInfo();
 
-		glClearColor(0.0f, 0.6f, 0.4f, 1.0f);
+		glEnable(GL_SCISSOR_TEST);
 
-		glViewport(0, 0, framebuffer_size.x, framebuffer_size.y);
+		ResetScissor();
+		ResetViewport();
 
 		materials.Init();
 		materials.SetGlobalParam(ViewProjGlobalName, &matrices);
@@ -34,6 +32,16 @@ namespace Expanse::Render::GL
 	void Renderer::SetViewport(const Rect& rect)
 	{
 		glViewport(rect.x, rect.y, rect.w, rect.h);
+	}
+
+	void Renderer::SetBgColor(const glm::vec4& color)
+	{
+		glClearColor(color.r, color.g, color.b, color.a);
+	}
+
+	void Renderer::SetScissor(const Rect& rect)
+	{		
+		glScissor(rect.x, rect.y, rect.w, rect.h);
 	}
 
 	void Renderer::LogOpenGLInfo()
@@ -131,17 +139,6 @@ namespace Expanse::Render::GL
 	{
 		matrices.view = view;
 		matrices.proj = proj;
-		materials.SetGlobalParam(ViewProjGlobalName, &matrices);
-	}
-
-	void Renderer::Set2DMode()
-	{
-		matrices.view = glm::mat4{ 1.0f };
-
-		const auto fwidth = static_cast<float>(window_size.x);
-		const auto fheight = static_cast<float>(window_size.y);
-		matrices.proj = glm::orthoLH_NO(0.0f, fwidth, 0.0f, fheight, -1.0f, 1.0f);
-
 		materials.SetGlobalParam(ViewProjGlobalName, &matrices);
 	}
 }

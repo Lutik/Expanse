@@ -16,34 +16,6 @@ namespace Expanse
         { Render::VertexElementUsage::COLOR, sizeof(ImDrawVert::col), offsetof(ImDrawVert, col), 1, true, false },
     } };
 
-    struct OpenGLState
-    {
-        GLint last_viewport[4];
-        GLint last_scissor_box[4];
-        GLboolean last_enable_depth_test;
-        GLboolean last_enable_stencil_test;
-        GLboolean last_enable_scissor_test;
-
-        OpenGLState()
-        {
-            glGetIntegerv(GL_VIEWPORT, last_viewport);
-            glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);
-            last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
-            last_enable_stencil_test = glIsEnabled(GL_STENCIL_TEST);
-            last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
-        }
-
-        ~OpenGLState()
-        {
-            if (last_enable_depth_test) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
-            if (last_enable_stencil_test) glEnable(GL_STENCIL_TEST); else glDisable(GL_STENCIL_TEST);
-            if (last_enable_scissor_test) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
-
-            glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
-            glScissor(last_scissor_box[0], last_scissor_box[1], (GLsizei)last_scissor_box[2], (GLsizei)last_scissor_box[3]);
-        }
-    };
-
     ImGuiRenderer::ImGuiRenderer(Render::IRenderer* render)
         : renderer(render)
     {
@@ -81,11 +53,6 @@ namespace Expanse
 
     void ImGuiRenderer::SetupRenderState(ImDrawData* draw_data, int fb_width, int fb_height)
     {
-        // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_STENCIL_TEST);
-        glEnable(GL_SCISSOR_TEST);
-
         // Setup viewport, orthographic projection matrix
         renderer->SetViewport({ 0, 0, fb_width, fb_height });
 
@@ -105,9 +72,6 @@ namespace Expanse
         int fb_height = (int)(draw_data->DisplaySize.y * draw_data->FramebufferScale.y);
         if (fb_width <= 0 || fb_height <= 0)
             return;
-
-        // Backup GL state
-        OpenGLState push_state;
 
         // Setup desired GL state
         SetupRenderState(draw_data, fb_width, fb_height);
@@ -152,7 +116,8 @@ namespace Expanse
                     if (clip_rect.x < fb_width && clip_rect.y < fb_height && clip_rect.z >= 0.0f && clip_rect.w >= 0.0f)
                     {
                         // Apply scissor/clipping rectangle
-                        glScissor((int)clip_rect.x, (int)(fb_height - clip_rect.w), (int)(clip_rect.z - clip_rect.x), (int)(clip_rect.w - clip_rect.y));
+                        Rect scissor_rect{ (int)clip_rect.x, (int)(fb_height - clip_rect.w), (int)(clip_rect.z - clip_rect.x), (int)(clip_rect.w - clip_rect.y) };
+                        renderer->SetScissor(scissor_rect);
 
                         // Bind texture and draw
                         renderer->SetMaterialParameter(gui_material, "tex", Render::Texture{ (size_t)cmd.GetTexID() });
@@ -161,6 +126,10 @@ namespace Expanse
                 }
             }
         }
+
+        // Restore default render state
+        renderer->ResetViewport();
+        renderer->ResetScissor();
     }
 
     void ImGuiRenderer::CreateFontTexture()

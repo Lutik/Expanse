@@ -12,30 +12,38 @@ namespace Expanse::Render::GL
 	public:
 		Renderer(Point window_size, Point framebuffer_size);
 
-		void ClearFrame() override;
+		// Renderer state
 		void SetViewport(const Rect& rect) override;
+		void SetBgColor(const glm::vec4& color) override;
+		void SetScissor(const Rect& rect) override;
 
+		// Material functions
 		Material CreateMaterial(const std::string& file) override;
 		Material CreateMaterial(Material material) override;
 		void FreeMaterial(Material material) override;
 		void SetMaterialParameter(Material material, std::string_view name, const MaterialParameterValue& value) override;
 
+		// Mesh functions
 		Mesh CreateMesh() override;
 		void FreeMesh(Mesh mesh) override;
 		void SetMeshVertices(Mesh mesh, BufferData data, const VertexLayout& layout) override;
 		void SetMeshIndices(Mesh mesh, BufferData data, size_t index_size) override;
 		void SetMeshPrimitiveType(Mesh mesh, PrimitiveType prim_type) override;
 
+		// Drawing functions
+		void ClearFrame() override;
 		void Draw(Mesh mesh, Material material) override;
 		void DrawVertexRange(Mesh mesh, Material material, int start_vertex, int vertex_count) override;
 		void DrawIndexRange(Mesh mesh, Material material, int start_index, int count, int base_vertex) override;
 
+		// Texture functions
 		Texture CreateTexture(const std::string& file) override;
 		Texture CreateTexture(std::string_view name, const TextureDescription& tex_data) override;
 		void FreeTexture(Texture texture) override;
 
+		// Set camera/projections/matrices
 		void SetViewProjection(const glm::mat4& view, const glm::mat4& proj);
-		void Set2DMode() override;
+
 	private:
 		void LogOpenGLInfo();
 

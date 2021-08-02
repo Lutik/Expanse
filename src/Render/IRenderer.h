@@ -8,6 +8,8 @@
 #include "RenderTypes.h"
 #include "Common/ResourceDescriptions.h"
 
+#include "glm/ext/matrix_clip_space.hpp"
+
 namespace Expanse::Render
 {
 	class IRenderer
@@ -22,9 +24,25 @@ namespace Expanse::Render
 		virtual ~IRenderer() = default;
 
 		/***********************************************************************************/
-		virtual void ClearFrame() = 0;
 
+		// Sets viewport rectangle
 		virtual void SetViewport(const Rect& rect) = 0;
+
+		// Sets background color, used when clearing framebuffer
+		virtual void SetBgColor(const glm::vec4& color) = 0;
+
+		// Sets scissor rect
+		virtual void SetScissor(const Rect& rect) = 0;
+
+		// Resets viewport to include whole window
+		void ResetViewport() {
+			SetViewport(GetFramebufferRect());
+		}
+
+		// Disables scissor rect
+		void ResetScissor() {
+			SetScissor(GetFramebufferRect());
+		}
 
 		/***********************************************************************************/
 
@@ -54,15 +72,20 @@ namespace Expanse::Render
 		virtual void SetMeshPrimitiveType(Mesh mesh, PrimitiveType prim_type) = 0;
 
 		template<class Vertex>
-		void SetMeshVertices(Mesh mesh, const std::vector<Vertex>& vertices) {
+		void SetMeshVertices(Mesh mesh, const std::vector<Vertex>& vertices)
+		{
 			SetMeshVertices(mesh, vertices, VertexFormat<Vertex>);
 		}
+
 		template<class Index>
-		void SetMeshIndices(Mesh mesh, const std::vector<Index>& indices) {
+		void SetMeshIndices(Mesh mesh, const std::vector<Index>& indices)
+		{
 			SetMeshIndices(mesh, indices, sizeof(Index));
 		}
+
 		template<class Vertex, class Index>
-		Mesh CreateMesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, PrimitiveType prim_type = PrimitiveType::Triangles) {
+		Mesh CreateMesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, PrimitiveType prim_type = PrimitiveType::Triangles)
+		{
 			auto mesh = CreateMesh();
 			SetMeshVertices(mesh, vertices);
 			SetMeshIndices(mesh, indices);
@@ -71,6 +94,9 @@ namespace Expanse::Render
 		}
 
 		/***********************************************************************************/
+
+		// Clear framebuffer
+		virtual void ClearFrame() = 0;
 
 		// Draws whole mesh
 		virtual void Draw(Mesh mesh, Material material) = 0;
@@ -93,12 +119,27 @@ namespace Expanse::Render
 		virtual void FreeTexture(Texture texture) = 0;
 
 		/***********************************************************************************/
+
+		// Sets view and projection matrices (for those materials that use them)
 		virtual void SetViewProjection(const glm::mat4& view, const glm::mat4& proj) = 0;
 
-		virtual void Set2DMode() = 0;
+		// Sets matrices to use window coordinate system
+		void Set2DMode()
+		{
+			const auto view = glm::mat4{ 1.0f };
+			const auto proj = glm::orthoLH_NO(0.0f, static_cast<float>(window_size.x), 0.0f, static_cast<float>(window_size.y), -1.0f, 1.0f);
+			SetViewProjection(view, proj);
+		}
 
+		/***********************************************************************************/
+
+		// Returns window size
 		Point GetWindowSize() const { return window_size; }
+		Rect GetWindowRect() const { return Rect{0, 0, window_size.x, window_size.y }; }
+
+		// Returns framebuffer size (may be not equal to window size on retina devices)
 		Point GetFramebufferSize() const { return framebuffer_size; }
+		Rect GetFramebufferRect() const { return Rect{0, 0, framebuffer_size.x, framebuffer_size.y }; }
 
 	protected:
 		Point window_size;

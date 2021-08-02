@@ -62,6 +62,7 @@ namespace Expanse
     {
         // Create renderer
         renderer = Render::CreateOpenGLRenderer(window_size, framebuffer_size);
+        renderer->SetBgColor({0.0f, 0.6f, 0.4f, 1.0f});
 
         // Init game objects
         const std::vector<Render::VertexP2T2> verts = {
