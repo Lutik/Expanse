@@ -72,6 +72,8 @@ namespace Expanse
 		constexpr TRect& operator-= (TPoint<T> off) { x -= off.x; y -= off.y; return *this; }
 		constexpr TRect& operator*= (T v) { x *= v; y *= v; w *= v; h *= v; return *this; }
 		constexpr TRect& operator/= (T v) { x /= v; y /= v; w /= v; h /= v; return *this; }
+		constexpr TRect& operator*= (TPoint<T> scale) { x *= scale.x; y *= scale.y; w *= scale.x; h *= scale.y; return *this; }
+		constexpr TRect& operator/= (TPoint<T> scale) { x /= scale.y; y /= scale.y; w /= scale.x; h /= scale.y; return *this; }
 	};
 
 	template<Number T>
@@ -85,6 +87,12 @@ namespace Expanse
 
 	template<Number T>
 	constexpr TRect<T> operator/ (TRect<T> rect, T scale) { rect /= scale; return rect; }
+
+	template<Number T>
+	constexpr TRect<T> operator* (TRect<T> rect, TPoint<T> scale) { rect *= scale; return rect; }
+
+	template<Number T>
+	constexpr TRect<T> operator/ (TRect<T> rect, TPoint<T> scale) { rect /= scale; return rect; }
 
 	template<Number T>
 	constexpr bool operator==(const TRect<T>& rect1, const TRect<T>& rect2) {
