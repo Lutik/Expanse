@@ -2,6 +2,7 @@
 
 #include "ShaderProgram.h"
 #include "TextureManager.h"
+#include "RenderStateManager.h"
 #include "Render/RenderTypes.h"
 
 namespace Expanse::Render::GL
@@ -13,6 +14,8 @@ namespace Expanse::Render::GL
 		~MaterialManager();
 		MaterialManager(const MaterialManager&) = delete;
 		MaterialManager& operator=(const MaterialManager&) = delete;
+
+		void Init();
 
 		Material Create(const std::string& file);
 		Material Create(Material material);
@@ -49,6 +52,7 @@ namespace Expanse::Render::GL
 		{
 			Shader shader;
 			std::vector<MaterialParameter> parameters;
+			MaterialProperties properties;
 
 			bool IsFree() const { return !shader.IsValid(); }
 		};
@@ -56,8 +60,6 @@ namespace Expanse::Render::GL
 		std::vector<MaterialResource> materials;
 
 		Material CreateEmpty();
-		MaterialParameterValue ParamValueFromJson(nlohmann::json jvalue);
-
 
 		struct GlobalMaterialParameter
 		{
@@ -65,5 +67,10 @@ namespace Expanse::Render::GL
 			GLuint buffer;
 		};
 		std::vector<GlobalMaterialParameter> globals;
+
+		RenderStateManager gl_state;
 	};
+
+
+	
 }

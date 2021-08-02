@@ -9,7 +9,7 @@
 
 namespace Expanse::Render
 {
-	enum class PrimitiveType
+	enum class PrimitiveType : uint8_t
 	{
 		Points,
 		Lines,
@@ -17,15 +17,24 @@ namespace Expanse::Render
 		Triangles,
 		TriangleStrip
 	};
-	enum class TextureFilterType
+	enum class TextureFilterType : uint8_t
 	{
 		Nearest,
 		Linear
 	};
-	enum class TextureAddressMode
+	enum class TextureAddressMode : uint8_t
 	{
 		Clamp,
 		Repeat
+	};
+
+	enum class BlendMode : uint8_t
+	{
+		None,
+		Alpha,
+		Add,
+		Multiply,
+		ImGui // find a proper name for it?
 	};
 
 	/*

@@ -22,6 +22,7 @@ namespace Expanse::Render::GL
 
 		glViewport(0, 0, framebuffer_size.x, framebuffer_size.y);
 
+		materials.Init();
 		materials.SetGlobalParam(ViewProjGlobalName, &matrices);
 	}
 

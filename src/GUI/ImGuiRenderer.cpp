@@ -18,56 +18,27 @@ namespace Expanse
 
     struct OpenGLState
     {
-        GLenum last_active_texture;
-        GLuint last_texture;
-        GLuint last_array_buffer;
-        GLint last_polygon_mode[2];
         GLint last_viewport[4];
         GLint last_scissor_box[4];
-        GLenum last_blend_src_rgb;
-        GLenum last_blend_dst_rgb;
-        GLenum last_blend_src_alpha;
-        GLenum last_blend_dst_alpha;
-        GLenum last_blend_equation_rgb;
-        GLenum last_blend_equation_alpha;
-        GLboolean last_enable_blend;
-        GLboolean last_enable_cull_face;
         GLboolean last_enable_depth_test;
         GLboolean last_enable_stencil_test;
         GLboolean last_enable_scissor_test;
-        GLboolean last_enable_primitive_restart;
 
         OpenGLState()
         {
-            glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode);
             glGetIntegerv(GL_VIEWPORT, last_viewport);
             glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);
-            glGetIntegerv(GL_BLEND_SRC_RGB, (GLint*)&last_blend_src_rgb);
-            glGetIntegerv(GL_BLEND_DST_RGB, (GLint*)&last_blend_dst_rgb);
-            glGetIntegerv(GL_BLEND_SRC_ALPHA, (GLint*)&last_blend_src_alpha);
-            glGetIntegerv(GL_BLEND_DST_ALPHA, (GLint*)&last_blend_dst_alpha);
-            glGetIntegerv(GL_BLEND_EQUATION_RGB, (GLint*)&last_blend_equation_rgb);
-            glGetIntegerv(GL_BLEND_EQUATION_ALPHA, (GLint*)&last_blend_equation_alpha);
-            last_enable_blend = glIsEnabled(GL_BLEND);
-            last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
             last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
             last_enable_stencil_test = glIsEnabled(GL_STENCIL_TEST);
             last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
-            last_enable_primitive_restart = glIsEnabled(GL_PRIMITIVE_RESTART);
         }
 
         ~OpenGLState()
         {
-            glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
-            glBlendFuncSeparate(last_blend_src_rgb, last_blend_dst_rgb, last_blend_src_alpha, last_blend_dst_alpha);
-            if (last_enable_blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
-            if (last_enable_cull_face) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
             if (last_enable_depth_test) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
             if (last_enable_stencil_test) glEnable(GL_STENCIL_TEST); else glDisable(GL_STENCIL_TEST);
             if (last_enable_scissor_test) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
-            if (last_enable_primitive_restart) glEnable(GL_PRIMITIVE_RESTART); else glDisable(GL_PRIMITIVE_RESTART);
 
-            glPolygonMode(GL_FRONT_AND_BACK, (GLenum)last_polygon_mode[0]);
             glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
             glScissor(last_scissor_box[0], last_scissor_box[1], (GLsizei)last_scissor_box[2], (GLsizei)last_scissor_box[3]);
         }
@@ -111,15 +82,9 @@ namespace Expanse
     void ImGuiRenderer::SetupRenderState(ImDrawData* draw_data, int fb_width, int fb_height)
     {
         // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
-        glEnable(GL_BLEND);
-        glBlendEquation(GL_FUNC_ADD);
-        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_STENCIL_TEST);
         glEnable(GL_SCISSOR_TEST);
-        glDisable(GL_PRIMITIVE_RESTART);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // Setup viewport, orthographic projection matrix
         renderer->SetViewport({ 0, 0, fb_width, fb_height });
@@ -189,10 +154,8 @@ namespace Expanse
                         // Apply scissor/clipping rectangle
                         glScissor((int)clip_rect.x, (int)(fb_height - clip_rect.w), (int)(clip_rect.z - clip_rect.x), (int)(clip_rect.w - clip_rect.y));
 
-                        // Bind texture, Draw
-                        Render::Texture tex{ (size_t)cmd.GetTexID() };
-                        renderer->SetMaterialParameter(gui_material, "tex", tex);
-
+                        // Bind texture and draw
+                        renderer->SetMaterialParameter(gui_material, "tex", Render::Texture{ (size_t)cmd.GetTexID() });
                         renderer->DrawIndexRange(gui_mesh, gui_material, cmd.IdxOffset, cmd.ElemCount, cmd.VtxOffset);
                     }
                 }

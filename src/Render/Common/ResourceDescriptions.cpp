@@ -56,6 +56,15 @@ namespace Expanse::Render
 		}
 	}
 
+	BlendMode BlendModeFromString(std::string_view str)
+	{
+		if (str == "alpha") return BlendMode::Alpha;
+		else if (str == "add") return BlendMode::Add;
+		else if (str == "multiply") return BlendMode::Multiply;
+		else if (str == "imgui") return BlendMode::ImGui;
+		return BlendMode::Alpha;
+	}
+
 	std::optional<MaterialDescription> LoadMaterialDescription(const std::string& file)
 	{
 		const auto file_content = File::LoadContents(file);
@@ -77,6 +86,17 @@ namespace Expanse::Render
 		for (auto& [name, jvalue] : jparams.items())
 		{
 			desc.params.push_back({ name, ParamValueFromJson(jvalue) });
+		}
+
+		// material properties
+		const auto jprops = json_mat["properties"];
+		for (auto& [name, jvalue] : jprops.items())
+		{
+			if (name == "blend") {
+				desc.properties.blend_mode = BlendModeFromString(jvalue.get<std::string>());
+			} else if (name == "culling") {
+				desc.properties.culling = jvalue.get<bool>();
+			}
 		}
 
 		return desc;

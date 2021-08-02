@@ -1,3 +1,7 @@
 {
-    "shader":"content/shaders/imgui.txt"
+    "shader":"content/shaders/imgui.txt",
+    "properties":{
+        "blend":"imgui",
+        "culling":false
+    }
 }

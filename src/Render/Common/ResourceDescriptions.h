@@ -8,6 +8,12 @@
 
 namespace Expanse::Render
 {
+	struct MaterialProperties
+	{
+		BlendMode blend_mode = BlendMode::Alpha;
+		bool culling = false;
+	};
+
 	struct MaterialParameterPair
 	{
 		std::string name;
@@ -16,8 +22,14 @@ namespace Expanse::Render
 
 	struct MaterialDescription
 	{
+		// shader program
 		std::string shader_file;
+
+		// uniforms and textures
 		std::vector<MaterialParameterPair> params;
+
+		// render state (blend mode, etc.)
+		MaterialProperties properties;
 	};
 
 	std::optional<MaterialDescription> LoadMaterialDescription(const std::string& file);

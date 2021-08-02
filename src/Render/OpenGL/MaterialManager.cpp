@@ -28,6 +28,11 @@ namespace Expanse::Render::GL
 		void operator()(const TextureName& tex_name) { operator()(tex_mgr.Create(tex_name)); }
 	};
 
+	void MaterialManager::Init()
+	{
+		gl_state.Init();
+	}
+
 	Material MaterialManager::CreateEmpty()
 	{
 		const auto index = GetFreeIndexInVector(materials, [](const auto& mat) { return mat.IsFree(); });
@@ -72,6 +77,9 @@ namespace Expanse::Render::GL
 
 			SetParameter(handle, name, value);
 		}
+
+		// copy properties
+		mat.properties = desc->properties;
 
 		return handle;
 	}
@@ -147,6 +155,9 @@ namespace Expanse::Render::GL
 				set_param.tex_unit++;
 			}
 		}
+
+		// set opengl state
+		gl_state.Set(mat.properties);
 	}
 
 	Texture MaterialManager::CreateTexture(const std::string& file)

@@ -36,6 +36,9 @@
     <ClCompile Include="..\..\src\Render\Common\ResourceDescriptions.cpp">
       <Filter>Render\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Render\OpenGL\RenderStateManager.cpp">
+      <Filter>Render\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Render\IRenderer.h">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Render\Common\ResourceDescriptions.h">
       <Filter>Render\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Render\OpenGL\RenderStateManager.h">
+      <Filter>Render\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

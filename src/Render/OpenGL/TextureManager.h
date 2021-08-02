@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Render/RenderTypes.h"
 #include "Render/Common/ResourceDescriptions.h"
 
 namespace Expanse::Render::GL

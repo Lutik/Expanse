@@ -184,6 +184,7 @@
     <ClCompile Include="..\..\src\Render\Common\ResourceDescriptions.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\MaterialManager.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\Renderer.cpp" />
+    <ClCompile Include="..\..\src\Render\OpenGL\RenderStateManager.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\ShaderProgram.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\TextureManager.cpp" />
     <ClCompile Include="..\..\src\Render\OpenGL\VertexArrayObject.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="..\..\src\Render\Common\ResourceDescriptions.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\MaterialManager.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\Renderer.h" />
+    <ClInclude Include="..\..\src\Render\OpenGL\RenderStateManager.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\ShaderProgram.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\TextureManager.h" />
     <ClInclude Include="..\..\src\Render\OpenGL\Utils.h" />
