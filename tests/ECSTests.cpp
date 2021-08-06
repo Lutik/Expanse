@@ -87,4 +87,37 @@ namespace Expanse::Tests
 		EXPECT_EQ(a, a2);
 		EXPECT_EQ(b, b2);
 	}
+
+	TEST(ECS, ForEach)
+	{
+		ecs::World world;
+		auto ent0 = world.CreateEntity();
+		auto ent1 = world.CreateEntity();
+		auto ent2 = world.CreateEntity();
+
+		world.AddComponent<CompA>(ent0, 1);
+
+		world.AddComponent<CompA>(ent1, 2);
+		world.AddComponent<CompB>(ent1, 2.0f);
+
+		world.AddComponent<CompA>(ent2, 3);
+		world.AddComponent<CompB>(ent2, 3.0f);
+
+
+		world.ForEach<CompA, CompB>([](ecs::Entity ent, CompA& a, CompB& b) {
+			a.x = 0;
+			b.v = 0.0f;
+		});
+
+		auto* a = world.GetComponent<CompA>(ent0);
+		EXPECT_EQ(1, a->x);
+
+		auto [a1, b1] = world.GetComponents<CompA, CompB>(ent1);
+		EXPECT_EQ(0, a1->x);
+		EXPECT_EQ(0.0f, b1->v);
+
+		auto [a2, b2] = world.GetComponents<CompA, CompB>(ent1);
+		EXPECT_EQ(0, a2->x);
+		EXPECT_EQ(0.0f, b2->v);
+	}
 }

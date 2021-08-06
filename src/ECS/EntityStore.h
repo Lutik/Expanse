@@ -27,7 +27,7 @@ namespace Expanse::ecs
 			components[comp_type] = NullComponentIndex;
 		}
 
-		size_t GetComponentIndex(size_t comp_type) const noexcept
+		ComponentIndex GetComponentIndex(size_t comp_type) const noexcept
 		{
 			return (comp_type < components.size()) ? components[comp_type] : NullComponentIndex;
 		}

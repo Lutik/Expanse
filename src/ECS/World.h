@@ -8,6 +8,21 @@
 
 namespace Expanse::ecs
 {
+	namespace details
+	{
+		/* Checks if all elements in tuple are not null */
+		template<typename Tuple>
+		bool HasAll(const Tuple& tup) noexcept {
+			return std::apply([](auto&&... v) { return (... && v); }, tup);
+		}
+
+		/* Checks if all component indices in tuple are not null */
+		template<typename IndexTuple>
+		bool HasAllComponents(const IndexTuple& comp_idx) noexcept {
+			return std::apply([](auto&&... v) { return (... && (v != NullComponentIndex)); }, comp_idx);
+		}
+	}
+
 	class World
 	{
 	public:
@@ -46,16 +61,16 @@ namespace Expanse::ecs
 			return GetComponentImpl<Comp>(entity);
 		}
 
-		template<typename Comp, typename... Comps>
+		template<typename... Comps>
 		auto GetComponents(Entity entity)
 		{
-			return GetComponentsImpl<decltype(this), Comp, Comps...>(this, entity);
+			return std::make_tuple((GetComponent<Comps>(entity))...);
 		}
 
-		template<typename Comp, typename... Comps>
+		template<typename... Comps>
 		auto GetComponents(Entity entity) const
 		{
-			return GetComponentsImpl<decltype(this), Comp, Comps...>(this, entity);
+			return std::make_tuple((GetComponent<Comps>(entity))...);
 		}
 
 		template<typename Comp>
@@ -66,6 +81,30 @@ namespace Expanse::ecs
 			return entities[entity.Index()].HasComponent(TypeIndex<Comp>);
 		}
 
+		template<typename Comp>
+		const auto& GetEntitiesWith() const
+		{		
+			const auto store = GetStore<Comp>();
+
+			static decltype(store->entities) empty{};
+			return store ? store->entities : empty;
+		}
+
+		template<typename Comp, typename... Comps, typename Func>
+		void ForEach(Func func)
+		{
+			// first, find stores for all mentioned components
+			auto stores = GetComponentStores<Comp, Comps...>();
+			if (!details::HasAll(stores)) return;
+
+			for (const auto ent : GetEntitiesWith<Comp>())
+			{
+				const auto indices = GetComponentIndices<Comp, Comps...>(ent);
+				if (details::HasAllComponents(indices)) {
+					std::apply(func, GetComponentsTuple(ent, stores, indices));
+				}
+			}
+		}
 	protected:
 
 		template<typename Comp>
@@ -104,15 +143,34 @@ namespace Expanse::ecs
 			return store ? store->Get(comp_idx) : nullptr;
 		}
 
-		template<typename W, typename Comp, typename... Comps>
-		static auto GetComponentsImpl(W world, Entity entity)
+
+		template<typename... Comps>
+		auto GetComponentIndices(Entity entity) const noexcept
 		{
-			auto comp_tup = std::make_tuple(world->GetComponent<Comp>(entity));
-			if constexpr (sizeof...(Comps) == 0) {
-				return comp_tup;
-			} else {
-				return std::tuple_cat(comp_tup, world->GetComponents<Comps...>(entity));
-			}
+			const auto& ent = entities[entity.Index()];
+			return std::make_tuple( (ent.GetComponentIndex(TypeIndex<Comps>))... );
+		}
+
+		template<typename... Comps>
+		auto GetComponentStores() const
+		{
+			return std::make_tuple( (GetStore<Comps>())... );
+		}
+
+		template<class Stores, class Indices, size_t... I>
+		auto GetComponentsTupleImpl(Entity entity, Stores&& stores, Indices&& indices, std::index_sequence<I...>)
+		{
+			return std::make_tuple(entity, (std::ref(*(std::get<I>(stores)->Get(std::get<I>(indices)))))...);
+		}
+
+		// Returns a tuple consisting of entity and references to components, specified by component stores and component indices
+		template<class Stores, class Indices>
+		auto GetComponentsTuple(Entity entity, Stores&& stores, Indices&& indices)
+		{
+			return GetComponentsTupleImpl(entity,
+				std::forward<Stores>(stores),
+				std::forward<Indices>(indices),
+				std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Stores>>>());
 		}
 
 		bool RemoveComponent(Entity entity, size_t comp_type);

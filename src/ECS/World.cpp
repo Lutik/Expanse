@@ -1,5 +1,7 @@
 #include "World.h"
 
+#include <ranges>
+
 namespace Expanse::ecs
 {
 	Entity World::CreateEntity()
@@ -60,8 +62,7 @@ namespace Expanse::ecs
 
 		auto& ent = entities[entity.Index()];
 
-		const size_t comp_count = ent.components.size();
-		for (size_t comp_type = 0; comp_type < comp_count; ++comp_type)
+		for (const size_t comp_type : std::views::iota(0u, ent.components.size()))
 		{
 			const auto comp_idx = ent.components[comp_type];
 			if (comp_idx != NullComponentIndex)
