@@ -7,6 +7,26 @@
 
 namespace Expanse
 {
+    /* Components */
+
+    struct Visual
+    {
+        Render::Mesh mesh;
+        Render::Material material;
+    };
+
+    struct Position
+    {
+        FPoint position;
+    };
+
+    struct Speed
+    {
+        float speed;
+    };
+
+    /* Systems */
+
     class MoveObjectsSystem final : public Game::ISystem
     {
     public:
@@ -20,9 +40,10 @@ namespace Expanse
             if (world.input.IsKeyDown(Input::Key::Left)) offset += { -1.0f, 0.0f };
             if (world.input.IsKeyDown(Input::Key::Right)) offset += { 1.0f, 0.0f };
 
-            for (auto& obj : world.objects) {
-                obj.position += offset * (obj.speed * world.dt);
-            }
+            world.entities.ForEach<Position, Speed>([offset, dt = world.dt](ecs::Entity ent, Position& pos, const Speed& sp)
+            {
+                pos.position += offset * (sp.speed * dt);
+            });
         }
     };
 
@@ -40,18 +61,21 @@ namespace Expanse
             {
                 renderer->ClearFrame();
                 renderer->Set2DMode();
-                for (auto& obj : world.objects)
+
+                world.entities.ForEach<Visual, Position>([this](auto ent, const Visual& visual, const Position& pos)
                 {
-                    auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ obj.position.x, obj.position.y, 0.0f });
-                    renderer->SetMaterialParameter(obj.material, "model", model);
-                    renderer->Draw(obj.mesh, obj.material);
-                }
+                    auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ pos.position.x, pos.position.y, 0.0f });
+                    renderer->SetMaterialParameter(visual.material, "model", model);
+                    renderer->Draw(visual.mesh, visual.material);
+                });
             }
         }
 
     private:
         Render::IRenderer* renderer = nullptr;
     };
+
+    /********************************************************************/
 
     Application::Application()
     {
@@ -64,7 +88,7 @@ namespace Expanse
         renderer = Render::CreateOpenGLRenderer(window_size, framebuffer_size);
         renderer->SetBgColor({0.0f, 0.6f, 0.4f, 1.0f});
 
-        // Init game objects
+        // Init graphical objects
         const std::vector<Render::VertexP2T2> verts = {
             {{-50.0f, -50.0f}, {0.0f, 0.0f}},
             {{-50.0f, 50.0f}, {0.0f, 1.0f}},
@@ -77,10 +101,18 @@ namespace Expanse
         auto mat0 = renderer->CreateMaterial("content/materials/wood.json");
         auto mat1 = renderer->CreateMaterial("content/materials/concrete.json");
 
-        world.objects = {
-            { mesh, mat0, { 400.0f, 200.0f }, 100.0f },
-            { mesh, mat1, { 1000.0f, 600.0f}, 150.0f },
-        };
+        // Create game entities
+        auto& entities = world.entities;
+
+        auto ent1 = entities.CreateEntity();
+        entities.AddComponent<Visual>(ent1, mesh, mat0);
+        entities.AddComponent<Position>(ent1, FPoint{ 400.0f, 300.0f });
+        entities.AddComponent<Speed>(ent1, 100.0f);
+
+        auto ent2 = entities.CreateEntity();
+        entities.AddComponent<Visual>(ent2, mesh, mat1);
+        entities.AddComponent<Position>(ent2, FPoint{ 1000.0f, 600.0f });
+        entities.AddComponent<Speed>(ent2, 150.0f);
 
         // Init systems
         auto logic_systems = systems->AddSystem<Game::SystemCollection>();

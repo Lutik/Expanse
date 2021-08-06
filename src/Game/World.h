@@ -7,21 +7,13 @@
 
 #include <vector>
 
+#include "ECS/World.h"
+
 namespace Expanse::Game
 {
-    struct GameObject
-    {
-        Render::Mesh mesh;
-        Render::Material material;
-        FPoint position;
-
-        float speed = 1.0f;
-    };
-
-
     struct World
     {
-        std::vector<GameObject> objects;
+        ecs::World entities;
 
         Input::InputState input;
         float dt;
