@@ -208,6 +208,9 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="ECS\ECS.vcxproj">
+      <Project>{8b029ef5-4ef1-4cc0-8894-7aa675f760e3}</Project>
+    </ProjectReference>
     <ProjectReference Include="Image\Image.vcxproj">
       <Project>{a754237e-7c77-469b-b681-7306624820b9}</Project>
     </ProjectReference>
