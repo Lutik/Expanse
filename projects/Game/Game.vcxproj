@@ -151,12 +151,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Game\CoordSystems.h" />
     <ClInclude Include="..\..\src\Game\ISystem.h" />
     <ClInclude Include="..\..\src\Game\World.h" />
     <ClInclude Include="..\..\src\Input\Input.h" />
     <ClInclude Include="..\..\src\Input\KeyCodes.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Game\CoordSystems.cpp" />
     <ClCompile Include="..\..\src\Input\Input.cpp" />
   </ItemGroup>
   <ItemGroup>

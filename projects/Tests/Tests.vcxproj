@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\tests\Array2DTests.cpp" />
+    <ClCompile Include="..\..\tests\CoordSystems.cpp" />
     <ClCompile Include="..\..\tests\ECSTests.cpp" />
     <ClCompile Include="..\..\tests\MathTests.cpp" />
     <ClCompile Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-death-test.cc" />
@@ -173,6 +174,9 @@
   <ItemGroup>
     <ProjectReference Include="..\ECS\ECS.vcxproj">
       <Project>{8b029ef5-4ef1-4cc0-8894-7aa675f760e3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Game\Game.vcxproj">
+      <Project>{078bf67f-972f-4de2-86b4-47328523f38b}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Utils\Utils.vcxproj">
       <Project>{ff31b5f0-e166-40f4-bbcf-67be83d6889e}</Project>

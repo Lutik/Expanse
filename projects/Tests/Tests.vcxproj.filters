@@ -45,6 +45,9 @@
     <ClCompile Include="..\..\tests\ECSTests.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\tests\CoordSystems.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\thidrparty\googletest-release-1.11.0\googletest\src\gtest-internal-inl.h">

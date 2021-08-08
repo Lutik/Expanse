@@ -21,10 +21,16 @@
     <ClInclude Include="..\..\src\Input\KeyCodes.h">
       <Filter>Input</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Game\CoordSystems.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Input\Input.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game\CoordSystems.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
