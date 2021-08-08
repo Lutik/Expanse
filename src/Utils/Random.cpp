@@ -75,4 +75,22 @@ namespace Expanse
 		sseq.generate(&seed, &seed + 1);
 		return seed;
 	}
+
+	/*
+	* Convenience functions
+	*/
+
+	static uint32_t debug_rng = GetRandomSeed();
+
+	float RandomFloat(float a, float b)
+	{
+		debug_rng = Xorshift32(debug_rng);
+		return UniformFloat(debug_rng, a, b);
+	}
+
+	int RandomInt(int a, int b)
+	{
+		debug_rng = Xorshift32(debug_rng);
+		return UniformInt(debug_rng, a, b);
+	}
 }

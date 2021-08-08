@@ -24,4 +24,8 @@ namespace Expanse
 
 	/* Misc */
 	uint32_t GetRandomSeed();
+
+	/* Convenience functions */
+	float RandomFloat(float a, float b);
+	int RandomInt(int a, int b);
 }
