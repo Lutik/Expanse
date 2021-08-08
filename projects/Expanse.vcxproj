@@ -163,7 +163,6 @@
   <ItemGroup>
     <ClCompile Include="..\src\Application.cpp" />
     <ClCompile Include="..\src\GUI\ImGuiRenderer.cpp" />
-    <ClCompile Include="..\src\Input\Input.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\SDL_Utils.cpp" />
     <ClCompile Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.cpp" />
@@ -175,11 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Application.h" />
-    <ClInclude Include="..\src\Game\ISystem.h" />
-    <ClInclude Include="..\src\Game\World.h" />
     <ClInclude Include="..\src\GUI\ImGuiRenderer.h" />
-    <ClInclude Include="..\src\Input\Input.h" />
-    <ClInclude Include="..\src\Input\KeyCodes.h" />
     <ClInclude Include="..\src\SDL_Utils.h" />
     <ClInclude Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.h" />
     <ClInclude Include="..\thidrparty\imgui-1.83\imconfig.h" />
@@ -210,6 +205,9 @@
   <ItemGroup>
     <ProjectReference Include="ECS\ECS.vcxproj">
       <Project>{8b029ef5-4ef1-4cc0-8894-7aa675f760e3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Game\Game.vcxproj">
+      <Project>{078bf67f-972f-4de2-86b4-47328523f38b}</Project>
     </ProjectReference>
     <ProjectReference Include="Image\Image.vcxproj">
       <Project>{a754237e-7c77-469b-b681-7306624820b9}</Project>

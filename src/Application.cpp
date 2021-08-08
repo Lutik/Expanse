@@ -137,7 +137,7 @@ namespace Expanse
 
     void Application::ProcessSystemEvent(const SDL_Event& evt)
     {
-        Input::ProcessEvent(evt, world.input);
+        ProcessInputEvent(evt);
 
         ImGui_ImplSDL2_ProcessEvent(&evt);
     }
@@ -151,5 +151,46 @@ namespace Expanse
         ImGui::ShowDemoWindow();
 
         imgui_render->EndFrame();
+    }
+
+    void Application::ProcessInputEvent(const SDL_Event& event)
+    {
+        using namespace Input;
+
+        auto& input = world.input;
+
+        if (event.type == SDL_KEYDOWN)
+        {
+            if (event.key.keysym.scancode < input.keyboard_state.size()) {
+                input.keyboard_state[event.key.keysym.scancode] = ButtonState::Pressed;
+                input.key_state_changed = true;
+            }
+        }
+        else if (event.type == SDL_KEYUP)
+        {
+            if (event.key.keysym.scancode < input.keyboard_state.size()) {
+                input.keyboard_state[event.key.keysym.scancode] = ButtonState::Released;
+                input.key_state_changed = true;
+            }
+        }
+        else if (event.type == SDL_MOUSEWHEEL)
+        {
+            input.mouse_wheel = event.wheel.y;
+        }
+        else if (event.type == SDL_MOUSEMOTION)
+        {
+            input.mouse_pos = Point{ event.motion.x, event.motion.y };
+            input.mouse_pos_rel += Point{ event.motion.xrel, -event.motion.yrel };
+        }
+        else if (event.type == SDL_MOUSEBUTTONDOWN)
+        {
+            input.mouse_state[event.button.button] = ButtonState::Pressed;
+            input.mouse_key_state_changed = true;
+        }
+        else if (event.type == SDL_MOUSEBUTTONUP)
+        {
+            input.mouse_state[event.button.button] = ButtonState::Released;
+            input.mouse_key_state_changed = true;
+        }
     }
 }

@@ -6,6 +6,7 @@
 
 #include "Game/World.h"
 #include "Game/ISystem.h"
+#include "Input/Input.h"
 
 #include <SDL.h>
 
@@ -34,5 +35,8 @@ namespace Expanse
         void ImGuiFrame(float dt);
 
         std::unique_ptr<ImGuiRenderer> imgui_render;
+
+        // Handles system events to update input state
+        void ProcessInputEvent(const SDL_Event& event);
     };
 }

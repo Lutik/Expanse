@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SDL.h>
-
 #include <array>
 #include <vector>
 
@@ -22,7 +20,7 @@ namespace Expanse::Input
 	using KeyCode = std::underlying_type_t<Key::Scancode>;
 
 
-	inline constexpr size_t MaxKeyboardKeys = SDL_NUM_SCANCODES;
+	inline constexpr size_t MaxKeyboardKeys = 512;
 	inline constexpr size_t MaxMouseKeys = 32;
 
 	struct InputState
@@ -53,8 +51,7 @@ namespace Expanse::Input
 		InputState();
 	};
 
-	// Handles system events to update input state
-	void ProcessEvent(const SDL_Event& event, InputState& input);
+	
 
 	// Should be called every frame to update input state
 	void UpdateState(InputState& input);

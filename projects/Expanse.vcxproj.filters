@@ -13,12 +13,6 @@
     <Filter Include="copy_dll\x86">
       <UniqueIdentifier>{3022da4d-7617-453c-9245-ea62c338f927}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Input">
-      <UniqueIdentifier>{be295b09-8406-4c09-a09d-7a2ad2cfc6b4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Game">
-      <UniqueIdentifier>{a75d6122-2f6c-48b0-8c47-bf7fd585ce2e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="thirdparty">
       <UniqueIdentifier>{e9eb5b88-6ed0-4d9d-840b-8566f527e86b}</UniqueIdentifier>
     </Filter>
@@ -41,9 +35,6 @@
     </ClCompile>
     <ClCompile Include="..\src\Application.cpp">
       <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Input\Input.cpp">
-      <Filter>src\Input</Filter>
     </ClCompile>
     <ClCompile Include="..\thidrparty\imgui-1.83\imgui.cpp">
       <Filter>thirdparty\ImGui</Filter>
@@ -73,18 +64,6 @@
     </ClInclude>
     <ClInclude Include="..\src\Application.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Input\Input.h">
-      <Filter>src\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Input\KeyCodes.h">
-      <Filter>src\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Game\ISystem.h">
-      <Filter>src\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Game\World.h">
-      <Filter>src\Game</Filter>
     </ClInclude>
     <ClInclude Include="..\thidrparty\imgui-1.83\imconfig.h">
       <Filter>thirdparty\ImGui</Filter>
