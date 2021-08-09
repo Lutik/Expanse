@@ -209,6 +209,7 @@
     <ClInclude Include="..\..\src\Render\pch.h" />
     <ClInclude Include="..\..\src\Render\IRenderer.h" />
     <ClInclude Include="..\..\src\Render\RenderTypes.h" />
+    <ClInclude Include="..\..\src\Render\SpriteBatch.h" />
     <ClInclude Include="..\..\src\Render\VertexTypes.h" />
   </ItemGroup>
   <ItemGroup>

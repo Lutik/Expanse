@@ -40,11 +40,13 @@ namespace Expanse::Render
 	/*
 	* Different resource handles
 	*/
-	inline constexpr auto InvalidHandleIndex = std::numeric_limits<size_t>::max();
 	struct Handle
 	{
-		size_t index = InvalidHandleIndex;
-		bool IsValid() const noexcept { return index != InvalidHandleIndex; }
+		static constexpr auto InvalidIndex = std::numeric_limits<size_t>::max();
+
+		size_t index = InvalidIndex;
+
+		bool IsValid() const noexcept { return index != InvalidIndex; }
 	};
 
 	struct Material : public Handle {};

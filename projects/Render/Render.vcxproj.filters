@@ -80,5 +80,8 @@
     <ClInclude Include="..\..\src\Render\OpenGL\RenderStateManager.h">
       <Filter>Render\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Render\SpriteBatch.h">
+      <Filter>Render</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,9 +1,9 @@
 #include "Application.h"
 
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_transform.hpp"
-
 #include "backends/imgui_impl_sdl.h"
+
+#include "Render/SpriteBatch.h"
+#include "Utils/Random.h"
 
 namespace Expanse
 {
@@ -11,7 +11,6 @@ namespace Expanse
 
     struct Visual
     {
-        Render::Mesh mesh;
         Render::Material material;
     };
 
@@ -53,10 +52,20 @@ namespace Expanse
         RenderObjectsSystem(Game::World& w, Render::IRenderer *r)
             : ISystem(w)
             , renderer(r)
-        {}
+            , batch(r)
+        {
+        }
 
         void Update() override
         {
+            static constexpr std::array<Render::VertexP2T2, 4> verts = {{
+                {{-50.0f, -50.0f}, {0.0f, 0.0f}},
+                {{-50.0f, 50.0f}, {0.0f, 1.0f}},
+                {{50.0f, 50.0f}, {1.0f, 1.0f}},
+                {{50.0f, -50.0f}, {1.0f, 0.0f}},
+            }};
+            static constexpr std::array<uint16_t, 6> indices = { 1, 0, 2, 2, 0, 3 };
+
             if (renderer)
             {
                 renderer->ClearFrame();
@@ -64,15 +73,17 @@ namespace Expanse
 
                 world.entities.ForEach<Visual, Position>([this](auto ent, const Visual& visual, const Position& pos)
                 {
-                    auto model = glm::translate(glm::mat4{ 1.0f }, glm::vec3{ pos.position.x, pos.position.y, 0.0f });
-                    renderer->SetMaterialParameter(visual.material, "model", model);
-                    renderer->Draw(visual.mesh, visual.material);
+                    batch.DrawWithOffset(pos.position, verts, indices, visual.material);
                 });
             }
+
+
+            batch.Draw(verts, indices, Render::Material{});
         }
 
     private:
         Render::IRenderer* renderer = nullptr;
+        Render::SpriteBatch<Render::VertexP2T2> batch;
     };
 
     /********************************************************************/
@@ -89,30 +100,20 @@ namespace Expanse
         renderer->SetBgColor({0.0f, 0.6f, 0.4f, 1.0f});
 
         // Init graphical objects
-        const std::vector<Render::VertexP2T2> verts = {
-            {{-50.0f, -50.0f}, {0.0f, 0.0f}},
-            {{-50.0f, 50.0f}, {0.0f, 1.0f}},
-            {{50.0f, 50.0f}, {1.0f, 1.0f}},
-            {{50.0f, -50.0f}, {1.0f, 0.0f}},
-        };
-        const std::vector<uint16_t> indices = { 1, 0, 2, 3 };
-
-        auto mesh = renderer->CreateMesh(verts, indices, Render::PrimitiveType::TriangleStrip);
-        auto mat0 = renderer->CreateMaterial("content/materials/wood.json");
-        auto mat1 = renderer->CreateMaterial("content/materials/concrete.json");
+        Render::Material mat[2];
+        mat[0] = renderer->CreateMaterial("content/materials/wood.json");
+        mat[1] = renderer->CreateMaterial("content/materials/concrete.json");
 
         // Create game entities
         auto& entities = world.entities;
+        for (int i : std::views::iota(0, 20))
+        {
+            auto ent = entities.CreateEntity();
+            entities.AddComponent<Visual>(ent, mat[RandomInt(0,1)]);
+            entities.AddComponent<Position>(ent, FPoint{ RandomFloat(0.0f, 1000.0f), RandomFloat(0.0f, 800.0f) });
+            entities.AddComponent<Speed>(ent, RandomFloat(50.0f, 150.0f));
+        }
 
-        auto ent1 = entities.CreateEntity();
-        entities.AddComponent<Visual>(ent1, mesh, mat0);
-        entities.AddComponent<Position>(ent1, FPoint{ 400.0f, 300.0f });
-        entities.AddComponent<Speed>(ent1, 100.0f);
-
-        auto ent2 = entities.CreateEntity();
-        entities.AddComponent<Visual>(ent2, mesh, mat1);
-        entities.AddComponent<Position>(ent2, FPoint{ 1000.0f, 600.0f });
-        entities.AddComponent<Speed>(ent2, 150.0f);
 
         // Init systems
         auto logic_systems = systems->AddSystem<Game::SystemCollection>();
@@ -130,7 +131,7 @@ namespace Expanse
 
         systems->Update();
 
-        ImGuiFrame(world.dt);
+        //ImGuiFrame(world.dt);
 
         Input::UpdateState(world.input);
     }
