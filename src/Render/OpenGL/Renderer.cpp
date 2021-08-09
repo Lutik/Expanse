@@ -90,6 +90,7 @@ namespace Expanse::Render::GL
 
 	void Renderer::SetMeshVertices(Mesh mesh, BufferData data, const VertexLayout& layout)
 	{
+		assert(!layout.elements.empty());
 		vertex_arrays.SetVertices(mesh, data, layout);
 	}
 

@@ -1,0 +1,7 @@
+{
+    "shader":"content/shaders/terrain.txt",
+    "parameters":{
+        "color":[1.0, 1.0, 1.0, 1.0],
+        "tex0":"content/textures/grass.json"
+    }
+}

@@ -5,89 +5,11 @@
 #include "Render/SpriteBatch.h"
 #include "Utils/Random.h"
 
+#include "Game/Terrain/Systems/GenerateTerrain.h"
+#include "Game/Terrain/Systems/RenderTerrain.h"
+
 namespace Expanse
 {
-    /* Components */
-
-    struct Visual
-    {
-        Render::Material material;
-    };
-
-    struct Position
-    {
-        FPoint position;
-    };
-
-    struct Speed
-    {
-        float speed;
-    };
-
-    /* Systems */
-
-    class MoveObjectsSystem final : public Game::ISystem
-    {
-    public:
-        MoveObjectsSystem(Game::World& w) : ISystem(w) {}
-
-        void Update() override
-        {
-            FPoint offset{ 0.0f, 0.0f };
-            if (world.input.IsKeyDown(Input::Key::Up)) offset += { 0.0f, 1.0f };
-            if (world.input.IsKeyDown(Input::Key::Down)) offset += { 0.0f, -1.0f };
-            if (world.input.IsKeyDown(Input::Key::Left)) offset += { -1.0f, 0.0f };
-            if (world.input.IsKeyDown(Input::Key::Right)) offset += { 1.0f, 0.0f };
-
-            world.entities.ForEach<Position, Speed>([offset, dt = world.dt](ecs::Entity ent, Position& pos, const Speed& sp)
-            {
-                pos.position += offset * (sp.speed * dt);
-            });
-        }
-    };
-
-    class RenderObjectsSystem final : public Game::ISystem
-    {
-    public:
-        RenderObjectsSystem(Game::World& w, Render::IRenderer *r)
-            : ISystem(w)
-            , renderer(r)
-            , batch(r)
-        {
-        }
-
-        void Update() override
-        {
-            static constexpr std::array<Render::VertexP2T2, 4> verts = {{
-                {{-50.0f, -50.0f}, {0.0f, 0.0f}},
-                {{-50.0f, 50.0f}, {0.0f, 1.0f}},
-                {{50.0f, 50.0f}, {1.0f, 1.0f}},
-                {{50.0f, -50.0f}, {1.0f, 0.0f}},
-            }};
-            static constexpr std::array<uint16_t, 6> indices = { 1, 0, 2, 2, 0, 3 };
-
-            if (renderer)
-            {
-                renderer->ClearFrame();
-                renderer->Set2DMode();
-
-                world.entities.ForEach<Visual, Position>([this](auto ent, const Visual& visual, const Position& pos)
-                {
-                    batch.DrawWithOffset(pos.position, verts, indices, visual.material);
-                });
-            }
-
-
-            batch.Draw(verts, indices, Render::Material{});
-        }
-
-    private:
-        Render::IRenderer* renderer = nullptr;
-        Render::SpriteBatch<Render::VertexP2T2> batch;
-    };
-
-    /********************************************************************/
-
     Application::Application()
     {
         systems = std::make_unique<Game::SystemCollection>(world);
@@ -97,37 +19,25 @@ namespace Expanse
     {
         // Create renderer
         renderer = Render::CreateOpenGLRenderer(window_size, framebuffer_size);
-        renderer->SetBgColor({0.0f, 0.6f, 0.4f, 1.0f});
-
-        // Init graphical objects
-        Render::Material mat[2];
-        mat[0] = renderer->CreateMaterial("content/materials/wood.json");
-        mat[1] = renderer->CreateMaterial("content/materials/concrete.json");
-
-        // Create game entities
-        auto& entities = world.entities;
-        for (int i : std::views::iota(0, 20))
-        {
-            auto ent = entities.CreateEntity();
-            entities.AddComponent<Visual>(ent, mat[RandomInt(0,1)]);
-            entities.AddComponent<Position>(ent, FPoint{ RandomFloat(0.0f, 1000.0f), RandomFloat(0.0f, 800.0f) });
-            entities.AddComponent<Speed>(ent, RandomFloat(50.0f, 150.0f));
-        }
-
+        renderer->SetBgColor({0.0f, 0.3f, 0.2f, 1.0f});
 
         // Init systems
-        auto logic_systems = systems->AddSystem<Game::SystemCollection>();
-        logic_systems->AddSystem<MoveObjectsSystem>();
-
-        auto render_systems = systems->AddSystem<Game::SystemCollection>();
-        render_systems->AddSystem<RenderObjectsSystem>(renderer.get());
-
+        auto terrain_systems = systems->AddSystem<Game::SystemCollection>();
+        terrain_systems->AddSystem<Game::Terrain::GenerateCells>();
+        terrain_systems->AddSystem<Game::Terrain::RenderCells>(renderer.get());
+ 
+        // init ImGui backend
         imgui_render = std::make_unique<ImGuiRenderer>(renderer.get());
     }
 
     void Application::Tick()
     {
         world.dt = timer.Elapsed(true);
+
+        const auto view_rect = FRect{-720, -405, 1440, 810} / 64.0f;
+
+        renderer->ClearFrame();
+        renderer->Set2DMode(view_rect);
 
         systems->Update();
 

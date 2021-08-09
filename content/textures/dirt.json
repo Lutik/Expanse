@@ -1,0 +1,6 @@
+{
+    "image":"content/textures/dirt.png",
+    "filter":"linear",
+    "address":"repeat",
+    "mipmaps":true
+}

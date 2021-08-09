@@ -15,6 +15,8 @@ namespace Expanse::Game
     {
         ecs::World entities;
 
+        Point world_origin = {0, 0};
+
         Input::InputState input;
         float dt;
     };

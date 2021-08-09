@@ -7,6 +7,12 @@
     <Filter Include="Input">
       <UniqueIdentifier>{6aa270c3-8b04-4199-b37d-1a3556a89e97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Terrain">
+      <UniqueIdentifier>{b7d72695-bd31-4783-81ee-3b0f23d3ad1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Terrain\Systems">
+      <UniqueIdentifier>{5393584a-74e6-4800-aef9-0d1aeec35c90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\ISystem.h">
@@ -24,6 +30,15 @@
     <ClInclude Include="..\..\src\Game\CoordSystems.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\TerrainData.h">
+      <Filter>Game\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\Systems\GenerateTerrain.h">
+      <Filter>Game\Terrain\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\Systems\RenderTerrain.h">
+      <Filter>Game\Terrain\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Input\Input.cpp">
@@ -31,6 +46,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Game\CoordSystems.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game\Terrain\Systems\GenerateTerrain.cpp">
+      <Filter>Game\Terrain\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game\Terrain\Systems\RenderTerrain.cpp">
+      <Filter>Game\Terrain\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

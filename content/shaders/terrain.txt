@@ -1,0 +1,43 @@
+$vertex #version 330 core
+
+uniform vec2 chunk_pos;
+layout(std140) uniform GlobalMatrices
+{
+  mat4 view;
+  mat4 proj;
+};
+
+in vec2 a_position;
+in vec2 a_uv;
+in vec4 a_color;
+
+out vec2 frag_uv;
+out vec4 frag_color;
+
+void main()
+{
+  frag_uv = a_uv;
+  frag_color = a_color;
+  gl_Position = proj * view * vec4(a_position + chunk_pos, 0, 1);
+}
+
+$fragment #version 330 core
+
+uniform sampler2D tex0;
+uniform sampler2D tex1;
+uniform sampler2D tex2;
+uniform sampler2D tex3;
+
+in vec2 frag_uv;
+in vec4 frag_color;
+
+out vec4 fragment_color;
+
+void main()
+{
+  vec4 col0 = texture(tex0, frag_uv) * frag_color.r;
+  vec4 col1 = texture(tex1, frag_uv) * frag_color.g;
+  vec4 col2 = texture(tex2, frag_uv) * frag_color.b;
+  vec4 col3 = texture(tex3, frag_uv) * frag_color.a;
+  fragment_color = col0 + col1 + col2 + col3;
+}

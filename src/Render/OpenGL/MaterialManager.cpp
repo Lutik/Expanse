@@ -70,11 +70,6 @@ namespace Expanse::Render::GL
 		// read and set initial parameter values
 		for (auto& [name, value] : desc->params)
 		{
-			// optional optimization: convert string parameter to texture handle in advance
-			if (auto tex_name = std::get_if<std::string>(&value)) {
-				value = textures.Create(*tex_name);
-			}
-
 			SetParameter(handle, name, value);
 		}
 
@@ -129,7 +124,12 @@ namespace Expanse::Render::GL
 			return;
 		}
 
-		itr->value = value;
+		if (auto tex_name = std::get_if<TextureName>(&value)) {
+			// texture names should be converted to texture handles
+			itr->value = textures.Create(*tex_name);
+		} else {
+			itr->value = value;
+		}
 	}
 
 	void MaterialManager::Bind(Material material)
@@ -147,6 +147,9 @@ namespace Expanse::Render::GL
 		{
 			set_param.loc = param.location;		
 			std::visit(set_param, param.value);
+
+			// strings should be converted to texture handles in advance
+			assert(std::get_if<TextureName>(&param.value) == nullptr);
 
 			// if parameter is texture, bind it and increment texture unit
 			if (auto* tex = std::get_if<Texture>(&param.value))

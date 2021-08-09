@@ -124,10 +124,10 @@ namespace Expanse::Render
 		virtual void SetViewProjection(const glm::mat4& view, const glm::mat4& proj) = 0;
 
 		// Sets matrices to use window coordinate system
-		void Set2DMode()
+		void Set2DMode(const FRect& rect)
 		{
 			const auto view = glm::mat4{ 1.0f };
-			const auto proj = glm::orthoLH_NO(0.0f, static_cast<float>(window_size.x), 0.0f, static_cast<float>(window_size.y), -1.0f, 1.0f);
+			const auto proj = glm::orthoLH_NO(rect.x, rect.x + rect.w, rect.y, rect.y + rect.h, -1.0f, 1.0f);
 			SetViewProjection(view, proj);
 		}
 

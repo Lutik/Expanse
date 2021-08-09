@@ -82,6 +82,13 @@ namespace Expanse::ecs
 		}
 
 		template<typename Comp>
+		bool HasComponents() const
+		{
+			const auto store = GetStore<Comp>();
+			return store && !store->entities.empty();
+		}
+
+		template<typename Comp>
 		const auto& GetEntitiesWith() const
 		{		
 			const auto store = GetStore<Comp>();

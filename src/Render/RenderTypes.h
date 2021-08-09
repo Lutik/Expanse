@@ -1,6 +1,7 @@
 #pragma once
 
 #include <variant>
+#include <string>
 
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
