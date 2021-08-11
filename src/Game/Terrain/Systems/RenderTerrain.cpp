@@ -5,10 +5,10 @@
 #include "Game/Terrain/TerrainData.h"
 
 #include "Utils/RectPoints.h"
+#include "Utils/Utils.h"
 
 #include <map>
 #include <format>
-#include <numeric>
 
 #include "Game/Utils/NeighbourCells.h"
 
@@ -48,7 +48,7 @@ namespace Expanse::Game::Terrain
 			13,12,14, 14,12,15
 		};
 
-		using VertexColorWeights = utils::Neighbours<float>;
+		using VertexColorWeights = Neighbours<float>;
 
 		static constexpr VertexColorWeights color_weights[] = {
 			{ 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f}, // left bottom
@@ -122,7 +122,7 @@ namespace Expanse::Game::Terrain
 		auto& types = result.second;
 		for (const auto& cell : chunk.cells)
 		{
-			if (std::ranges::find(types, cell.type) == types.end()) {
+			if (!utils::contains(types, cell.type)) {
 				types.push_back(cell.type);
 			}
 		}
@@ -191,35 +191,27 @@ namespace Expanse::Game::Terrain
 		}
 	}
 
+	glm::vec4 CalcVertexColor(const CellGeometry::VertexColorWeights& weights, const Neighbours<uint8_t>& neighbours)
+	{
+		glm::vec4 color{ 0.0f };
+		utils::for_each_zipped(weights, neighbours, [&color](float w, auto t) { color[t] += w; });
+		return color;
+	}
 
 	void CalcVertexColors(auto vertex_range, Point cell, const Array2D<uint8_t>& slot_map)
 	{
-		constexpr auto weights_count = std::size(CellGeometry::color_weights);
-
-		const auto my_type = slot_map[cell];
-		const auto neighbours = utils::SelectNeighbours(cell, slot_map, my_type);
-
-		for (size_t i = 0; i < weights_count; ++i)
+		// color vertices with blending weights
+		const auto neighbours = SelectNeighbours(cell, slot_map, slot_map[cell]);
+		auto [v_itr, w_itr] = utils::for_each_zipped(vertex_range, CellGeometry::color_weights, [neighbours](auto& vtx, const auto& weights)
 		{
-			const auto& weights = CellGeometry::color_weights[i];
+			vtx.color = CalcVertexColor(weights, neighbours);
+		});
 
-			const auto color = std::inner_product(weights.begin(), weights.end(), neighbours.begin(), glm::vec4{ 0.0f },
-				std::plus<glm::vec4>(),
-				[](float w, auto t){
-					glm::vec4 col{ 0.0f };
-					col[t] = w;
-					return col;
-				}
-			);
-
-
-			auto &vtx = vertex_range[i];
-			vtx.color = color;
-		}
-
-		for (auto& vtx : vertex_range | std::views::drop(weights_count)) {
-			vtx.color = glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f };
-			vtx.color[my_type] = 1.0f;
+		// apply default color to remaining vertices
+		glm::vec4 def_color{ 0.0f };
+		def_color[neighbours[Offset::Center]] = 1.0f;
+		for (auto& vtx : std::ranges::subrange(v_itr, vertex_range.end())) {
+			vtx.color = def_color;
 		}
 	}
 
@@ -244,7 +236,7 @@ namespace Expanse::Game::Terrain
 
 
 
-		for (Point cell_pos : views::rect_points{ chunk->cells.GetRect() })
+		for (Point cell_pos : utils::rect_points{ chunk->cells.GetRect() })
 		{
 			// Emit vertices and indices
 			auto cell_verts = EmitCellVertices(vertices, indices, cell_pos);

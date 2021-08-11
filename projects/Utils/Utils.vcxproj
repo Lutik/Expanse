@@ -160,12 +160,13 @@
     <ClInclude Include="..\..\src\Utils\RectPoints.h" />
     <ClInclude Include="..\..\src\Utils\StaticArray2D.h" />
     <ClInclude Include="..\..\src\Utils\Timers.h" />
+    <ClInclude Include="..\..\src\Utils\FileUtils.h" />
     <ClInclude Include="..\..\src\Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Utils\Logger\Logger.cpp" />
     <ClCompile Include="..\..\src\Utils\Random.cpp" />
-    <ClCompile Include="..\..\src\Utils\Utils.cpp" />
+    <ClCompile Include="..\..\src\Utils\FileUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

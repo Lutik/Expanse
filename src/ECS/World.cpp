@@ -35,7 +35,7 @@ namespace Expanse::ecs
 		const auto idx = entity.Index();
 		return (idx < entities.size())
 			&& (entities[idx].entity == entity)
-			&& (std::ranges::find(free_entities, idx) == free_entities.end());
+			&& (std::ranges::find(free_entities, idx) == std::ranges::end(free_entities));
 	}
 
 	bool World::RemoveComponent(Entity entity, size_t comp_type)

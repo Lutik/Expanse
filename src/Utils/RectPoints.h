@@ -3,7 +3,7 @@
 #include "Utils/Math.h"
 #include <ranges>
 
-namespace Expanse::views
+namespace Expanse::utils
 {
 	class rect_points : public std::ranges::view_interface<rect_points>
 	{
