@@ -26,6 +26,7 @@ namespace Expanse::Coords
 	FRect CellToWorld(Point cell, Point world_origin);
 
 	Point LocalToCell(Point local_pos, Point chunk, int chunk_size);
+	Point CellToLocal(Point cell_pos, Point chunk, int chunk_size);
 
 	FPoint LocalToWorld(FPoint local_pos, Point chunk, Point world_origin, int chunk_size);
 	FPoint WorldToLocal(FPoint world_pos, Point chunk, Point world_origin, int chunk_size);

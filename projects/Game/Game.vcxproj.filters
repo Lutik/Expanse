@@ -45,6 +45,9 @@
     <ClInclude Include="..\..\src\Game\Utils\NeighbourCells.h">
       <Filter>Game\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\TerrainHelper.h">
+      <Filter>Game\Terrain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Input\Input.cpp">
@@ -58,6 +61,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Game\Terrain\Systems\RenderTerrain.cpp">
       <Filter>Game\Terrain\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game\Terrain\TerrainHelper.cpp">
+      <Filter>Game\Terrain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

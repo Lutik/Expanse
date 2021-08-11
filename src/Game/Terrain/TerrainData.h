@@ -17,7 +17,7 @@ namespace Expanse::Game::Terrain
 
 	struct TerrainChunk
 	{
-		static constexpr int Size = 8;
+		static constexpr int Size = 16;
 
 		Point position;
 		Array2D<TerrainCell> cells;

@@ -22,6 +22,11 @@ namespace Expanse::Coords
 		return chunk * chunk_size + local_pos;
 	}
 
+	Point CellToLocal(Point cell_pos, Point chunk, int chunk_size)
+	{
+		return cell_pos - chunk * chunk_size;
+	}
+
 	FPoint LocalToWorld(FPoint local_pos, Point chunk, Point world_origin, int chunk_size)
 	{
 		return FPoint{ chunk * chunk_size - world_origin } + local_pos;

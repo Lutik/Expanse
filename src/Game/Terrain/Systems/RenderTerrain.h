@@ -7,6 +7,7 @@
 #include "ECS/Entity.h"
 
 #include "Game/Terrain/TerrainData.h"
+#include "Game/Terrain/TerrainHelper.h"
 
 namespace Expanse::Game::Terrain
 {
@@ -20,6 +21,7 @@ namespace Expanse::Game::Terrain
 	private:
 		Render::IRenderer* renderer = nullptr;
 		Render::Material terrain_material;
+		TerrainHelper helper;
 
 		void GenerateChunksRenderData();
 		void GenerateChunkRenderData(ecs::Entity ent);

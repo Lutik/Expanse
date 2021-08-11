@@ -167,3 +167,32 @@ namespace Expanse
 		return { std::clamp(pt.x, min_pt.x, max_pt.x), std::clamp(pt.y, min_pt.y, max_pt.y) };
 	}
 }
+
+
+/*
+* Hashing for math types to be able to use them as keys in unordered_map/set
+*/
+
+namespace details
+{
+	// Combines hashes of simple arguments into a single hash. Algorithm taken from boost::hash_combine
+	template <typename T, typename... Ts>
+	inline size_t calc_hash(const T& v, const Ts&... vs) noexcept
+	{
+		size_t result = std::hash<T>{}(v);
+		if constexpr (sizeof...(Ts) > 0) {
+			result ^= calc_hash(vs...) + 0x9e3779b9 + (result << 6) + (result >> 2);
+		}
+		return result;
+	}
+}
+
+namespace std
+{
+	template<> struct hash<Expanse::Point>
+	{
+		size_t operator()(const Expanse::Point& pt) const noexcept {
+			return details::calc_hash(pt.x, pt.y);
+		}
+	};
+}
