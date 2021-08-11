@@ -8,9 +8,65 @@
 
 #include <map>
 #include <format>
+#include <numeric>
+
+#include "Game/Utils/NeighbourCells.h"
 
 namespace Expanse::Game::Terrain
 {
+	// Cell geometry configuration
+	namespace CellGeometry
+	{
+		constexpr float facet = 0.35f;
+
+		static_assert(facet >= 0.0f && facet <= 0.5f);
+
+		static constexpr FPoint vertices[] = {
+			// outer ring
+			{0.0f, 0.0f}, {0.0f, facet}, {0.0f, 1.0f - facet},
+			{0.0f, 1.0f}, {facet, 1.0f}, {1.0f - facet, 1.0f},
+			{1.0f, 1.0f}, {1.0f, 1.0f - facet}, {1.0f, facet},
+			{1.0f, 0.0f}, {1.0f - facet, 0.0f}, {facet, 0.0f},
+			// inner ring
+			{facet, facet}, {facet, 1.0f - facet}, {1.0f - facet, 1.0f - facet}, {1.0f - facet, facet},
+		};
+
+		static constexpr uint16_t indices[] = {
+			// corners
+			1,0,12, 12,0,11,
+			3,2,13, 3,13,4,
+			5,14,6, 6,14,7,
+			8,15,9, 9,15,10,
+
+			// sides
+			2,1,13, 13,1,12,
+			4,13,14, 4,14,5,
+			7,14,15, 7,15,8,
+			12,11,10, 12,10,15,
+
+			//center
+			13,12,14, 14,12,15
+		};
+
+		using VertexColorWeights = utils::Neighbours<float>;
+
+		static constexpr VertexColorWeights color_weights[] = {
+			{ 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f}, // left bottom
+			{ 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // left
+			{ 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // left
+			{ 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f, 0.0f, 0.0f, 0.0f}, // left top
+			{ 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // up
+			{ 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // up
+			{ 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f, 0.0f, 0.0f}, // right top
+			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f }, // right
+			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f }, // right
+			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f }, // right down
+			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f }, // down
+			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f }, // down
+		};
+	}
+
+
 	struct TerrainVertex
 	{
 		FPoint position;	
@@ -58,9 +114,12 @@ namespace Expanse::Game::Terrain
 	using TerrainTextureSlots = std::vector<TerrainType>;
 
 	// Distributes terrain types in chunk into material texture slots
-	TerrainTextureSlots AllocateTerrainTextureSlots(const TerrainChunk& chunk)
+	std::pair<Array2D<uint8_t>, TerrainTextureSlots> AllocateTerrainTextureSlots(const TerrainChunk& chunk)
 	{
-		TerrainTextureSlots types;
+		std::pair<Array2D<uint8_t>, TerrainTextureSlots> result;
+
+		// find all types, assign them indices
+		auto& types = result.second;
 		for (const auto& cell : chunk.cells)
 		{
 			if (std::ranges::find(types, cell.type) == types.end()) {
@@ -68,14 +127,16 @@ namespace Expanse::Game::Terrain
 			}
 		}
 		types.resize(4, TerrainType::Grass);
-		return types;
+		
+		// create map of all cells terrain slots
+		auto& arr = result.first;
+		arr = Array2D<uint8_t>{ chunk.cells.GetRect() };
+		auto get_index = [&types](const auto& cell){ return static_cast<uint8_t>(std::ranges::find(types, cell.type) - types.begin()); };
+		std::transform(chunk.cells.begin(), chunk.cells.end(), arr.begin(), get_index);
+
+		return result;
 	}
 
-	// Finds texture slot number in terrain material for particular terrain type
-	int GetTerrainTextureSlot(TerrainType type, const TerrainTextureSlots& types)
-	{
-		return static_cast<int>(std::ranges::find(types, type) - types.begin());
-	}
 
 	void SetTerrainMaterialTextures(Render::IRenderer* renderer, Render::Material material, const TerrainTextureSlots& terrain_slots)
 	{
@@ -96,22 +157,16 @@ namespace Expanse::Game::Terrain
 	//
 	auto EmitCellVertices(std::vector<TerrainVertex>& vertices, std::vector<uint16_t>& indices, Point cell_pos)
 	{
-		static constexpr std::array<FPoint, 8> cell_vertices = {{
-			{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
-			{0.2f, 0.2f}, {0.8f, 0.2f}, {0.8f, 0.8f}, {0.2f, 0.8f},
-		}};
-		static constexpr uint16_t cell_indices[] = { 0,1,4, 4,1,5, 5,1,2, 5,2,6, 6,2,3, 6,3,7, 7,3,0, 0,4,7, 4,5,7, 7,5,6 };
-
 		// Write indices
 		auto rebase_idx = [base = static_cast<uint16_t>(vertices.size())](uint16_t idx){ return base + idx; };
-		auto rebased_indices = cell_indices | std::views::transform(rebase_idx);
+		auto rebased_indices = CellGeometry::indices | std::views::transform(rebase_idx);
 		indices.insert(indices.end(), rebased_indices.begin(), rebased_indices.end());
 
 		// Write vertices
 		auto pos_to_vertex = [pos = FPoint{cell_pos}](FPoint vp) {
 			return TerrainVertex{.position = pos + vp };
 		};
-		auto vertices_gen = cell_vertices | std::views::transform(pos_to_vertex);
+		auto vertices_gen = CellGeometry::vertices | std::views::transform(pos_to_vertex);
 		auto itr = vertices.insert(vertices.end(), vertices_gen.begin(), vertices_gen.end());
 
 		// return view of inserted vertices
@@ -136,6 +191,38 @@ namespace Expanse::Game::Terrain
 		}
 	}
 
+
+	void CalcVertexColors(auto vertex_range, Point cell, const Array2D<uint8_t>& slot_map)
+	{
+		constexpr auto weights_count = std::size(CellGeometry::color_weights);
+
+		const auto my_type = slot_map[cell];
+		const auto neighbours = utils::SelectNeighbours(cell, slot_map, my_type);
+
+		for (size_t i = 0; i < weights_count; ++i)
+		{
+			const auto& weights = CellGeometry::color_weights[i];
+
+			const auto color = std::inner_product(weights.begin(), weights.end(), neighbours.begin(), glm::vec4{ 0.0f },
+				std::plus<glm::vec4>(),
+				[](float w, auto t){
+					glm::vec4 col{ 0.0f };
+					col[t] = w;
+					return col;
+				}
+			);
+
+
+			auto &vtx = vertex_range[i];
+			vtx.color = color;
+		}
+
+		for (auto& vtx : vertex_range | std::views::drop(weights_count)) {
+			vtx.color = glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f };
+			vtx.color[my_type] = 1.0f;
+		}
+	}
+
 	// Generates chunk meshes and materials
 	//
 	void RenderCells::GenerateChunkRenderData(ecs::Entity ent)
@@ -146,27 +233,27 @@ namespace Expanse::Game::Terrain
 		assert(chunk);
 
 		// Find all terrain types in chunk
-		const auto terrain_slots = AllocateTerrainTextureSlots(*chunk);
+		const auto& [slot_map, slots] = AllocateTerrainTextureSlots(*chunk);
 
+		// Create vertex and index buffers
+		const auto chunk_cells_count = chunk->Size * chunk->Size;
 		std::vector<TerrainVertex> vertices;
 		std::vector<uint16_t> indices;
+		vertices.reserve(std::size(CellGeometry::vertices) * chunk_cells_count);
+		indices.reserve(std::size(CellGeometry::indices) * chunk_cells_count);
+
+
 
 		for (Point cell_pos : views::rect_points{ chunk->cells.GetRect() })
 		{
 			// Emit vertices and indices
 			auto cell_verts = EmitCellVertices(vertices, indices, cell_pos);
 
-			// get texture slot number in material for this cell terrain type
-			const auto type_idx = GetTerrainTextureSlot(chunk->cells[cell_pos].type, terrain_slots);
-
 			// Calc vertex texture coordinates
 			CalcVertexUVs(cell_verts, 2.0f / chunk->Size);
 
 			// Calc vertex colors
-			for (auto& vtx : cell_verts) {
-				vtx.color = glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f };
-				vtx.color[type_idx] = 1.0f;
-			}
+			CalcVertexColors(cell_verts, cell_pos, slot_map);
 
 			// Transform vertex positions into scene space
 			TransformVerticesIntoSceneSpace(cell_verts);
@@ -180,7 +267,7 @@ namespace Expanse::Game::Terrain
 
 		// create material
 		Render::Material material = renderer->CreateMaterial(terrain_material);
-		SetTerrainMaterialTextures(renderer, material, terrain_slots);
+		SetTerrainMaterialTextures(renderer, material, slots);
 		render_data->material = material;
 	}
 

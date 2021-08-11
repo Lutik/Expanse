@@ -4,6 +4,9 @@
 
 namespace Expanse::Coords
 {
+	static constexpr FPoint Axis[2] = {{ 1.6f, 0.4f }, { -1.0f, 0.75f }};
+
+
 	FRect CellToWorld(Rect cell, Point world_origin)
 	{
 		return FRect{ cell - world_origin };
@@ -43,12 +46,16 @@ namespace Expanse::Coords
 
 	FPoint WorldToScene(FPoint world_pos)
 	{
-		return { world_pos.x + world_pos.y, 0.5f * (world_pos.y - world_pos.x) };
+		return Axis[0] * world_pos.x + Axis[1] * world_pos.y;
 	}
 
 	FPoint SceneToWorld(FPoint scene_pos)
 	{
-		return { 0.5f * scene_pos.x - scene_pos.y, 0.5f * scene_pos.x + scene_pos.y };
+		constexpr float AxisDet = Axis[0].x * Axis[1].y - Axis[0].y * Axis[1].x;
+
+		const float x_det = Axis[1].y * scene_pos.x - Axis[1].x * scene_pos.y;
+		const float y_det = Axis[0].x * scene_pos.y - Axis[0].y * scene_pos.x;
+		return { x_det / AxisDet, y_det / AxisDet };
 	}
 
 	Point CellToChunk(Point cell, int chunk_size)

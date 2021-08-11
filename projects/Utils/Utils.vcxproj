@@ -158,6 +158,7 @@
     <ClInclude Include="..\..\src\Utils\Math.h" />
     <ClInclude Include="..\..\src\Utils\Random.h" />
     <ClInclude Include="..\..\src\Utils\RectPoints.h" />
+    <ClInclude Include="..\..\src\Utils\StaticArray2D.h" />
     <ClInclude Include="..\..\src\Utils\Timers.h" />
     <ClInclude Include="..\..\src\Utils\Utils.h" />
   </ItemGroup>

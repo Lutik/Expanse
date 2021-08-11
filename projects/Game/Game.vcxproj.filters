@@ -13,6 +13,9 @@
     <Filter Include="Game\Terrain\Systems">
       <UniqueIdentifier>{5393584a-74e6-4800-aef9-0d1aeec35c90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Utils">
+      <UniqueIdentifier>{b55691c1-e6c7-40cf-b732-45069d8f63df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\ISystem.h">
@@ -38,6 +41,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Game\Terrain\Systems\RenderTerrain.h">
       <Filter>Game\Terrain\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game\Utils\NeighbourCells.h">
+      <Filter>Game\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

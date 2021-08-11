@@ -22,6 +22,9 @@
     <ClInclude Include="..\..\src\Utils\Timers.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Utils\StaticArray2D.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utils">

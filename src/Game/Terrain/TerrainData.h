@@ -2,7 +2,7 @@
 
 #include "Utils/Array2D.h"
 
-namespace Expanse
+namespace Expanse::Game::Terrain
 {
 	enum class TerrainType
 	{

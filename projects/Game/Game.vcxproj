@@ -156,6 +156,7 @@
     <ClInclude Include="..\..\src\Game\Terrain\Systems\GenerateTerrain.h" />
     <ClInclude Include="..\..\src\Game\Terrain\Systems\RenderTerrain.h" />
     <ClInclude Include="..\..\src\Game\Terrain\TerrainData.h" />
+    <ClInclude Include="..\..\src\Game\Utils\NeighbourCells.h" />
     <ClInclude Include="..\..\src\Game\World.h" />
     <ClInclude Include="..\..\src\Input\Input.h" />
     <ClInclude Include="..\..\src\Input\KeyCodes.h" />
