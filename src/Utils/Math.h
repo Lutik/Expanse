@@ -158,4 +158,12 @@ namespace Expanse
 		static constexpr auto Zero = static_cast<T>(0);
 		return { x, y, std::max(Zero, w), std::max(Zero, h) };
 	}
+
+	template<Number T>
+	constexpr TPoint<T> Clamp(const TPoint<T>& pt, const TRect<T>& rect)
+	{
+		const auto min_pt = LeftBottom(rect);
+		const auto max_pt = RightTop(rect);
+		return { std::clamp(pt.x, min_pt.x, max_pt.x), std::clamp(pt.y, min_pt.y, max_pt.y) };
+	}
 }

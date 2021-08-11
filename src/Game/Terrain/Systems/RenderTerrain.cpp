@@ -17,7 +17,7 @@ namespace Expanse::Game::Terrain
 	// Cell geometry configuration
 	namespace CellGeometry
 	{
-		constexpr float facet = 0.35f;
+		constexpr float facet = 0.3f;
 
 		static_assert(facet >= 0.0f && facet <= 0.5f);
 
@@ -201,7 +201,7 @@ namespace Expanse::Game::Terrain
 	void CalcVertexColors(auto vertex_range, Point cell, const Array2D<uint8_t>& slot_map)
 	{
 		// color vertices with blending weights
-		const auto neighbours = SelectNeighbours(cell, slot_map, slot_map[cell]);
+		const auto neighbours = SelectNeighbours(cell, slot_map);
 		auto [v_itr, w_itr] = utils::for_each_zipped(vertex_range, CellGeometry::color_weights, [neighbours](auto& vtx, const auto& weights)
 		{
 			vtx.color = CalcVertexColor(weights, neighbours);
@@ -242,7 +242,7 @@ namespace Expanse::Game::Terrain
 			auto cell_verts = EmitCellVertices(vertices, indices, cell_pos);
 
 			// Calc vertex texture coordinates
-			CalcVertexUVs(cell_verts, 2.0f / chunk->Size);
+			CalcVertexUVs(cell_verts, 0.5f);
 
 			// Calc vertex colors
 			CalcVertexColors(cell_verts, cell_pos, slot_map);

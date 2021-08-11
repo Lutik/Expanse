@@ -24,13 +24,13 @@ namespace Expanse::Game
 	}
 
 	template<class T>
-	Neighbours<T> SelectNeighbours(Point cell, const Array2D<T>& arr, const T& def)
+	Neighbours<T> SelectNeighbours(Point cell, const Array2D<T>& arr)
 	{
 		Neighbours<T> result;
 		for (Point offset : utils::rect_points(result.GetRect()))
 		{
-			const Point index = cell + offset;
-			result[offset] = arr.IndexIsValid(index) ? arr[index] : def;
+			const auto index = Clamp(cell + offset, arr.GetRect());
+			result[offset] = arr[index];
 		}
 		return result;
 	}
