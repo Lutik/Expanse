@@ -16,6 +16,9 @@
     <Filter Include="Game\Utils">
       <UniqueIdentifier>{b55691c1-e6c7-40cf-b732-45069d8f63df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Player">
+      <UniqueIdentifier>{6f0afd48-8174-4a24-98d5-bff449cf4c48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\ISystem.h">
@@ -48,6 +51,9 @@
     <ClInclude Include="..\..\src\Game\Terrain\TerrainHelper.h">
       <Filter>Game\Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Game\Player\ScrollCameraSystem.h">
+      <Filter>Game\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Input\Input.cpp">
@@ -64,6 +70,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Game\Terrain\TerrainHelper.cpp">
       <Filter>Game\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game\Player\ScrollCameraSystem.cpp">
+      <Filter>Game\Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -11,6 +11,12 @@
 
 namespace Expanse::Game::Terrain
 {
+	struct TerrainChunkRenderData
+	{
+		Render::Mesh mesh;
+		Render::Material material;
+	};
+
 	class RenderCells : public ISystem
 	{
 	public:

@@ -147,6 +147,18 @@ namespace Expanse
 		return rect;
 	}
 
+	constexpr void Centralize(FRect& rect, FPoint center = { 0.0f, 0.0f })
+	{
+		rect.x = center.x - rect.w * 0.5f;
+		rect.y = center.y - rect.h * 0.5f;
+	}
+
+	constexpr FRect Centralized(FRect rect, FPoint center = { 0.0f, 0.0f})
+	{
+		Centralize(rect, center);
+		return rect;
+	}
+
 	template<Number T>
 	TRect<T> Intersection(const TRect<T>& r1, const TRect<T>& r2)
 	{

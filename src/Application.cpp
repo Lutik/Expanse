@@ -8,6 +8,8 @@
 #include "Game/Terrain/Systems/GenerateTerrain.h"
 #include "Game/Terrain/Systems/RenderTerrain.h"
 
+#include "Game/Player/ScrollCameraSystem.h"
+
 namespace Expanse
 {
     Application::Application()
@@ -20,6 +22,9 @@ namespace Expanse
         // Create renderer
         renderer = Render::CreateOpenGLRenderer(window_size, framebuffer_size);
         renderer->SetBgColor({0.0f, 0.3f, 0.2f, 1.0f});
+
+        // Camera control
+        systems->AddSystem<Game::Player::ScrollCamera>();
 
         // Init systems
         auto terrain_systems = systems->AddSystem<Game::SystemCollection>();
@@ -34,9 +39,10 @@ namespace Expanse
     {
         world.dt = timer.Elapsed(true);
 
-        const auto view_rect = FRect{-720, -405, 1440, 810} / 64.0f;
-
         renderer->ClearFrame();
+
+        const auto window_rect = FRect{ renderer->GetWindowRect() };
+        const auto view_rect = Centralized(window_rect) / world.camera_scale + world.camera_pos;
         renderer->Set2DMode(view_rect);
 
         systems->Update();

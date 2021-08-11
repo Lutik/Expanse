@@ -81,12 +81,6 @@ namespace Expanse::Game::Terrain
 		{ Render::VertexElementUsage::COLOR, sizeof(TerrainVertex::color), offsetof(TerrainVertex, color), 4, false, false },
 	} };
 
-	struct TerrainChunkRenderData
-	{
-		Render::Mesh mesh;
-		Render::Material material;
-	};
-
 	RenderCells::RenderCells(World& w, Render::IRenderer* r)
 		: ISystem(w)
 		, renderer(r)

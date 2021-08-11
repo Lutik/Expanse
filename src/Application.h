@@ -25,6 +25,7 @@ namespace Expanse
 
         void ProcessSystemEvent(const SDL_Event& evt);
     private:
+
         std::unique_ptr<Render::IRenderer> renderer;
         Timer timer;
         

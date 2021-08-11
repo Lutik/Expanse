@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\CoordSystems.h" />
     <ClInclude Include="..\..\src\Game\ISystem.h" />
+    <ClInclude Include="..\..\src\Game\Player\ScrollCameraSystem.h" />
     <ClInclude Include="..\..\src\Game\Terrain\Systems\GenerateTerrain.h" />
     <ClInclude Include="..\..\src\Game\Terrain\Systems\RenderTerrain.h" />
     <ClInclude Include="..\..\src\Game\Terrain\TerrainData.h" />
@@ -164,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\CoordSystems.cpp" />
+    <ClCompile Include="..\..\src\Game\Player\ScrollCameraSystem.cpp" />
     <ClCompile Include="..\..\src\Game\Terrain\Systems\GenerateTerrain.cpp" />
     <ClCompile Include="..\..\src\Game\Terrain\Systems\RenderTerrain.cpp" />
     <ClCompile Include="..\..\src\Game\Terrain\TerrainHelper.cpp" />
