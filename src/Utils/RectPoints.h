@@ -5,7 +5,79 @@
 
 namespace Expanse::utils
 {
-	class rect_points : public std::ranges::view_interface<rect_points>
+	namespace details
+	{
+		template<typename T>
+		concept RectIterOrder = std::is_default_constructible_v<T> && std::is_constructible_v<T, Rect> &&
+		requires(T v, Rect rect, Point& pt) {
+			{ T::start_point(rect) } -> std::convertible_to<Point>;
+			{ T::end_point(rect) } -> std::convertible_to<Point>;
+			{ v.advance(pt) };
+		};
+
+		class IterRectLB2RT
+		{
+		public:
+			static Point start_point(const Rect& rect) noexcept {
+				return LeftBottom(rect);
+			}
+			static Point end_point(const Rect& rect) noexcept {
+				return { rect.x, rect.y + rect.h };
+			}
+
+			IterRectLB2RT() = default;
+			IterRectLB2RT(const Rect& rect)
+				: start_x(rect.x)
+				, end_x(rect.x + rect.w)
+			{}
+
+			void advance(Point& point)
+			{
+				++point.x;
+				if (point.x >= end_x) {
+					point.x = start_x;
+					++point.y;
+				}
+			}
+		private:
+			int start_x;
+			int end_x;
+		};
+
+		class IterRectRT2LB
+		{
+		public:
+			static Point start_point(const Rect& rect) noexcept {
+				return RightTop(rect);
+			}
+			static Point end_point(const Rect& rect) noexcept {
+				return { rect.x + rect.w - 1, rect.y - 1 };
+			}
+
+			IterRectRT2LB() = default;
+			IterRectRT2LB(const Rect& rect)
+				: start_x(rect.x + rect.w - 1)
+				, end_x(rect.x - 1)
+			{}
+
+			void advance(Point& point)
+			{
+				--point.x;
+				if (point.x <= end_x) {
+					point.x = start_x;
+					--point.y;
+				}
+			}
+		private:
+			int start_x;
+			int end_x;
+		};
+	}
+
+	//using IterOrder = details::IterRectLB2RT;
+
+	template<details::RectIterOrder IterOrder>
+	class rect_points_base : public std::ranges::view_interface<rect_points_base<IterOrder>>
 	{
 	public:
 		class Iterator
@@ -25,10 +97,9 @@ namespace Expanse::utils
 			Iterator& operator=(const Iterator& rhs) = default;
 			Iterator& operator=(Iterator&& rhs) = default;
 
-			Iterator(Point pt, int width)
+			Iterator(const Rect& rect, Point pt)
 				: point(pt)
-				, start_x(pt.x)
-				, end_x(pt.x + width)
+				, iter_order(rect)
 			{}
 
 			reference operator*() const noexcept { return point; }
@@ -36,11 +107,7 @@ namespace Expanse::utils
 
 			Iterator& operator++() noexcept
 			{
-				++point.x;
-				if (point.x >= end_x) {
-					point.x = start_x;
-					++point.y;
-				}
+				iter_order.advance(point);
 				return *this;
 			}
 
@@ -60,26 +127,22 @@ namespace Expanse::utils
 
 		private:
 			Point point;
-			int start_x;
-			int end_x;
+			IterOrder iter_order;
 		};
 
-		rect_points() = default;
-		rect_points(Rect r) : rect(r) {}
+		rect_points_base() = default;
+		rect_points_base(Rect r) : rect(r) {}
 
-		auto begin() const noexcept { return Iterator{ {rect.x, rect.y}, rect.w }; }
-		auto end() const noexcept { return Iterator{ {rect.x, rect.y + rect.h}, rect.w }; }
+		auto begin() const noexcept { return Iterator{ rect, IterOrder::start_point(rect) }; }
+		auto end() const noexcept { return Iterator{ rect, IterOrder::end_point(rect) }; }
 
 	private:
 		Rect rect;
 	};
 
-	auto rect_points_from_top(const Rect& rect)
-	{
-		auto flip_y = [v = (2 * rect.y + rect.h - 1)](Point pt) {
-			pt.y = v - pt.y;
-			return pt;
-		};
-		return rect_points{ rect } | std::views::transform(flip_y);
-	}
+	
+
+	using rect_points_lb2rt = rect_points_base<details::IterRectLB2RT>;
+	using rect_points_rt2lb = rect_points_base<details::IterRectRT2LB>;
+	using rect_points = rect_points_lb2rt;
 }
