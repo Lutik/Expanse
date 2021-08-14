@@ -69,6 +69,9 @@ namespace Expanse::Render::GL
 		std::vector<GlobalMaterialParameter> globals;
 
 		RenderStateManager gl_state;
+
+		void UseParam(const MaterialParameterValue& param);
+		void FreeParam(const MaterialParameterValue& param);
 	};
 
 

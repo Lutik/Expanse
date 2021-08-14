@@ -85,7 +85,16 @@ namespace Expanse::Render::GL
 
 		const auto handle = CreateEmpty();
 
-		materials[handle.index] = materials[material.index];
+		auto& mat = materials[handle.index];
+
+		// copy another material
+		mat = materials[material.index];
+
+		// Inc reference count for used shader and textures
+		shaders.Use(mat.shader);
+		for (const auto& param : mat.parameters) {
+			UseParam(param.value);
+		}
 
 		return handle;
 	}
@@ -96,14 +105,10 @@ namespace Expanse::Render::GL
 
 		auto& mat = materials[material.index];
 
-		// free shader
+		// free shader and textures
 		shaders.Free(mat.shader);
-
-		// free textures
 		for (auto& param : mat.parameters) {
-			if (auto* tex = std::get_if<Texture>(&param.value)) {
-				textures.Free(*tex);
-			}
+			FreeParam(param.value);
 		}
 
 		mat = {};
@@ -124,11 +129,18 @@ namespace Expanse::Render::GL
 			return;
 		}
 
-		if (auto tex_name = std::get_if<TextureName>(&value)) {
+		// free previously used texture
+		FreeParam(itr->value);
+
+		if (auto tex_name = std::get_if<TextureName>(&value))
+		{
 			// texture names should be converted to texture handles
 			itr->value = textures.Create(*tex_name);
-		} else {
+		}
+		else
+		{
 			itr->value = value;
+			UseParam(itr->value);
 		}
 	}
 
@@ -204,6 +216,20 @@ namespace Expanse::Render::GL
 		for (const auto& gp : globals)
 		{
 			glDeleteBuffers(1, &gp.buffer);
+		}
+	}
+
+	void MaterialManager::UseParam(const MaterialParameterValue& param)
+	{
+		if (auto* tex = std::get_if<Texture>(&param)) {
+			textures.Use(*tex);
+		}
+	}
+
+	void MaterialManager::FreeParam(const MaterialParameterValue& param)
+	{
+		if (auto* tex = std::get_if<Texture>(&param)) {
+			textures.Free(*tex);
 		}
 	}
 }

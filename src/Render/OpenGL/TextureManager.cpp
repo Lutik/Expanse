@@ -54,6 +54,13 @@ namespace Expanse::Render::GL
 		return texture;
 	}
 
+	void TextureManager::Use(Texture texture)
+	{
+		if (!texture.IsValid()) return;
+
+		textures[texture.index].use_count++;
+	}
+
 	void TextureManager::Free(Texture texture)
 	{
 		if (!texture.IsValid()) return;

@@ -15,6 +15,7 @@ namespace Expanse::Render::GL
 		Texture Create(const std::string& file);
 		Texture Create(std::string_view name, const TextureDescription& tex_data);
 
+		void Use(Texture texture);
 		void Free(Texture texture);
 		void Bind(Texture texture, int unit);
 

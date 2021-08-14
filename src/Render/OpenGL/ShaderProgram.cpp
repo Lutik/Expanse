@@ -244,6 +244,9 @@ namespace Expanse::Render::GL
 		res.use_count--;
 		if (res.use_count == 0)
 		{
+			if (current_shader == res.id) {
+				current_shader = 0;
+			}
 			glDeleteProgram(res.id);
 			res.id = 0;
 			res.name.clear();
