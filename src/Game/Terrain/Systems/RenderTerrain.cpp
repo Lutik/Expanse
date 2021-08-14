@@ -48,21 +48,21 @@ namespace Expanse::Game::Terrain
 			13,12,14, 14,12,15
 		};
 
-		using VertexColorWeights = Neighbours<float>;
+		using VertexColorWeights = Neighbours<uint8_t>;
 
 		static constexpr VertexColorWeights color_weights[] = {
-			{ 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f}, // left bottom
-			{ 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // left
-			{ 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // left
-			{ 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f, 0.0f, 0.0f, 0.0f}, // left top
-			{ 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // up
-			{ 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // up
-			{ 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f, 0.0f, 0.0f}, // right top
-			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f }, // right
-			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f }, // right
-			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f }, // right down
-			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f }, // down
-			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f }, // down
+			{ 0, 0, 0, 64, 64, 0, 63, 64, 0}, // left bottom
+			{ 0, 0, 0, 127, 128, 0, 0, 0, 0}, // left
+			{ 0, 0, 0, 127, 128, 0, 0, 0, 0}, // left
+			{ 63, 64, 0, 64, 64, 0, 0, 0, 0}, // left top
+			{ 0, 127, 0, 0, 128, 0, 0, 0, 0}, // up
+			{ 0, 127, 0, 0, 128, 0, 0, 0, 0}, // up
+			{ 0, 64, 63, 0, 64, 64, 0, 0, 0}, // right top
+			{ 0, 0, 0, 0, 128, 127, 0, 0, 0 }, // right
+			{ 0, 0, 0, 0, 128, 127, 0, 0, 0 }, // right
+			{ 0, 0, 0, 0, 64, 64, 0, 64, 63 }, // right down
+			{ 0, 0, 0, 0, 128, 0, 0, 127, 0 }, // down
+			{ 0, 0, 0, 0, 128, 0, 0, 127, 0 }, // down
 		};
 	}
 
@@ -71,14 +71,14 @@ namespace Expanse::Game::Terrain
 	{
 		FPoint position;	
 		FPoint uv;
-		glm::vec4 color; // TODO: use 4 bytes for color, not 4 floats
+		Render::Color color;
 	};
 
 	static const Render::VertexLayout TerrainVertexFormat = { sizeof(TerrainVertex),
 	{
 		{ Render::VertexElementUsage::POSITION, sizeof(TerrainVertex::position), offsetof(TerrainVertex, position), 4, false, false },
 		{ Render::VertexElementUsage::TEXCOORD0, sizeof(TerrainVertex::uv), offsetof(TerrainVertex, uv), 4, false, false },
-		{ Render::VertexElementUsage::COLOR, sizeof(TerrainVertex::color), offsetof(TerrainVertex, color), 4, false, false },
+		{ Render::VertexElementUsage::COLOR, sizeof(TerrainVertex::color), offsetof(TerrainVertex, color), 1, true, false },
 	} };
 
 	RenderCells::RenderCells(World& w, Render::IRenderer* r)
@@ -186,11 +186,11 @@ namespace Expanse::Game::Terrain
 		}
 	}
 
-	glm::vec4 CalcVertexColor(const CellGeometry::VertexColorWeights& weights, const Neighbours<uint8_t>& neighbours)
+	Render::Color CalcVertexColor(const CellGeometry::VertexColorWeights& weights, const Neighbours<uint8_t>& neighbours)
 	{
-		glm::vec4 color{ 0.0f };
-		utils::for_each_zipped(weights, neighbours, [&color](float w, auto t) { color[t] += w; });
-		return color;
+		std::array<uint8_t, 4> color = { 0, 0, 0, 0} ;
+		utils::for_each_zipped(weights, neighbours, [&color](uint8_t w, auto t) { color[t] += w; });
+		return Render::Color{ color };
 	}
 
 	void CalcVertexColors(auto vertex_range, Point cell, const Array2D<uint8_t>& slot_map)
@@ -203,10 +203,10 @@ namespace Expanse::Game::Terrain
 		});
 
 		// apply default color to remaining vertices
-		glm::vec4 def_color{ 0.0f };
-		def_color[neighbours[Offset::Center]] = 1.0f;
+		std::array<uint8_t, 4> def_color = { 0, 0, 0, 0 };
+		def_color[neighbours[Offset::Center]] = 255;
 		for (auto& vtx : std::ranges::subrange(v_itr, vertex_range.end())) {
-			vtx.color = def_color;
+			vtx.color = Render::Color{ def_color };
 		}
 	}
 
