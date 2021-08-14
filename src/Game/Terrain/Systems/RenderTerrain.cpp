@@ -9,6 +9,7 @@
 
 #include <map>
 #include <format>
+#include <numeric>
 
 #include "Game/Utils/NeighbourCells.h"
 
@@ -17,52 +18,59 @@ namespace Expanse::Game::Terrain
 	// Cell geometry configuration
 	namespace CellGeometry
 	{
-		constexpr float facet = 0.3f;
+		// How much does one unit of height takes in scene coordinates
+		static constexpr float UnitHeight = 0.1f;
 
-		static_assert(facet >= 0.0f && facet <= 0.5f);
+		/*
+		* Vertices configuration
+		* 1 - 2 - 3
+		* | \ | / |
+		* 8 - 0 - 4
+		* | / | \ |
+		* 7 - 6 - 5
+		*/
 
-		static constexpr FPoint vertices[] = {
-			// outer ring
-			{0.0f, 0.0f}, {0.0f, facet}, {0.0f, 1.0f - facet},
-			{0.0f, 1.0f}, {facet, 1.0f}, {1.0f - facet, 1.0f},
-			{1.0f, 1.0f}, {1.0f, 1.0f - facet}, {1.0f, facet},
-			{1.0f, 0.0f}, {1.0f - facet, 0.0f}, {facet, 0.0f},
-			// inner ring
-			{facet, facet}, {facet, 1.0f - facet}, {1.0f - facet, 1.0f - facet}, {1.0f - facet, facet},
+		static constexpr size_t CellVertexCount = 9;
+
+		static constexpr FPoint vertices[CellVertexCount] = {
+			{ 0.5f, 0.5f },
+			{ 0.0f, 1.0f }, { 0.5f, 1.0f },
+			{ 1.0f, 1.0f }, { 1.0f, 0.5f },
+			{ 1.0f, 0.0f }, { 0.5f, 0.0f },
+			{ 0.0f, 0.0f }, { 0.0f, 0.5f }
 		};
 
 		static constexpr uint16_t indices[] = {
-			// corners
-			1,0,12, 12,0,11,
-			3,2,13, 3,13,4,
-			5,14,6, 6,14,7,
-			8,15,9, 9,15,10,
-
-			// sides
-			2,1,13, 13,1,12,
-			4,13,14, 4,14,5,
-			7,14,15, 7,15,8,
-			12,11,10, 12,10,15,
-
-			//center
-			13,12,14, 14,12,15
+			0,2,1, 0,3,2, 0,4,3, 0,5,4, 0,6,5, 0,7,6, 0,8,7, 0,1,8
 		};
 
 		using VertexColorWeights = Neighbours<uint8_t>;
 
-		static constexpr VertexColorWeights color_weights[] = {
-			{ 0, 0, 0, 64, 64, 0, 63, 64, 0}, // left bottom
-			{ 0, 0, 0, 127, 128, 0, 0, 0, 0}, // left
-			{ 0, 0, 0, 127, 128, 0, 0, 0, 0}, // left
-			{ 63, 64, 0, 64, 64, 0, 0, 0, 0}, // left top
-			{ 0, 127, 0, 0, 128, 0, 0, 0, 0}, // up
-			{ 0, 127, 0, 0, 128, 0, 0, 0, 0}, // up
-			{ 0, 64, 63, 0, 64, 64, 0, 0, 0}, // right top
-			{ 0, 0, 0, 0, 128, 127, 0, 0, 0 }, // right
+		static constexpr VertexColorWeights color_weights[CellVertexCount] = {
+			{ 0, 0, 0, 0, 255, 0, 0, 0, 0 },   // center
+			{ 63, 64, 0, 64, 64, 0, 0, 0, 0 }, // left top
+			{ 0, 127, 0, 0, 128, 0, 0, 0, 0 }, // up
+			{ 0, 64, 63, 0, 64, 64, 0, 0, 0 }, // right top
 			{ 0, 0, 0, 0, 128, 127, 0, 0, 0 }, // right
 			{ 0, 0, 0, 0, 64, 64, 0, 64, 63 }, // right down
 			{ 0, 0, 0, 0, 128, 0, 0, 127, 0 }, // down
-			{ 0, 0, 0, 0, 128, 0, 0, 127, 0 }, // down
+			{ 0, 0, 0, 64, 64, 0, 63, 64, 0}, // left bottom
+			{ 0, 0, 0, 127, 128, 0, 0, 0, 0}, // left
+		};
+
+
+		using VertexHeightWeights = Neighbours<float>;
+
+		static constexpr VertexHeightWeights height_weights[CellVertexCount] = {
+			{ 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f }, // center
+			{ 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f, 0.0f, 0.0f, 0.0f}, // left top
+			{ 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // up
+			{ 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f, 0.0f, 0.0f}, // right top
+			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f }, // right
+			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f }, // right down
+			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f }, // down
+			{ 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f}, // left bottom
+			{ 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // left			
 		};
 	}
 
@@ -147,44 +155,59 @@ namespace Expanse::Game::Terrain
 		}
 	}
 
-	// Adds vertices with their world positions, and indices into provided vectors.
-	// Returns a view of the added vertices for further processing
-	//
-	auto EmitCellVertices(std::vector<TerrainVertex>& vertices, std::vector<uint16_t>& indices, Point cell_pos)
+	void EmitIndices(size_t vertex_count, std::vector<uint16_t>& indices)
 	{
-		// Write indices
-		auto rebase_idx = [base = static_cast<uint16_t>(vertices.size())](uint16_t idx){ return base + idx; };
+		auto rebase_idx = [base = static_cast<uint16_t>(vertex_count)](uint16_t idx){ return base + idx; };
 		auto rebased_indices = CellGeometry::indices | std::views::transform(rebase_idx);
 		indices.insert(indices.end(), rebased_indices.begin(), rebased_indices.end());
+	}
 
-		// Write vertices
-		auto pos_to_vertex = [pos = FPoint{cell_pos}](FPoint vp) {
-			return TerrainVertex{.position = pos + vp };
+	// Adds vertices for the cell into vertex array, return a view of the added vertices for further processing
+	//
+	auto EmitCellVertices(std::vector<TerrainVertex>& vertices)
+	{
+		auto itr = vertices.insert(vertices.end(), CellGeometry::CellVertexCount, TerrainVertex{});
+		return std::ranges::subrange{ itr, vertices.end() };
+	}
+
+	std::vector<glm::vec3> CalcVertexPositions(Point cell_pos, const Array2D<float>& heights)
+	{
+		auto pos_to_vertex = [pos = FPoint{ cell_pos }](FPoint vp) {
+			return glm::vec3{ pos.x + vp.x, pos.y + vp.y, 0.0f };
 		};
 		auto vertices_gen = CellGeometry::vertices | std::views::transform(pos_to_vertex);
-		auto itr = vertices.insert(vertices.end(), vertices_gen.begin(), vertices_gen.end());
+		std::vector<glm::vec3> positions{ vertices_gen.begin(), vertices_gen.end() };
 
-		// return view of inserted vertices
-		return std::ranges::subrange{ itr, vertices.end() };
+
+		const auto neighbours = SelectNeighbours(cell_pos, heights);
+		utils::for_each_zipped(positions, CellGeometry::height_weights, [neighbours](auto& pos, const auto& weights)
+		{
+			pos.z = std::inner_product(weights.begin(), weights.end(), neighbours.begin(), 0.0f);
+		});
+
+		return positions;
 	}
 
 	// Transforms vertex positions from world/local space into scene space for rendering
 	//
-	void TransformVerticesIntoSceneSpace(auto vertex_range)
+	void WriteVertexPositions(auto vertex_range, const std::vector<glm::vec3>& positions)
 	{
-		for (auto& vtx : vertex_range) {
-			vtx.position = Coords::WorldToScene(vtx.position);
-		}
+		utils::for_each_zipped(vertex_range, positions, [](auto& vtx, glm::vec3 pos) {
+			vtx.position = Coords::WorldToScene(FPoint{ pos.x, pos.y });
+			vtx.position.y += pos.z;
+		});
 	}
 
 	// Calculates vertex uvs based on their world/local positions
 	//
-	void CalcVertexUVs(auto vertex_range, float cell_uv_size)
+	void WriteVertexUVs(auto vertex_range, float cell_uv_size, const std::vector<glm::vec3>& positions)
 	{
-		for (auto& vtx : vertex_range) {
-			vtx.uv = vtx.position * cell_uv_size;
-		}
+		utils::for_each_zipped(vertex_range, positions, [cell_uv_size](auto& vtx, glm::vec3 pos) {
+			vtx.uv = FPoint{ pos.x, pos.y } * cell_uv_size;
+		});
 	}
+
+	// Landscape types blending calculations
 
 	Render::Color CalcVertexColor(const CellGeometry::VertexColorWeights& weights, const Neighbours<uint8_t>& neighbours)
 	{
@@ -193,7 +216,7 @@ namespace Expanse::Game::Terrain
 		return Render::Color{ color };
 	}
 
-	void CalcVertexColors(auto vertex_range, Point cell, const Array2D<uint8_t>& slot_map)
+	void WriteVertexColors(auto vertex_range, Point cell, const Array2D<uint8_t>& slot_map)
 	{
 		// color vertices with blending weights
 		const auto neighbours = SelectNeighbours(cell, slot_map);
@@ -201,13 +224,6 @@ namespace Expanse::Game::Terrain
 		{
 			vtx.color = CalcVertexColor(weights, neighbours);
 		});
-
-		// apply default color to remaining vertices
-		std::array<uint8_t, 4> def_color = { 0, 0, 0, 0 };
-		def_color[neighbours[Offset::Center]] = 255;
-		for (auto& vtx : std::ranges::subrange(v_itr, vertex_range.end())) {
-			vtx.color = Render::Color{ def_color };
-		}
 	}
 
 	// Generates chunk meshes and materials
@@ -220,6 +236,29 @@ namespace Expanse::Game::Terrain
 		assert(chunk);
 
 		const auto chunk_rect = chunk->cells.GetRect();
+
+		// Create heights map for chunks
+		Array2D<float> heights{ Inflated(chunk_rect, 1 , 1) };
+		for (const auto pt : utils::rect_points(heights.GetRect()))
+		{
+			if (chunk->cells.IndexIsValid(pt)) {
+				// cell in this chunk
+				heights[pt] = chunk->cells[pt].height * CellGeometry::UnitHeight;
+			}
+			else {
+				// cell in neighboring chunk
+				const auto ncell = Coords::LocalToCell(pt, chunk->position, chunk->Size);
+				if (auto* cell = helper.GetCell(ncell)) {
+					// we have neighbour chunk loaded, ok
+					heights[pt] = cell->height * CellGeometry::UnitHeight;
+				}
+				else {
+					// no data, assume same type as on this chunks border
+					const auto clamped_pt = Clamp(pt, chunk_rect);
+					heights[pt] = chunk->cells[clamped_pt].height * CellGeometry::UnitHeight;
+				}
+			}
+		}
 
 		// Create terrain types map for chunk
 		Array2D<TerrainType> types{ Inflated(chunk_rect, 1, 1) };
@@ -253,20 +292,18 @@ namespace Expanse::Game::Terrain
 		indices.reserve(std::size(CellGeometry::indices) * chunk_cells_count);
 
 
-
-		for (Point cell_pos : utils::rect_points{ chunk_rect })
+		for (Point cell_pos : utils::rect_points_from_top(chunk_rect))
 		{
-			// Emit vertices and indices
-			auto cell_verts = EmitCellVertices(vertices, indices, cell_pos);
+			// Append indices and vertices
+			EmitIndices(vertices.size(), indices);
+			auto cell_verts = EmitCellVertices(vertices);
 
-			// Calc vertex texture coordinates
-			CalcVertexUVs(cell_verts, 0.5f);
+			// Calculate 3D positions of vertices in world
+			const auto positions = CalcVertexPositions(cell_pos, heights);
 
-			// Calc vertex colors
-			CalcVertexColors(cell_verts, cell_pos, slot_map);
-
-			// Transform vertex positions into scene space
-			TransformVerticesIntoSceneSpace(cell_verts);
+			WriteVertexPositions(cell_verts, positions);
+			WriteVertexUVs(cell_verts, 0.5f, positions);
+			WriteVertexColors(cell_verts, cell_pos, slot_map);
 		}
 
 		// create mesh

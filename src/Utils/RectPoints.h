@@ -73,4 +73,13 @@ namespace Expanse::utils
 	private:
 		Rect rect;
 	};
+
+	auto rect_points_from_top(const Rect& rect)
+	{
+		auto flip_y = [v = (2 * rect.y + rect.h - 1)](Point pt) {
+			pt.y = v - pt.y;
+			return pt;
+		};
+		return rect_points{ rect } | std::views::transform(flip_y);
+	}
 }

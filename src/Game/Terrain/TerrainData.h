@@ -13,6 +13,7 @@ namespace Expanse::Game::Terrain
 	struct TerrainCell
 	{
 		TerrainType type;
+		int height;
 	};
 
 	struct TerrainChunk

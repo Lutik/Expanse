@@ -13,6 +13,7 @@ namespace Expanse::Game::Terrain
 		: ISystem(w)
 		, types_seed(seed)
 	{
+		heights_seed = Xorshift32(seed);
 	}
 
 	void GenerateCells::Update()
@@ -36,6 +37,7 @@ namespace Expanse::Game::Terrain
 
 					auto& cell = chunk->cells[local_pos];
 					cell.type = TerrainTypes[NoiseInt(cell_pos, 0, 1, types_seed)];
+					cell.height = NoiseInt(cell_pos, -2, 2, heights_seed);
 				}
 			}	
 		}
