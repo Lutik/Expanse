@@ -28,7 +28,7 @@ namespace Expanse
 
         // Init systems
         auto terrain_systems = systems->AddSystem<Game::SystemCollection>();
-        terrain_systems->AddSystem<Game::Terrain::GenerateCells>();
+        terrain_systems->AddSystem<Game::Terrain::GenerateCells>(GetRandomSeed());
         terrain_systems->AddSystem<Game::Terrain::RenderCells>(renderer.get());
  
         // init ImGui backend
