@@ -23,7 +23,7 @@ namespace Expanse::ecs
 	{
 		assert(HasEntity(entity));
 
-		// TODO: remove all components
+		RemoveAllComponents(entity);
 
 		const auto idx = entity.Index();
 		entities[idx].entity.IncVersion();
