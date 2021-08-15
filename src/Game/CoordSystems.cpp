@@ -19,7 +19,12 @@ namespace Expanse::Coords
 
 	Point LocalToCell(Point local_pos, Point chunk, int chunk_size)
 	{
-		return chunk * chunk_size + local_pos;
+		return local_pos + chunk * chunk_size;
+	}
+
+	Rect LocalToCell(Rect local_rect, Point chunk, int chunk_size)
+	{
+		return local_rect + chunk * chunk_size;
 	}
 
 	Point CellToLocal(Point cell_pos, Point chunk, int chunk_size)
@@ -27,14 +32,29 @@ namespace Expanse::Coords
 		return cell_pos - chunk * chunk_size;
 	}
 
+	Rect CellToLocal(Rect cell_rect, Point chunk, int chunk_size)
+	{
+		return cell_rect - chunk * chunk_size;
+	}
+
 	FPoint LocalToWorld(FPoint local_pos, Point chunk, Point world_origin, int chunk_size)
 	{
-		return FPoint{ chunk * chunk_size - world_origin } + local_pos;
+		return local_pos + FPoint{ chunk * chunk_size - world_origin };
+	}
+
+	FRect LocalToWorld(FRect local_rect, Point chunk, Point world_origin, int chunk_size)
+	{
+		return local_rect + FPoint{ chunk * chunk_size - world_origin };
 	}
 
 	FPoint WorldToLocal(FPoint world_pos, Point chunk, Point world_origin, int chunk_size)
 	{
 		return world_pos - FPoint{ chunk * chunk_size - world_origin };
+	}
+
+	FRect WorldToLocal(FRect world_rect, Point chunk, Point world_origin, int chunk_size)
+	{
+		return world_rect - FPoint{ chunk * chunk_size - world_origin };
 	}
 
 	FPoint LocalToLocal(FPoint local_pos, Point from_chunk, Point to_chunk, int chunk_size)
