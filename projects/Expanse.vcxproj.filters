@@ -30,6 +30,9 @@
     <ClCompile Include="..\src\GUI\ImGuiRenderer.cpp">
       <Filter>src\UI</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\GUI\LogWindow.cpp">
+      <Filter>src\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\SDL_Utils.h">
@@ -39,6 +42,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\GUI\ImGuiRenderer.h">
+      <Filter>src\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GUI\LogWindow.h">
       <Filter>src\UI</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,8 +10,6 @@
 
 #include <SDL.h>
 
-#include "GUI/ImGuiRenderer.h"
-
 namespace Expanse
 {
     class Application
@@ -32,10 +30,6 @@ namespace Expanse
         Game::World world;
         std::unique_ptr<Game::SystemCollection> systems;
 
-
-        void ImGuiFrame(float dt);
-
-        std::unique_ptr<ImGuiRenderer> imgui_render;
 
         // Handles system events to update input state
         void ProcessInputEvent(const SDL_Event& event);

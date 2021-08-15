@@ -1,6 +1,8 @@
 #include "Application.h"
 
 #include "backends/imgui_impl_sdl.h"
+#include "GUI/ImGuiRenderer.h"
+#include "GUI/LogWindow.h"
 
 #include "Render/SpriteBatch.h"
 #include "Utils/Random.h"
@@ -34,6 +36,32 @@ namespace Expanse
         private:
             Render::IRenderer* renderer = nullptr;
         };
+
+
+        class RenderGUISystem : public SystemCollection
+        {
+        public:
+            RenderGUISystem(World& w, Render::IRenderer* renderer)
+                : SystemCollection(w)
+            {
+                imgui_render = std::make_unique<ImGuiRenderer>(renderer);
+            }
+
+            void Update() override
+            {
+                ImGui_ImplSDL2_NewFrame();
+
+                imgui_render->StartFrame();
+
+                SystemCollection::Update();
+                //ImGui::ShowDemoWindow();
+
+                imgui_render->EndFrame();
+            }
+
+        private:
+            std::unique_ptr<ImGuiRenderer> imgui_render;
+        };
     }
 
 
@@ -49,9 +77,6 @@ namespace Expanse
         renderer->SetBgColor({0.0f, 0.3f, 0.2f, 1.0f});
 
         InitSystems();
- 
-        // init ImGui backend
-        imgui_render = std::make_unique<ImGuiRenderer>(renderer.get());
     }
 
     void Application::InitSystems()
@@ -69,6 +94,11 @@ namespace Expanse
         {
             render_system->AddSystem<Game::Terrain::RenderChunks>(render);
         }
+
+        auto gui_system = systems->AddSystem<Game::RenderGUISystem>(render);
+        {
+            gui_system->AddSystem<LogWindowSystem>();
+        }
     }
 
     void Application::Tick()
@@ -79,8 +109,6 @@ namespace Expanse
 
         systems->Update();
 
-        ImGuiFrame(world.dt);
-
         Input::UpdateState(world.input);
     }
 
@@ -89,17 +117,6 @@ namespace Expanse
         ProcessInputEvent(evt);
 
         ImGui_ImplSDL2_ProcessEvent(&evt);
-    }
-
-    void Application::ImGuiFrame(float dt)
-    {
-        ImGui_ImplSDL2_NewFrame();
-
-        imgui_render->StartFrame();
-
-        ImGui::ShowDemoWindow();
-
-        imgui_render->EndFrame();
     }
 
     void Application::ProcessInputEvent(const SDL_Event& event)

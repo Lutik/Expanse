@@ -7,8 +7,18 @@
 
 namespace Expanse::Log
 {
+	struct ILogSink
+	{
+		virtual ~ILogSink() = default;
+		virtual void Write(const std::string& msg) = 0;
+	};
+
 	// Init logging functionality
 	void init();
+
+	// Add/remove additional log output sinks
+	void add_sink(std::shared_ptr<ILogSink> sink);
+	void remove_sink(std::shared_ptr<ILogSink> sink);
 
 	// Output unformatted message to log
 	void message(const std::string& msg);

@@ -5,11 +5,7 @@
 
 namespace Expanse::Log
 {
-	struct ILogSink
-	{
-		virtual ~ILogSink() = default;
-		virtual void Write(const std::string& msg) = 0;
-	};
+	
 
 	class TextFileSink : public ILogSink
 	{
@@ -30,14 +26,19 @@ namespace Expanse::Log
 
 	/**********************************************************************************/
 
+	// TODO: make it thread-safe
 	class Logger
 	{
 	public:
 
-		template<typename Sink, typename... Args> requires std::is_base_of_v<ILogSink, Sink>
-		void AddSink(Args&&... args)
+		void AddSink(std::shared_ptr<ILogSink> sink)
 		{
-			sinks.push_back(std::make_unique<Sink>(std::forward<Args>(args)...));
+			sinks.push_back(sink);
+		}
+
+		void RemoveSink(std::shared_ptr<ILogSink> sink)
+		{
+			std::erase(sinks, sink);
 		}
 
 		void Write(const std::string& msg)
@@ -48,7 +49,7 @@ namespace Expanse::Log
 		}
 
 	private:
-		std::vector<std::unique_ptr<ILogSink>> sinks;
+		std::vector<std::shared_ptr<ILogSink>> sinks;
 	};
 
 	/**********************************************************************************/
@@ -57,7 +58,17 @@ namespace Expanse::Log
 
 	void init()
 	{
-		logger.AddSink<TextFileSink>("log.txt");
+		logger.AddSink( std::make_shared<TextFileSink>("log.txt") );
+	}
+
+	void add_sink(std::shared_ptr<ILogSink> sink)
+	{
+		logger.AddSink(sink);
+	}
+
+	void remove_sink(std::shared_ptr<ILogSink> sink)
+	{
+		logger.RemoveSink(sink);
 	}
 
 	void message(const std::string& msg)
