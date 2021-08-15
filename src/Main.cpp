@@ -38,7 +38,7 @@ int main(int argc, char* args[])
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
-    ImGui_ImplSDL2_InitForOpenGL(window.window);
+    ImGui_ImplSDL2_InitForOpenGL(window.window, /*unused*/nullptr);
 
 
     Expanse::Point wnd_size;

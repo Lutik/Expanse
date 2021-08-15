@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="thirdparty">
+      <UniqueIdentifier>{6d762f6f-c162-4d09-82d3-013a5f2f0a08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\ImGui">
+      <UniqueIdentifier>{b9d52e37-6365-4d9e-b9ad-528ae9d08fd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\ImGui\backends">
+      <UniqueIdentifier>{9c0bf454-105d-4b60-959f-9b0826c17182}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\thidrparty\imgui\backends\imgui_impl_sdl.cpp">
+      <Filter>thirdparty\ImGui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\imgui\imgui.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\imgui\imgui_demo.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\imgui\imgui_draw.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\imgui\imgui_tables.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thidrparty\imgui\imgui_widgets.cpp">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\thidrparty\imgui\backends\imgui_impl_sdl.h">
+      <Filter>thirdparty\ImGui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\imgui\imconfig.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\imgui\imgui.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\imgui\imgui_internal.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\imgui\imstb_rectpack.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\imgui\imstb_textedit.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thidrparty\imgui\imstb_truetype.h">
+      <Filter>thirdparty\ImGui</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

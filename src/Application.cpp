@@ -79,7 +79,7 @@ namespace Expanse
 
         systems->Update();
 
-        //ImGuiFrame(world.dt);
+        ImGuiFrame(world.dt);
 
         Input::UpdateState(world.input);
     }
@@ -93,7 +93,7 @@ namespace Expanse
 
     void Application::ImGuiFrame(float dt)
     {
-        ImGui_ImplSDL2_NewFrame(renderer->GetWindowSize(), renderer->GetFramebufferSize(), dt);
+        ImGui_ImplSDL2_NewFrame();
 
         imgui_render->StartFrame();
 

@@ -13,15 +13,6 @@
     <Filter Include="copy_dll\x86">
       <UniqueIdentifier>{3022da4d-7617-453c-9245-ea62c338f927}</UniqueIdentifier>
     </Filter>
-    <Filter Include="thirdparty">
-      <UniqueIdentifier>{e9eb5b88-6ed0-4d9d-840b-8566f527e86b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="thirdparty\ImGui">
-      <UniqueIdentifier>{f53ec586-01ee-4e06-b280-54a73dcbc967}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="thirdparty\ImGui\backends">
-      <UniqueIdentifier>{6819c7bb-e6d2-4a34-93aa-c56ff9b024a6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\UI">
       <UniqueIdentifier>{c51208df-966b-4e7f-8807-71c678a9b314}</UniqueIdentifier>
     </Filter>
@@ -36,24 +27,6 @@
     <ClCompile Include="..\src\Application.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui.cpp">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_demo.cpp">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_draw.cpp">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_tables.cpp">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_widgets.cpp">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.cpp">
-      <Filter>thirdparty\ImGui\backends</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\GUI\ImGuiRenderer.cpp">
       <Filter>src\UI</Filter>
     </ClCompile>
@@ -64,27 +37,6 @@
     </ClInclude>
     <ClInclude Include="..\src\Application.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\thidrparty\imgui-1.83\imconfig.h">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\thidrparty\imgui-1.83\imgui.h">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\thidrparty\imgui-1.83\imgui_internal.h">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\thidrparty\imgui-1.83\imstb_rectpack.h">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\thidrparty\imgui-1.83\imstb_textedit.h">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\thidrparty\imgui-1.83\imstb_truetype.h">
-      <Filter>thirdparty\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.h">
-      <Filter>thirdparty\ImGui\backends</Filter>
     </ClInclude>
     <ClInclude Include="..\src\GUI\ImGuiRenderer.h">
       <Filter>src\UI</Filter>

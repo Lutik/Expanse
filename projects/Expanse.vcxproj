@@ -94,7 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;$(SolutionDir)thidrparty\imgui-1.83;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;$(SolutionDir)thidrparty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;$(SolutionDir)thidrparty\imgui-1.83;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;$(SolutionDir)thidrparty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -130,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;$(SolutionDir)thidrparty\imgui-1.83;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;$(SolutionDir)thidrparty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -148,7 +148,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;$(SolutionDir)thidrparty\imgui-1.83;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src;$(SolutionDir)thidrparty\glm;$(SolutionDir)thidrparty\SDL2-2.0.14\include;$(SolutionDir)thidrparty\glew-2.2.0\include;$(SolutionDir)thidrparty\SDL2_image-2.0.5\include;$(SolutionDir)thidrparty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -165,24 +165,11 @@
     <ClCompile Include="..\src\GUI\ImGuiRenderer.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
     <ClCompile Include="..\src\SDL_Utils.cpp" />
-    <ClCompile Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.cpp" />
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui.cpp" />
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_demo.cpp" />
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_draw.cpp" />
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_tables.cpp" />
-    <ClCompile Include="..\thidrparty\imgui-1.83\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Application.h" />
     <ClInclude Include="..\src\GUI\ImGuiRenderer.h" />
     <ClInclude Include="..\src\SDL_Utils.h" />
-    <ClInclude Include="..\thidrparty\imgui-1.83\backends\imgui_impl_sdl.h" />
-    <ClInclude Include="..\thidrparty\imgui-1.83\imconfig.h" />
-    <ClInclude Include="..\thidrparty\imgui-1.83\imgui.h" />
-    <ClInclude Include="..\thidrparty\imgui-1.83\imgui_internal.h" />
-    <ClInclude Include="..\thidrparty\imgui-1.83\imstb_rectpack.h" />
-    <ClInclude Include="..\thidrparty\imgui-1.83\imstb_textedit.h" />
-    <ClInclude Include="..\thidrparty\imgui-1.83\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\thidrparty\SDL2-2.0.14\lib\x64\SDL2.dll">
@@ -211,6 +198,9 @@
     </ProjectReference>
     <ProjectReference Include="Image\Image.vcxproj">
       <Project>{a754237e-7c77-469b-b681-7306624820b9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="ImGui\ImGui.vcxproj">
+      <Project>{2f60125a-55af-4eff-845d-0da363e8efb0}</Project>
     </ProjectReference>
     <ProjectReference Include="Render\Render.vcxproj">
       <Project>{9e16341a-c487-4909-9536-79b7a5a0f8d8}</Project>
