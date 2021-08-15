@@ -159,8 +159,33 @@ namespace Expanse
 		return rect;
 	}
 
+	constexpr void ScaleFromCenter(FRect rect, FPoint scale)
+	{
+		const float dx = rect.w * (scale.x - 1.0f) * 0.5f;
+		const float dy = rect.h * (scale.y - 1.0f) * 0.5f;
+		Inflate(rect, dx, dy);
+	}
+
+	constexpr void ScaleFromCenter(FRect rect, float scale)
+	{
+		scale = (scale - 1.0f) * 0.5f;
+		Inflate(rect, rect.w * scale, rect.h * scale);
+	}
+
+	constexpr FRect ScaledFromCenter(FRect rect, FPoint scale)
+	{
+		ScaleFromCenter(rect, scale);
+		return rect;
+	}
+
+	constexpr FRect ScaledFromCenter(FRect rect, float scale)
+	{
+		ScaleFromCenter(rect, scale);
+		return rect;
+	}
+
 	template<Number T>
-	TRect<T> Intersection(const TRect<T>& r1, const TRect<T>& r2)
+	constexpr TRect<T> Intersection(const TRect<T>& r1, const TRect<T>& r2)
 	{
 		const auto x = std::max(r1.x, r2.x);
 		const auto y = std::max(r1.y, r2.y);
@@ -169,6 +194,15 @@ namespace Expanse
 
 		static constexpr auto Zero = static_cast<T>(0);
 		return { x, y, std::max(Zero, w), std::max(Zero, h) };
+	}
+
+	template<Number T>
+	constexpr bool Intersects(const TRect<T>& r1, const TRect<T>& r2)
+	{
+		const auto ir = Intersection(r1, r2);
+
+		static constexpr auto Zero = static_cast<T>(0);
+		return (ir.w != Zero) && (ir.h != Zero); 
 	}
 
 	template<Number T>
