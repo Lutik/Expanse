@@ -151,7 +151,7 @@ namespace Expanse::Render::GL
 		const auto& mat = materials[material.index];
 
 		// bind shader
-		shaders.Use(mat.shader);
+		shaders.Bind(mat.shader);
 
 		// set uniforms and bind textures
 		UniformSetterVisitor set_param{ textures };

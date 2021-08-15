@@ -21,8 +21,11 @@ namespace Expanse::Render::GL
 		ShaderManager& operator=(const ShaderManager&) = delete;
 
 		Shader Create(const std::string& file);
-		void Free(Shader program);
+		
 		void Use(Shader program);
+		void Free(Shader program);
+
+		void Bind(Shader program);
 
 		// Retrieve names and locations of all uniforms in shader program
 		std::vector<ShaderUniformInfo> GetShaderUniformsInfo(Shader shader) const;

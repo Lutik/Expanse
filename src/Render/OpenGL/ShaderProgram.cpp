@@ -202,7 +202,7 @@ namespace Expanse::Render::GL
 		}
 	}
 
-	void ShaderManager::Use(Shader program)
+	void ShaderManager::Bind(Shader program)
 	{
 		if (!program.IsValid()) return;
 
@@ -234,6 +234,13 @@ namespace Expanse::Render::GL
 			res.name = file;
 			return { index };
 		}
+	}
+
+	void ShaderManager::Use(Shader handle)
+	{
+		if (!handle.IsValid()) return;
+
+		shaders[handle.index].use_count++;
 	}
 
 	void ShaderManager::Free(Shader handle)
