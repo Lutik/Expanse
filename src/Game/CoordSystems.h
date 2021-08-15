@@ -42,4 +42,9 @@ namespace Expanse::Coords
 	FPoint SceneToWorld(FPoint scene_pos);
 
 	Point CellToChunk(Point cell, int chunk_size);
+
+
+	FRect WorldRectSceneBounds(FRect world_rect);
+
+	FRect ChunkSceneBounds(Point world_origin, Point chunk, int chunk_size);
 }

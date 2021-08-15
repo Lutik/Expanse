@@ -14,5 +14,6 @@ namespace Expanse::Game::Terrain
 	private:
 		uint32_t types_seed;
 		uint32_t heights_seed;
+		bool init = false;
 	};
 }

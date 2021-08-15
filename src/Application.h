@@ -39,5 +39,7 @@ namespace Expanse
 
         // Handles system events to update input state
         void ProcessInputEvent(const SDL_Event& event);
+
+        void InitSystems();
     };
 }

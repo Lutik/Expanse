@@ -6,6 +6,7 @@
 
 #include "Utils/RectPoints.h"
 #include "Utils/Utils.h"
+#include "Utils/Logger/Logger.h"
 
 #include <map>
 #include <format>
@@ -89,7 +90,7 @@ namespace Expanse::Game::Terrain
 		{ Render::VertexElementUsage::COLOR, sizeof(TerrainVertex::color), offsetof(TerrainVertex, color), 1, true, false },
 	} };
 
-	RenderCells::RenderCells(World& w, Render::IRenderer* r)
+	LoadChunksToGPU::LoadChunksToGPU(World& w, Render::IRenderer* r)
 		: ISystem(w)
 		, renderer(r)
 		, helper(w)
@@ -97,22 +98,31 @@ namespace Expanse::Game::Terrain
 		terrain_material = renderer->CreateMaterial("content/materials/terrain.json");
 	}
 
-	void RenderCells::Update()
+	void LoadChunksToGPU::Update()
 	{
-		helper.Update();
-		GenerateChunksRenderData();
+		const auto window_rect = FRect{ renderer->GetWindowRect() };
+		const auto view_rect = Centralized(window_rect) / world.camera_scale + world.camera_pos;
+		ScaleFromCenter(view_rect, 1.1f);
 
-		RenderChunks();
-	}
-
-	void RenderCells::GenerateChunksRenderData()
-	{
-		for (const auto ent : world.entities.GetEntitiesWith<TerrainChunk>())
+		std::vector<ecs::Entity> gen_entities;
+		world.entities.ForEach<TerrainChunk>([this, view_rect, &gen_entities](auto ent, const TerrainChunk& chunk)
 		{
 			if (!world.entities.HasComponent<TerrainChunkRenderData>(ent)) {
-				GenerateChunkRenderData(ent);
+				const FRect chunk_view = Coords::ChunkSceneBounds(world.world_origin, chunk.position, TerrainChunk::Size);
+				if (Intersects(chunk_view, view_rect)) {
+					gen_entities.push_back(ent);
+				}
 			}
-		};
+		});
+
+		if (!gen_entities.empty())
+		{
+			helper.Update();
+
+			for (const auto ent : gen_entities) {
+				GenerateChunkRenderData(ent);
+			};
+		}
 	}
 
 	using TerrainTextureSlots = std::vector<TerrainType>;
@@ -228,7 +238,7 @@ namespace Expanse::Game::Terrain
 
 	// Generates chunk meshes and materials
 	//
-	void RenderCells::GenerateChunkRenderData(ecs::Entity ent)
+	void LoadChunksToGPU::GenerateChunkRenderData(ecs::Entity ent)
 	{
 		auto *render_data = world.entities.AddComponent<TerrainChunkRenderData>(ent);
 		auto* chunk = world.entities.GetComponent<TerrainChunk>(ent);
@@ -292,7 +302,7 @@ namespace Expanse::Game::Terrain
 		indices.reserve(std::size(CellGeometry::indices) * chunk_cells_count);
 
 
-		for (Point cell_pos : utils::rect_points_from_top(chunk_rect))
+		for (Point cell_pos : utils::rect_points_rt2lb(chunk_rect))
 		{
 			// Append indices and vertices
 			EmitIndices(vertices.size(), indices);
@@ -316,19 +326,72 @@ namespace Expanse::Game::Terrain
 		Render::Material material = renderer->CreateMaterial(terrain_material);
 		SetTerrainMaterialTextures(renderer, material, slots);
 		render_data->material = material;
+
+
+		Log::message("Chunk {}:{} render data generated", chunk->position.x, chunk->position.y);
 	}
 
+	/*************************************************************************************************/
 
-
-
-	void RenderCells::RenderChunks()
+	UnloadChunksFromGPU::UnloadChunksFromGPU(World& w, Render::IRenderer* r)
+		: ISystem(w)
+		, renderer(r)
 	{
-		world.entities.ForEach<TerrainChunkRenderData, TerrainChunk>([this](auto ent, const TerrainChunkRenderData& rdata, const TerrainChunk& chunk)
+	}
+
+	void UnloadChunksFromGPU::Update()
+	{
+		const auto window_rect = FRect{ renderer->GetWindowRect() };
+		const auto view_rect = Centralized(window_rect) / world.camera_scale + world.camera_pos;
+		ScaleFromCenter(view_rect, 2.0f);
+
+		std::vector<ecs::Entity> freed_chunks;
+		world.entities.ForEach<TerrainChunkRenderData, TerrainChunk>([this, &freed_chunks, view_rect](auto ent, const TerrainChunkRenderData& rdata, const TerrainChunk& chunk)
 		{
-			const auto world_pos = Coords::LocalToWorld(FPoint{0.0f, 0.0f}, chunk.position, world.world_origin, chunk.Size);
-			const auto scene_pos = Coords::WorldToScene(world_pos);
-			renderer->SetMaterialParameter(rdata.material, "chunk_pos", glm::vec2{ scene_pos.x, scene_pos.y });
-			renderer->Draw(rdata.mesh, rdata.material);
+			const FRect chunk_view = Coords::ChunkSceneBounds(world.world_origin, chunk.position, TerrainChunk::Size);
+			if (!Intersects(chunk_view, view_rect))
+			{
+				renderer->FreeMaterial(rdata.material);
+				renderer->FreeMesh(rdata.mesh);
+
+				freed_chunks.push_back(ent);
+				Log::message("Chunk {}:{} unloaded from GPU", chunk.position.x, chunk.position.y);
+			}
 		});
+
+		for (auto ent : freed_chunks) {
+			world.entities.RemoveComponent<TerrainChunkRenderData>(ent);
+		}
+	}
+
+	/*************************************************************************************************/
+
+	RenderChunks::RenderChunks(World& w, Render::IRenderer* r)
+		: ISystem(w)
+		, renderer(r)
+	{
+	}
+
+	void RenderChunks::Update()
+	{
+		// Gather all chunks
+		std::vector<std::pair<Point, TerrainChunkRenderData>> chunks;
+		world.entities.ForEach<TerrainChunkRenderData, TerrainChunk>([&chunks](auto ent, const TerrainChunkRenderData& rdata, const TerrainChunk& chunk)
+		{
+			chunks.emplace_back(chunk.position, rdata);
+		});
+
+		// Sort
+		auto comp = [](const auto& ch1, const auto& ch2){ return (ch1.first.x + ch1.first.y) > (ch2.first.x + ch2.first.y); };
+		std::ranges::sort(chunks, comp);
+
+		// Render
+		for (const auto [pos, data] : chunks)
+		{
+			const auto world_pos = Coords::LocalToWorld(FPoint{ 0.0f, 0.0f }, pos, world.world_origin, TerrainChunk::Size);
+			const auto scene_pos = Coords::WorldToScene(world_pos);
+			renderer->SetMaterialParameter(data.material, "chunk_pos", glm::vec2{ scene_pos.x, scene_pos.y });
+			renderer->Draw(data.mesh, data.material);
+		}
 	}
 }

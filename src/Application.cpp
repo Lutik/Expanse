@@ -12,6 +12,31 @@
 
 namespace Expanse
 {
+    namespace Game
+    {
+        class RenderWorldSystem : public SystemCollection
+        {
+        public:
+            RenderWorldSystem(World& w, Render::IRenderer* r)
+                : SystemCollection(w)
+                , renderer(r)
+            {}
+
+            void Update() override
+            {
+                const auto window_rect = FRect{ renderer->GetWindowRect() };
+                const auto view_rect = Centralized(window_rect) / world.camera_scale + world.camera_pos;
+                renderer->Set2DMode(view_rect);
+
+                SystemCollection::Update();
+            }
+
+        private:
+            Render::IRenderer* renderer = nullptr;
+        };
+    }
+
+
     Application::Application()
     {
         systems = std::make_unique<Game::SystemCollection>(world);
@@ -23,16 +48,27 @@ namespace Expanse
         renderer = Render::CreateOpenGLRenderer(window_size, framebuffer_size);
         renderer->SetBgColor({0.0f, 0.3f, 0.2f, 1.0f});
 
-        // Camera control
-        systems->AddSystem<Game::Player::ScrollCamera>();
-
-        // Init systems
-        auto terrain_systems = systems->AddSystem<Game::SystemCollection>();
-        terrain_systems->AddSystem<Game::Terrain::GenerateCells>(GetRandomSeed());
-        terrain_systems->AddSystem<Game::Terrain::RenderCells>(renderer.get());
+        InitSystems();
  
         // init ImGui backend
         imgui_render = std::make_unique<ImGuiRenderer>(renderer.get());
+    }
+
+    void Application::InitSystems()
+    {
+        auto render = renderer.get();
+
+        systems->AddSystem<Game::Player::ScrollCamera>();
+
+        systems->AddSystem<Game::Terrain::GenerateCells>(GetRandomSeed());
+
+        systems->AddSystem<Game::Terrain::LoadChunksToGPU>(render);
+        systems->AddSystem<Game::Terrain::UnloadChunksFromGPU>(render);
+
+        auto render_system = systems->AddSystem<Game::RenderWorldSystem>(render);
+        {
+            render_system->AddSystem<Game::Terrain::RenderChunks>(render);
+        }
     }
 
     void Application::Tick()
@@ -40,10 +76,6 @@ namespace Expanse
         world.dt = timer.Elapsed(true);
 
         renderer->ClearFrame();
-
-        const auto window_rect = FRect{ renderer->GetWindowRect() };
-        const auto view_rect = Centralized(window_rect) / world.camera_scale + world.camera_pos;
-        renderer->Set2DMode(view_rect);
 
         systems->Update();
 

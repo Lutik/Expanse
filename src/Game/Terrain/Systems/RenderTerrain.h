@@ -17,10 +17,13 @@ namespace Expanse::Game::Terrain
 		Render::Material material;
 	};
 
-	class RenderCells : public ISystem
+	/*
+	* Generates meshes and materials for loaded chunks, that come into view
+	*/
+	class LoadChunksToGPU : public ISystem
 	{
 	public:
-		RenderCells(World& w, Render::IRenderer* r);
+		LoadChunksToGPU(World& w, Render::IRenderer* r);
 
 		void Update() override;
 
@@ -29,9 +32,35 @@ namespace Expanse::Game::Terrain
 		Render::Material terrain_material;
 		TerrainHelper helper;
 
-		void GenerateChunksRenderData();
 		void GenerateChunkRenderData(ecs::Entity ent);
+	};
 
-		void RenderChunks();
+	/*
+	* Frees meshes and materials of chunks, that are no longer in view
+	*/
+	class UnloadChunksFromGPU : public ISystem
+	{
+	public:
+		UnloadChunksFromGPU(World& w, Render::IRenderer* r);
+
+		void Update() override;
+
+	private:
+		Render::IRenderer* renderer = nullptr;
+	};
+
+
+	/*
+	* Renders all terrain chunks, for which meshes and materials are present
+	*/
+	class RenderChunks : public ISystem
+	{
+	public:
+		RenderChunks(World& w, Render::IRenderer* r);
+
+		void Update() override;
+
+	private:
+		Render::IRenderer *renderer = nullptr;
 	};
 }

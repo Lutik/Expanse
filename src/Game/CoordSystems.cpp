@@ -90,4 +90,25 @@ namespace Expanse::Coords
 		};
 		return { to_chunk(cell.x), to_chunk(cell.y) };
 	}
+
+
+	FRect WorldRectSceneBounds(FRect world_rect)
+	{
+		// TODO: optimize
+		const FPoint pts[] = {
+			WorldToScene(LeftBottom(world_rect)),
+			WorldToScene(LeftTop(world_rect)),
+			WorldToScene(RightBottom(world_rect)),
+			WorldToScene(RightTop(world_rect)),
+		};
+		return FRect{ pts[1].x, pts[0].y, pts[2].x - pts[1].x, pts[3].y - pts[0].y };
+	}
+
+	FRect ChunkSceneBounds(Point world_origin, Point chunk, int chunk_size)
+	{
+		const FRect chunk_local_rect{ 0.0f, 0.0f, static_cast<float>(chunk_size), static_cast<float>(chunk_size) };
+		const FRect chunk_world_rect = LocalToWorld(chunk_local_rect, chunk, world_origin, chunk_size);
+
+		return WorldRectSceneBounds(chunk_world_rect);
+	}
 }

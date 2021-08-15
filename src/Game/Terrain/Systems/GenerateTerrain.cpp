@@ -18,15 +18,13 @@ namespace Expanse::Game::Terrain
 
 	void GenerateCells::Update()
 	{
-		if (!world.entities.HasComponents<TerrainChunk>())
+		if (!init)
 		{
-			static constexpr Point Chunks[] = {
-				{0, 0}, {-1, 0}, {-1, -1}, {0, -1}
-			};
+			init = true;
 
 			static constexpr TerrainType TerrainTypes[] = { TerrainType::Dirt, TerrainType::Grass };
 
-			for (const auto chunk_pos: Chunks)
+			for (const auto chunk_pos : utils::rect_points{ Rect{-2, -2, 4, 4} })
 			{
 				auto ent = world.entities.CreateEntity();
 				auto* chunk = world.entities.AddComponent<TerrainChunk>(ent, chunk_pos);
@@ -37,7 +35,7 @@ namespace Expanse::Game::Terrain
 
 					auto& cell = chunk->cells[local_pos];
 					cell.type = TerrainTypes[NoiseInt(cell_pos, 0, 1, types_seed)];
-					cell.height = NoiseInt(cell_pos, -2, 2, heights_seed);
+					cell.height = NoiseInt(cell_pos, -4, 4, heights_seed);
 				}
 			}	
 		}
