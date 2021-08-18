@@ -11,9 +11,7 @@ namespace Expanse
 	{
 		// based on algorithm from
 		// https://xor0110.wordpress.com/2010/09/24/how-to-generate-floating-point-random-numbers-efficiently/
-		x = x & 0x007FFFFF | 0x3F800000;
-		float f;
-		std::memcpy(&f, &x, sizeof(f));
+		const float f = std::bit_cast<float>(x & 0x007FFFFF | 0x3F800000);
 		return f - 1.0f;
 	}
 	
@@ -44,9 +42,9 @@ namespace Expanse
 	*/
 	uint32_t Squirrel3(int x, uint32_t seed)
 	{
-		static constexpr unsigned int BITS_NOISE[3] = { 0xB5297A4D, 0x68E31DA4, 0x1B56C4E9 };
+		static constexpr uint32_t BITS_NOISE[3] = { 0xB5297A4D, 0x68E31DA4, 0x1B56C4E9 };
 
-		unsigned int v = x;
+		uint32_t v = x;
 		v *= BITS_NOISE[0];
 		v += seed;
 		v ^= (v >> 8);
@@ -61,6 +59,52 @@ namespace Expanse
 	{
 		static constexpr int BIG_PRIME = 198491317;
 		return Squirrel3(pt.x + BIG_PRIME * pt.y, seed);
+	}
+
+	float PerlinNoise(FPoint pos, uint32_t seed)
+	{
+		const auto seedx = Squirrel3(0, seed);
+		const auto seedy = Squirrel3(1, seed);
+
+		auto get_grad = [=](int px, int py){
+			const float gx = UniformFloat(Squirrel3(Point{px, py}, seedx), -1.0f, 1.0f);
+			const float gy = UniformFloat(Squirrel3(Point{px, py}, seedy), -1.0f, 1.0f);
+			return FPoint{ gx, gy };
+		};
+
+		const auto fx = std::floor(pos.x);
+		const auto fy = std::floor(pos.y);
+		const auto x = static_cast<int>(fx);
+		const auto y = static_cast<int>(fy);
+
+		const FPoint grads[4] = {
+			get_grad(x, y),
+			get_grad(x, y+1),
+			get_grad(x+1, y),
+			get_grad(x+1, y+1),
+		};
+
+		const FPoint offsets[4] = {
+			{pos.x - fx, pos.y - fy},
+			{pos.x - fx, pos.y - fy - 1.0f},
+			{pos.x - fx - 1.0f, pos.y - fy},
+			{pos.x - fx - 1.0f, pos.y - fy - 1.0f},
+		};
+
+		const float dots[4] = {
+			DotProduct(grads[0], offsets[0]),
+			DotProduct(grads[1], offsets[1]),
+			DotProduct(grads[2], offsets[2]),
+			DotProduct(grads[3], offsets[3]),
+		};
+
+		const float sx = pos.x - fx;
+		const float sy = pos.y - fy;
+
+		const float v0 = Lerp(dots[0], dots[1], sy);
+		const float v1 = Lerp(dots[2], dots[3], sy);
+
+		return Lerp(v0, v1, sx);
 	}
 
 	/*

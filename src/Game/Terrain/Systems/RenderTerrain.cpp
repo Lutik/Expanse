@@ -20,7 +20,7 @@ namespace Expanse::Game::Terrain
 	namespace CellGeometry
 	{
 		// How much does one unit of height takes in scene coordinates
-		static constexpr float UnitHeight = 0.1f;
+		static constexpr float UnitHeight = 0.2f;
 
 		/*
 		* Vertices configuration

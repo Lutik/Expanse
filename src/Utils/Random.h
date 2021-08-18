@@ -22,6 +22,8 @@ namespace Expanse
 		return UniformInt(Squirrel3(pos, seed), a, b);
 	}
 
+	float PerlinNoise(FPoint pos, uint32_t seed = 0);
+
 	/* Misc */
 	uint32_t GetRandomSeed();
 

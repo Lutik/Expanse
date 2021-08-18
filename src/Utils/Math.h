@@ -212,6 +212,16 @@ namespace Expanse
 		const auto max_pt = RightTop(rect);
 		return { std::clamp(pt.x, min_pt.x, max_pt.x), std::clamp(pt.y, min_pt.y, max_pt.y) };
 	}
+
+	constexpr float DotProduct(FPoint p1, FPoint p2)
+	{
+		return p1.x * p2.x + p1.y * p2.y;
+	}
+
+	constexpr float Lerp(float a, float b, float weight)
+	{
+		return a + (b - a) * weight;
+	}
 }
 
 
