@@ -19,13 +19,15 @@ namespace Expanse::Game::Terrain
 	struct TerrainChunk
 	{
 		static constexpr int Size = 16;
+		static constexpr Rect Area = {0, 0, Size, Size};
+
 
 		Point position;
 		Array2D<TerrainCell> cells;
 
 		explicit TerrainChunk(Point pos)
 			: position(pos)
-			, cells(Rect{0, 0, Size, Size})
+			, cells(Rect{-1, -1, Size + 2, Size + 2})
 		{}
 	};
 }

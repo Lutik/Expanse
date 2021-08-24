@@ -23,14 +23,16 @@ namespace Expanse::Game
 		inline constexpr Point RightDown  = { 1, -1 };
 	}
 
-	template<class T>
-	Neighbours<T> SelectNeighbours(Point cell, const Array2D<T>& arr)
+	template<class T, class Pred = std::identity>
+	auto SelectNeighbours(Point cell, const Array2D<T>& arr, Pred pred = {})
 	{
-		Neighbours<T> result;
+		using RetType = std::remove_reference_t<std::invoke_result_t<Pred, T>>;
+
+		Neighbours<RetType> result;
 		for (Point offset : utils::rect_points(result.GetRect()))
 		{
 			const auto index = Clamp(cell + offset, arr.GetRect());
-			result[offset] = arr[index];
+			result[offset] = std::invoke(pred, arr[index]);
 		}
 		return result;
 	}

@@ -93,7 +93,6 @@ namespace Expanse::Game::Terrain
 	LoadChunksToGPU::LoadChunksToGPU(World& w, Render::IRenderer* r)
 		: ISystem(w)
 		, renderer(r)
-		, helper(w)
 	{
 		terrain_material = renderer->CreateMaterial("content/materials/terrain.json");
 	}
@@ -117,8 +116,6 @@ namespace Expanse::Game::Terrain
 
 		if (!gen_entities.empty())
 		{
-			helper.Update();
-
 			for (const auto ent : gen_entities) {
 				GenerateChunkRenderData(ent);
 			};
@@ -128,24 +125,24 @@ namespace Expanse::Game::Terrain
 	using TerrainTextureSlots = std::vector<TerrainType>;
 
 	// Distributes terrain types in chunk into material texture slots
-	std::pair<Array2D<uint8_t>, TerrainTextureSlots> AllocateTerrainTextureSlots(const Array2D<TerrainType>& chunk)
+	std::pair<Array2D<uint8_t>, TerrainTextureSlots> AllocateTerrainTextureSlots(const TerrainChunk& chunk)
 	{
 		std::pair<Array2D<uint8_t>, TerrainTextureSlots> result;
 
 		// find all types, assign them indices
 		auto& types = result.second;
-		for (const auto& cell_type : chunk) {
-			if (!utils::contains(types, cell_type)) {
-				types.push_back(cell_type);
+		for (const auto& cell : chunk.cells) {
+			if (!utils::contains(types, cell.type)) {
+				types.push_back(cell.type);
 			}
 		}
 		types.resize(4, TerrainType::Grass);
 		
 		// create map of all cells terrain slots
 		auto& arr = result.first;
-		arr = Array2D<uint8_t>{ chunk.GetRect() };
-		auto get_index = [&types](const auto& cell_type){ return static_cast<uint8_t>(std::ranges::find(types, cell_type) - types.begin()); };
-		std::transform(chunk.begin(), chunk.end(), arr.begin(), get_index);
+		arr = Array2D<uint8_t>{ chunk.cells.GetRect() };
+		auto get_index = [&types](const TerrainCell& cell){ return static_cast<uint8_t>(std::ranges::find(types, cell.type) - types.begin()); };
+		std::transform(chunk.cells.begin(), chunk.cells.end(), arr.begin(), get_index);
 
 		return result;
 	}
@@ -180,7 +177,7 @@ namespace Expanse::Game::Terrain
 		return std::ranges::subrange{ itr, vertices.end() };
 	}
 
-	std::vector<glm::vec3> CalcVertexPositions(Point cell_pos, const Array2D<float>& heights)
+	std::vector<glm::vec3> CalcVertexPositions(Point cell_pos, const TerrainChunk& chunk)
 	{
 		auto pos_to_vertex = [pos = FPoint{ cell_pos }](FPoint vp) {
 			return glm::vec3{ pos.x + vp.x, pos.y + vp.y, 0.0f };
@@ -189,7 +186,10 @@ namespace Expanse::Game::Terrain
 		std::vector<glm::vec3> positions{ vertices_gen.begin(), vertices_gen.end() };
 
 
-		const auto neighbours = SelectNeighbours(cell_pos, heights);
+		const auto neighbours = SelectNeighbours(cell_pos, chunk.cells, [](const TerrainCell& cell){
+			return cell.height * CellGeometry::UnitHeight;
+		});
+
 		utils::for_each_zipped(positions, CellGeometry::height_weights, [neighbours](auto& pos, const auto& weights)
 		{
 			pos.z = std::inner_product(weights.begin(), weights.end(), neighbours.begin(), 0.0f);
@@ -245,54 +245,8 @@ namespace Expanse::Game::Terrain
 
 		assert(chunk);
 
-		const auto chunk_rect = chunk->cells.GetRect();
-
-		// Create heights map for chunks
-		Array2D<float> heights{ Inflated(chunk_rect, 1 , 1) };
-		for (const auto pt : utils::rect_points(heights.GetRect()))
-		{
-			if (chunk->cells.IndexIsValid(pt)) {
-				// cell in this chunk
-				heights[pt] = chunk->cells[pt].height * CellGeometry::UnitHeight;
-			}
-			else {
-				// cell in neighboring chunk
-				const auto ncell = Coords::LocalToCell(pt, chunk->position, chunk->Size);
-				if (auto* cell = helper.GetCell(ncell)) {
-					// we have neighbour chunk loaded, ok
-					heights[pt] = cell->height * CellGeometry::UnitHeight;
-				}
-				else {
-					// no data, assume same type as on this chunks border
-					const auto clamped_pt = Clamp(pt, chunk_rect);
-					heights[pt] = chunk->cells[clamped_pt].height * CellGeometry::UnitHeight;
-				}
-			}
-		}
-
-		// Create terrain types map for chunk
-		Array2D<TerrainType> types{ Inflated(chunk_rect, 1, 1) };
-		for (const auto pt : utils::rect_points(types.GetRect()))
-		{
-			if (chunk->cells.IndexIsValid(pt)) {
-				// cell in this chunk
-				types[pt] = chunk->cells[pt].type;
-			} else {
-				// cell in neighboring chunk
-				const auto ncell = Coords::LocalToCell(pt, chunk->position, chunk->Size);
-				if (auto* cell = helper.GetCell(ncell)) {
-					// we have neighbour chunk loaded, ok
-					types[pt] = cell->type;
-				} else {
-					// no data, assume same type as on this chunks border
-					const auto clamped_pt = Clamp(pt, chunk_rect);
-					types[pt] = chunk->cells[clamped_pt].type;
-				}
-			}
-		}
-
 		// Distribute terrain types to textures slots
-		const auto& [slot_map, slots] = AllocateTerrainTextureSlots(types);
+		const auto& [slot_map, slots] = AllocateTerrainTextureSlots(*chunk);
 
 		// Create vertex and index buffers
 		const auto chunk_cells_count = chunk->Size * chunk->Size;
@@ -302,14 +256,14 @@ namespace Expanse::Game::Terrain
 		indices.reserve(std::size(CellGeometry::indices) * chunk_cells_count);
 
 
-		for (Point cell_pos : utils::rect_points_rt2lb(chunk_rect))
+		for (Point cell_pos : utils::rect_points_rt2lb(TerrainChunk::Area))
 		{
 			// Append indices and vertices
 			EmitIndices(vertices.size(), indices);
 			auto cell_verts = EmitCellVertices(vertices);
 
 			// Calculate 3D positions of vertices in world
-			const auto positions = CalcVertexPositions(cell_pos, heights);
+			const auto positions = CalcVertexPositions(cell_pos, *chunk);
 
 			WriteVertexPositions(cell_verts, positions);
 			WriteVertexUVs(cell_verts, 0.5f, positions);

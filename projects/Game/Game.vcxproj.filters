@@ -48,9 +48,6 @@
     <ClInclude Include="..\..\src\Game\Utils\NeighbourCells.h">
       <Filter>Game\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game\Terrain\TerrainHelper.h">
-      <Filter>Game\Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Game\Player\ScrollCameraSystem.h">
       <Filter>Game\Player</Filter>
     </ClInclude>
@@ -67,9 +64,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Game\Terrain\Systems\RenderTerrain.cpp">
       <Filter>Game\Terrain\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Game\Terrain\TerrainHelper.cpp">
-      <Filter>Game\Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Game\Player\ScrollCameraSystem.cpp">
       <Filter>Game\Player</Filter>
