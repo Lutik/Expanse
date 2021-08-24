@@ -37,6 +37,10 @@ namespace Expanse::ecs
 			return &components[comp_idx];
 		}
 
+		const std::vector<Comp>& GetAll() const {
+			return components;
+		}
+
 		Entity Remove(ComponentIndex comp_idx) override
 		{
 			assert(!components.empty());

@@ -16,7 +16,7 @@ namespace Expanse::Coords
 	* 
 	* World - float coordinates relative to dynamic world origin, world origin is specified in cell coordinates, cell size is 1.0 x 1.0
 	* 
-	* Scene - float coordinates in screen space, but indepenedent of resolution and scale, 1 unit is 1 cell height, {0.0, 0.0} is at world origin
+	* Scene - float coordinates in screen space, but indepenedent of resolution and scale, 1 unit is roughly 1 cell, {0.0, 0.0} is at world origin
 	* 
 	* Window - integer coordinates in window pixels. Used for input and/or UI rendering.
 	*/
@@ -46,5 +46,9 @@ namespace Expanse::Coords
 
 	FRect WorldRectSceneBounds(FRect world_rect);
 
-	FRect ChunkSceneBounds(Point world_origin, Point chunk, int chunk_size);
+	FRect SceneRectWorldBounds(FRect scene_rect);
+
+	Rect WorldRectCellBounds(FRect world_rect, Point world_origin);
+
+	Rect CellRectChunkBounds(Rect cell_rect, int chunk_size);
 }

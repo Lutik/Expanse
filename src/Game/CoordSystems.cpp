@@ -104,11 +104,30 @@ namespace Expanse::Coords
 		return FRect{ pts[1].x, pts[0].y, pts[2].x - pts[1].x, pts[3].y - pts[0].y };
 	}
 
-	FRect ChunkSceneBounds(Point world_origin, Point chunk, int chunk_size)
+	FRect SceneRectWorldBounds(FRect scene_rect)
 	{
-		const FRect chunk_local_rect{ 0.0f, 0.0f, static_cast<float>(chunk_size), static_cast<float>(chunk_size) };
-		const FRect chunk_world_rect = LocalToWorld(chunk_local_rect, chunk, world_origin, chunk_size);
+		const FPoint pts[] = {
+			SceneToWorld(LeftBottom(scene_rect)),
+			SceneToWorld(LeftTop(scene_rect)),
+			SceneToWorld(RightBottom(scene_rect)),
+			SceneToWorld(RightTop(scene_rect)),
+		};
+		return FRect{ pts[0].x, pts[2].y, pts[3].x - pts[0].x, pts[1].y - pts[2].y };
+	}
 
-		return WorldRectSceneBounds(chunk_world_rect);
+	Rect WorldRectCellBounds(FRect world_rect, Point world_origin)
+	{
+		const auto pt1 = WorldToCell(LeftBottom(world_rect), world_origin);
+		const auto pt2 = WorldToCell(RightTop(world_rect), world_origin);
+
+		return { pt1.x, pt1.y, pt2.x - pt1.x + 1, pt2.y - pt1.y + 1 };
+	}
+
+	Rect CellRectChunkBounds(Rect cell_rect, int chunk_size)
+	{
+		const auto pt1 = CellToChunk(LeftBottom(cell_rect), chunk_size);
+		const auto pt2 = CellToChunk(RightTop(cell_rect), chunk_size);
+
+		return { pt1.x, pt1.y, pt2.x - pt1.x + 1, pt2.y - pt1.y + 1 };
 	}
 }

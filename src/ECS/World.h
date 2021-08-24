@@ -30,6 +30,14 @@ namespace Expanse::ecs
 
 		void DestroyEntity(Entity entity);
 
+		template<typename EntityRange>
+		void DestroyEntities(EntityRange&& entities)
+		{
+			for (auto ent : entities) {
+				DestroyEntity(ent);
+			}
+		}
+
 		bool HasEntity(Entity entity) const;
 
 		template<typename Comp, typename... Args>
@@ -71,6 +79,15 @@ namespace Expanse::ecs
 		auto GetComponents(Entity entity) const
 		{
 			return std::make_tuple((GetComponent<Comps>(entity))...);
+		}
+
+		template<typename Comp>
+		const std::vector<Comp>& GetComponentArray() const
+		{
+			auto store = GetStore<Comp>();
+
+			static std::vector<Comp> empty{};
+			return store ? store->GetAll() : empty;
 		}
 
 		template<typename Comp>

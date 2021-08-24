@@ -70,8 +70,10 @@ namespace Expanse
         systems = std::make_unique<Game::SystemCollection>(world);
     }
 
-    void Application::Init(Point window_size, Point framebuffer_size)
+    void Application::Init(Point wnd_size, Point framebuffer_size)
     {
+        window_size = wnd_size;
+
         // Create renderer
         renderer = Render::CreateOpenGLRenderer(window_size, framebuffer_size);
         renderer->SetBgColor({0.0f, 0.3f, 0.2f, 1.0f});
@@ -85,7 +87,8 @@ namespace Expanse
 
         systems->AddSystem<Game::Player::ScrollCamera>();
 
-        systems->AddSystem<Game::Terrain::GenerateCells>(GetRandomSeed());
+        systems->AddSystem<Game::Terrain::GenerateChunks>(GetRandomSeed(), window_size);
+        systems->AddSystem<Game::Terrain::UnloadChunks>(window_size);
 
         systems->AddSystem<Game::Terrain::LoadChunksToGPU>(render);
         systems->AddSystem<Game::Terrain::UnloadChunksFromGPU>(render);

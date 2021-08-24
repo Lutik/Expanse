@@ -7,19 +7,33 @@
 
 namespace Expanse::Game::Terrain
 {
-	class GenerateCells : public ISystem
+	class GenerateChunks : public ISystem
 	{
 	public:
-		GenerateCells(World& w, uint32_t seed);
+		GenerateChunks(World& w, uint32_t seed, Point window_size);
 
-		void Update();
+		void Update() override;
 
 	private:
+		Point window_size;
 		uint32_t types_seed;
 		uint32_t heights_seed[2];
 		bool init = false;
 
 		float GetHeightAt(Point cell_pos) const;
 		TerrainType GetTerrainAt(Point cell_pos) const;
+
+		void LoadChunk(TerrainChunk& chunk);
+	};
+
+	class UnloadChunks : public ISystem
+	{
+	public:
+		UnloadChunks(World& w, Point window_size);
+
+		void Update() override;
+
+	private:
+		Point window_size;
 	};
 }

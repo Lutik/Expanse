@@ -30,6 +30,8 @@ namespace Expanse
         Game::World world;
         std::unique_ptr<Game::SystemCollection> systems;
 
+        Point window_size;
+
 
         // Handles system events to update input state
         void ProcessInputEvent(const SDL_Event& event);

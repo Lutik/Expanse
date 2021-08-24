@@ -16,6 +16,16 @@
 
 namespace Expanse::Game::Terrain
 {
+	namespace
+	{
+		FRect ChunkSceneBounds(Point chunk_pos, Point world_origin)
+		{
+			const auto chunk_cell_rect = Coords::LocalToCell(TerrainChunk::Area, chunk_pos, TerrainChunk::Size);
+			const auto chunk_world_rect = Coords::CellToWorld(chunk_cell_rect, world_origin);
+			return Coords::WorldRectSceneBounds(chunk_world_rect);
+		}
+	}
+
 	// Cell geometry configuration
 	namespace CellGeometry
 	{
@@ -106,8 +116,9 @@ namespace Expanse::Game::Terrain
 		std::vector<ecs::Entity> gen_entities;
 		world.entities.ForEach<TerrainChunk>([this, view_rect, &gen_entities](auto ent, const TerrainChunk& chunk)
 		{
-			if (!world.entities.HasComponent<TerrainChunkRenderData>(ent)) {
-				const FRect chunk_view = Coords::ChunkSceneBounds(world.world_origin, chunk.position, TerrainChunk::Size);
+			if (!world.entities.HasComponent<TerrainChunkRenderData>(ent))
+			{
+				const FRect chunk_view = ChunkSceneBounds(chunk.position, world.world_origin);
 				if (Intersects(chunk_view, view_rect)) {
 					gen_entities.push_back(ent);
 				}
@@ -245,6 +256,8 @@ namespace Expanse::Game::Terrain
 
 		assert(chunk);
 
+		chunk->use_count++;
+
 		// Distribute terrain types to textures slots
 		const auto& [slot_map, slots] = AllocateTerrainTextureSlots(*chunk);
 
@@ -280,9 +293,6 @@ namespace Expanse::Game::Terrain
 		Render::Material material = renderer->CreateMaterial(terrain_material);
 		SetTerrainMaterialTextures(renderer, material, slots);
 		render_data->material = material;
-
-
-		Log::message("Chunk {}:{} render data generated", chunk->position.x, chunk->position.y);
 	}
 
 	/*************************************************************************************************/
@@ -300,16 +310,17 @@ namespace Expanse::Game::Terrain
 		ScaleFromCenter(view_rect, 2.0f);
 
 		std::vector<ecs::Entity> freed_chunks;
-		world.entities.ForEach<TerrainChunkRenderData, TerrainChunk>([this, &freed_chunks, view_rect](auto ent, const TerrainChunkRenderData& rdata, const TerrainChunk& chunk)
+		world.entities.ForEach<TerrainChunkRenderData, TerrainChunk>([this, &freed_chunks, view_rect](auto ent, const TerrainChunkRenderData& rdata, TerrainChunk& chunk)
 		{
-			const FRect chunk_view = Coords::ChunkSceneBounds(world.world_origin, chunk.position, TerrainChunk::Size);
+			const auto chunk_view = ChunkSceneBounds(chunk.position, world.world_origin);
 			if (!Intersects(chunk_view, view_rect))
 			{
 				renderer->FreeMaterial(rdata.material);
 				renderer->FreeMesh(rdata.mesh);
 
 				freed_chunks.push_back(ent);
-				Log::message("Chunk {}:{} unloaded from GPU", chunk.position.x, chunk.position.y);
+
+				chunk.use_count--;
 			}
 		});
 

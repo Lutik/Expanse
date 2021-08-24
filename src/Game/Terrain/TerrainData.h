@@ -24,6 +24,8 @@ namespace Expanse::Game::Terrain
 
 		Point position;
 		Array2D<TerrainCell> cells;
+		int use_count = 0;
+
 
 		explicit TerrainChunk(Point pos)
 			: position(pos)
