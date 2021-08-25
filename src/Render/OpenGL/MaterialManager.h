@@ -42,7 +42,7 @@ namespace Expanse::Render::GL
 		struct MaterialParameter
 		{
 			std::string name;
-			GLint location;
+			GLint location = -1;
 			MaterialParameterValue value;
 
 			GLenum type;
@@ -64,7 +64,7 @@ namespace Expanse::Render::GL
 		struct GlobalMaterialParameter
 		{
 			std::string name;
-			GLuint buffer;
+			GLuint buffer = 0;
 		};
 		std::vector<GlobalMaterialParameter> globals;
 

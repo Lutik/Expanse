@@ -10,7 +10,7 @@ namespace Expanse::Game
 	class ISystem
 	{
 	public:
-		ISystem(World& w) : world(w) {}
+		explicit ISystem(World& w) : world(w) {}
 		virtual ~ISystem() = default;
 
 		virtual void Update() = 0;
@@ -42,7 +42,7 @@ namespace Expanse::Game
 	{
 		using SystemPtr = std::unique_ptr<ISystem>;
 	public:
-		SystemCollection(World& w) : ISystem(w) {}
+		explicit SystemCollection(World& w) : ISystem(w) {}
 
 		template<class S = FunctionSystem, typename... Args> requires std::is_base_of_v<ISystem, S>
 		S* AddSystem(Args&&... args)

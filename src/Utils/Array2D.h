@@ -50,12 +50,12 @@ namespace Expanse
 			return *this;
 		}
 
-		Array2D(Array2D&& other)
+		Array2D(Array2D&& other) noexcept
 			: _rect(other._rect)
 			, _data(std::move(other._data))
 		{}
 
-		Array2D& operator=(Array2D&& other)
+		Array2D& operator=(Array2D&& other) noexcept
 		{
 			_rect = other._rect;
 			_data = std::move(other._data);

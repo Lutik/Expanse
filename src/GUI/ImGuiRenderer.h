@@ -9,7 +9,7 @@ namespace Expanse
 	class ImGuiRenderer
 	{
 	public:
-		ImGuiRenderer(Render::IRenderer* render);
+		explicit ImGuiRenderer(Render::IRenderer* render);
 		~ImGuiRenderer();
 
 		void StartFrame();

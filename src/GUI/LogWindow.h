@@ -11,7 +11,7 @@ namespace Expanse
 	class GUILogSink : public Log::ILogSink
 	{
 	public:
-		GUILogSink(size_t max_msg);
+		explicit GUILogSink(size_t max_msg);
 
 		void Write(const std::string& msg);
 
@@ -26,7 +26,7 @@ namespace Expanse
 	class LogWindowSystem final : public Game::ISystem
 	{
 	public:
-		LogWindowSystem(Game::World& w);
+		explicit LogWindowSystem(Game::World& w);
 		~LogWindowSystem();
 
 		void Update() override;

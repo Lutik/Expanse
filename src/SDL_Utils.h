@@ -61,7 +61,7 @@ namespace SDL
 
 		void SwapBuffers();
 
-		SDL_GLContext context;
+		SDL_GLContext context = nullptr;
 
 	protected:
 		SDL_GLContext CreateContext(const GLContextParams& params);

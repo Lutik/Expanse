@@ -10,7 +10,7 @@ namespace Expanse::Log
 	class TextFileSink : public ILogSink
 	{
 	public:
-		TextFileSink(const std::string& filename)
+		explicit TextFileSink(const std::string& filename)
 			: out(filename, std::ios::out)
 		{
 		}

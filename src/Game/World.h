@@ -25,6 +25,6 @@ namespace Expanse::Game
         Input::InputState input;
 
         // Frame delta time
-        float dt;
+        float dt = 0.0f;
     };
 }

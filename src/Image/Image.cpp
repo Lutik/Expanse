@@ -38,6 +38,9 @@ namespace Expanse::Image
 			FILE* file;
 			fopen_s(&file, filename.c_str(), "rb");
 
+			if (!file)
+				return image;
+
 			png_byte signature[8];
 			fread(signature, 1, 8, file);
 			if (!png_check_sig(signature, 8))

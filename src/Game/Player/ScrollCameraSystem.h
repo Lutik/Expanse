@@ -7,7 +7,7 @@ namespace Expanse::Game::Player
 	class ScrollCamera : public ISystem
 	{
 	public:
-		ScrollCamera(World& w);
+		explicit ScrollCamera(World& w);
 
 		void Update() override;
 

@@ -11,8 +11,9 @@ namespace Expanse
 	{
 		static constexpr Rect rect{X, Y, W, H };
 		static constexpr auto Size = static_cast<size_t>(W * H);
-	public:
 
+		static_assert(W > 0 && H > 0);
+	public:
 		constexpr Elem& operator[](Point pt) { return _data[PointToIndex(pt)]; }
 		constexpr const Elem& operator[](Point pt) const { return _data[PointToIndex(pt)]; }
 

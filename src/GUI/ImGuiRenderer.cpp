@@ -143,8 +143,9 @@ namespace Expanse
         // Upload texture to graphics system
         Render::TextureDescription tex_data;
 
-        tex_data.image.data.reset(new uint8_t[width * height * 4]);
-        std::copy(pixels, pixels + width * height * 4, tex_data.image.data.get());
+        const size_t pixel_count = width * height * 4;
+        tex_data.image.data.reset(new uint8_t[pixel_count]);
+        std::copy(pixels, pixels + pixel_count, tex_data.image.data.get());
 
         tex_data.image.width = width;
         tex_data.image.height = height;
