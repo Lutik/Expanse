@@ -9,15 +9,18 @@ layout(std140) uniform GlobalMatrices
 
 in vec2 a_position;
 in vec2 a_uv;
+in vec3 a_normal;
 in vec4 a_color;
 
 out vec2 frag_uv;
+out vec3 frag_normal;
 out vec4 frag_color;
 
 void main()
 {
   frag_uv = a_uv;
   frag_color = a_color;
+  frag_normal = a_normal;
   gl_Position = proj * view * vec4(a_position + chunk_pos, 0, 1);
 }
 
@@ -28,7 +31,10 @@ uniform sampler2D tex1;
 uniform sampler2D tex2;
 uniform sampler2D tex3;
 
+uniform vec3 lightDir = vec3(0.0, 0.0, 1.0);
+
 in vec2 frag_uv;
+in vec3 frag_normal;
 in vec4 frag_color;
 
 out vec4 fragment_color;
@@ -39,5 +45,9 @@ void main()
   vec4 col1 = texture(tex1, frag_uv) * frag_color.g;
   vec4 col2 = texture(tex2, frag_uv) * frag_color.b;
   vec4 col3 = texture(tex3, frag_uv) * frag_color.a;
-  fragment_color = col0 + col1 + col2 + col3;
+  vec4 sum_color = col0 + col1 + col2 + col3;
+
+  float shadow_factor = max(0.0, dot(frag_normal, normalize(lightDir)));
+
+  fragment_color = sum_color * mix(0.2, 1.0, shadow_factor);
 }

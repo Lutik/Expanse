@@ -30,7 +30,7 @@ namespace Expanse::Game::Terrain
 	namespace CellGeometry
 	{
 		// How much does one unit of height takes in scene coordinates
-		static constexpr float UnitHeight = 0.2f;
+		static constexpr float UnitHeight = 0.15f;
 
 		/*
 		* Vertices configuration
@@ -65,8 +65,8 @@ namespace Expanse::Game::Terrain
 			{ 0, 0, 0, 0, 128, 127, 0, 0, 0 }, // right
 			{ 0, 0, 0, 0, 64, 64, 0, 64, 63 }, // right down
 			{ 0, 0, 0, 0, 128, 0, 0, 127, 0 }, // down
-			{ 0, 0, 0, 64, 64, 0, 63, 64, 0}, // left bottom
-			{ 0, 0, 0, 127, 128, 0, 0, 0, 0}, // left
+			{ 0, 0, 0, 64, 64, 0, 63, 64, 0 }, // left down
+			{ 0, 0, 0, 127, 128, 0, 0, 0, 0 }, // left
 		};
 
 
@@ -80,7 +80,7 @@ namespace Expanse::Game::Terrain
 			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f }, // right
 			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f }, // right down
 			{ 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.5f, 0.0f }, // down
-			{ 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f}, // left bottom
+			{ 0.0f, 0.0f, 0.0f, 0.25f, 0.25f, 0.0f, 0.25f, 0.25f, 0.0f}, // left down
 			{ 0.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f}, // left			
 		};
 	}
@@ -90,14 +90,16 @@ namespace Expanse::Game::Terrain
 	{
 		FPoint position;	
 		FPoint uv;
+		glm::vec3 normal;
 		Render::Color color;
 	};
 
 	static const Render::VertexLayout TerrainVertexFormat = { sizeof(TerrainVertex),
 	{
-		{ Render::VertexElementUsage::POSITION, sizeof(TerrainVertex::position), offsetof(TerrainVertex, position), 4, false, false },
-		{ Render::VertexElementUsage::TEXCOORD0, sizeof(TerrainVertex::uv), offsetof(TerrainVertex, uv), 4, false, false },
-		{ Render::VertexElementUsage::COLOR, sizeof(TerrainVertex::color), offsetof(TerrainVertex, color), 1, true, false },
+		{ Render::VertexElementUsage::POSITION, sizeof(TerrainVertex::position), offsetof(TerrainVertex, position), sizeof(float), false, false },
+		{ Render::VertexElementUsage::TEXCOORD0, sizeof(TerrainVertex::uv), offsetof(TerrainVertex, uv), sizeof(float), false, false },
+		{ Render::VertexElementUsage::NORMAL, sizeof(TerrainVertex::normal), offsetof(TerrainVertex, normal), sizeof(float), false, false },
+		{ Render::VertexElementUsage::COLOR, sizeof(TerrainVertex::color), offsetof(TerrainVertex, color), sizeof(uint8_t), true, false },
 	} };
 
 	LoadChunksToGPU::LoadChunksToGPU(World& w, Render::IRenderer* r)
@@ -125,12 +127,9 @@ namespace Expanse::Game::Terrain
 			}
 		});
 
-		if (!gen_entities.empty())
-		{
-			for (const auto ent : gen_entities) {
-				GenerateChunkRenderData(ent);
-			};
-		}
+		for (const auto ent : gen_entities) {
+			GenerateChunkRenderData(ent);
+		};
 	}
 
 	using TerrainTextureSlots = std::vector<TerrainType>;
@@ -201,12 +200,80 @@ namespace Expanse::Game::Terrain
 			return cell.height * CellGeometry::UnitHeight;
 		});
 
-		utils::for_each_zipped(positions, CellGeometry::height_weights, [neighbours](auto& pos, const auto& weights)
+		utils::for_each_zipped(positions, CellGeometry::height_weights, [&neighbours](auto& pos, const auto& weights)
 		{
 			pos.z = std::inner_product(weights.begin(), weights.end(), neighbours.begin(), 0.0f);
 		});
 
 		return positions;
+	}
+
+	glm::vec3 CalcVertexNormal(const Neighbours<float>& heights, size_t vtx_index)
+	{
+		glm::vec3 n{ 0.0f, 0.0f, 2.0f };
+
+		if (vtx_index == 0) // center
+		{
+			n.x = heights[Offset::Left] - heights[Offset::Right];
+			n.y = heights[Offset::Down] - heights[Offset::Up];
+		}
+		else if (vtx_index == 1) // left up
+		{
+			n.x = heights[Offset::LeftUp] + heights[Offset::Left] - heights[Offset::Up] - heights[Offset::Center];
+			n.y = heights[Offset::Left] + heights[Offset::Center] - heights[Offset::LeftUp] - heights[Offset::Up];
+		}
+		else if (vtx_index == 2) // up
+		{
+			n.x = (heights[Offset::Left] + heights[Offset::LeftUp] - heights[Offset::Right] - heights[Offset::RightUp]) * 0.5f;
+			n.y = (heights[Offset::Center] - heights[Offset::Up]) * 2.0f;
+		}
+		else if (vtx_index == 3) // right up
+		{
+			n.x = heights[Offset::Center] + heights[Offset::Up] - heights[Offset::Right] - heights[Offset::RightUp];
+			n.y = heights[Offset::Center] + heights[Offset::Right] - heights[Offset::Up] - heights[Offset::RightUp];
+		}
+		else if (vtx_index == 4) // right
+		{
+			n.x = (heights[Offset::Center] - heights[Offset::Right]) * 2.0f;
+			n.y = (heights[Offset::Down] + heights[Offset::RightDown] - heights[Offset::Up] - heights[Offset::RightUp]) * 0.5f;
+		}
+		else if (vtx_index == 5) // right down
+		{
+			n.x = heights[Offset::Center] + heights[Offset::Down] - heights[Offset::Right] - heights[Offset::RightDown];
+			n.y = heights[Offset::Down] + heights[Offset::RightDown] - heights[Offset::Center] - heights[Offset::Right];
+		}
+		else if (vtx_index == 6) // down
+		{
+			n.x = (heights[Offset::Left] + heights[Offset::LeftDown] - heights[Offset::Right] - heights[Offset::RightDown]) * 0.5f;
+			n.y = (heights[Offset::Down] - heights[Offset::Center]) * 2.0f;
+		}
+		else if (vtx_index == 7) // left down
+		{
+			n.x = heights[Offset::Left] + heights[Offset::LeftDown] - heights[Offset::Center] - heights[Offset::Down];
+			n.y = heights[Offset::LeftDown] + heights[Offset::Down] - heights[Offset::Center] - heights[Offset::Left];
+		}
+		else if (vtx_index == 8) // left
+		{
+			n.x = (heights[Offset::Left] - heights[Offset::Center]) * 2.0f;
+			n.y = (heights[Offset::LeftDown] + heights[Offset::Down] - heights[Offset::LeftUp] - heights[Offset::Up]) * 0.5f;
+		}
+
+		return glm::normalize(n);
+	}
+
+	std::vector<glm::vec3> CalcVertexNormals(Point cell_pos, const TerrainChunk& chunk)
+	{
+		const auto nheights = SelectNeighbours(cell_pos, chunk.cells, [](const TerrainCell& cell){
+			return cell.height * CellGeometry::UnitHeight;
+		});
+
+		std::vector<glm::vec3> normals(CellGeometry::CellVertexCount, glm::vec3{ 0.0f, 0.0f, 1.0f });
+	
+		for (size_t idx = 0; idx < CellGeometry::CellVertexCount; ++idx) {
+			normals[idx] = CalcVertexNormal(nheights, idx);
+		}
+
+		return normals;
 	}
 
 	// Transforms vertex positions from world/local space into scene space for rendering
@@ -216,6 +283,13 @@ namespace Expanse::Game::Terrain
 		utils::for_each_zipped(vertex_range, positions, [](auto& vtx, glm::vec3 pos) {
 			vtx.position = Coords::WorldToScene(FPoint{ pos.x, pos.y });
 			vtx.position.y += pos.z;
+		});
+	}
+
+	void WriteVertexNormals(auto vertex_range, const std::vector<glm::vec3>& normals)
+	{
+		utils::for_each_zipped(vertex_range, normals, [](auto& vtx, glm::vec3 normal) {
+			vtx.normal = normal;
 		});
 	}
 
@@ -278,8 +352,12 @@ namespace Expanse::Game::Terrain
 			// Calculate 3D positions of vertices in world
 			const auto positions = CalcVertexPositions(cell_pos, *chunk);
 
+			// Calculate 3D normals of vertices in world
+			const auto normals = CalcVertexNormals(cell_pos, *chunk);
+
 			WriteVertexPositions(cell_verts, positions);
 			WriteVertexUVs(cell_verts, 0.5f, positions);
+			WriteVertexNormals(cell_verts, normals);
 			WriteVertexColors(cell_verts, cell_pos, slot_map);
 		}
 

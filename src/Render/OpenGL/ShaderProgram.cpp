@@ -26,6 +26,7 @@ namespace Expanse::Render::GL
 			{ VertexElementUsage::TEXCOORD0, "a_uv" },
 			{ VertexElementUsage::TEXCOORD0, "a_uv0" },
 			{ VertexElementUsage::TEXCOORD1, "a_uv1" },
+			{ VertexElementUsage::NORMAL, "a_normal" },
 		};
 
 		GLenum GLShaderTypeFromString(std::string_view type_str)

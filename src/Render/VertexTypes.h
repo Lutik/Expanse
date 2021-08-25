@@ -11,7 +11,8 @@ namespace Expanse::Render
 		POSITION  = 0,
 		COLOR     = 1,
 		TEXCOORD0 = 2,
-		TEXCOORD1 = 3
+		TEXCOORD1 = 3,
+		NORMAL    = 4,
 	};
 
 	struct VertexElementLayout
