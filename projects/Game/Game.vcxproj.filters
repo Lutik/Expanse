@@ -19,6 +19,9 @@
     <Filter Include="Game\Player">
       <UniqueIdentifier>{6f0afd48-8174-4a24-98d5-bff449cf4c48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Terrain\Components">
+      <UniqueIdentifier>{7df48835-b664-49e6-8774-3e110fabcfa4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\ISystem.h">
@@ -36,13 +39,10 @@
     <ClInclude Include="..\..\src\Game\CoordSystems.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game\Terrain\TerrainData.h">
-      <Filter>Game\Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Game\Terrain\Systems\GenerateTerrain.h">
       <Filter>Game\Terrain\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Game\Terrain\Systems\RenderTerrain.h">
+    <ClInclude Include="..\..\src\Game\Terrain\Systems\StreamTerrainGPU.h">
       <Filter>Game\Terrain\Systems</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Game\Utils\NeighbourCells.h">
@@ -50,6 +50,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Game\Player\ScrollCameraSystem.h">
       <Filter>Game\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\TerrainData.h">
+      <Filter>Game\Terrain\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\Systems\TerrainMeshGenerator.h">
+      <Filter>Game\Terrain\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\Components\TerrainMesh.h">
+      <Filter>Game\Terrain\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\Systems\RenderTerrain.h">
+      <Filter>Game\Terrain\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -62,11 +74,17 @@
     <ClCompile Include="..\..\src\Game\Terrain\Systems\GenerateTerrain.cpp">
       <Filter>Game\Terrain\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Game\Terrain\Systems\RenderTerrain.cpp">
+    <ClCompile Include="..\..\src\Game\Terrain\Systems\StreamTerrainGPU.cpp">
       <Filter>Game\Terrain\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Game\Player\ScrollCameraSystem.cpp">
       <Filter>Game\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game\Terrain\Systems\TerrainMeshGenerator.cpp">
+      <Filter>Game\Terrain\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game\Terrain\Systems\RenderTerrain.cpp">
+      <Filter>Game\Terrain\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

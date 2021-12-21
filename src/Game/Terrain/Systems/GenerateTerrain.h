@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Game/ISystem.h"
-#include "Game/Terrain/TerrainData.h"
+#include "Game/Terrain/Components/TerrainData.h"
 
 #include "Utils/Math.h"
 

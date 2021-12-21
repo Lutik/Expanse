@@ -8,6 +8,7 @@
 #include "Utils/Random.h"
 
 #include "Game/Terrain/Systems/GenerateTerrain.h"
+#include "Game/Terrain/Systems/StreamTerrainGPU.h"
 #include "Game/Terrain/Systems/RenderTerrain.h"
 
 #include "Game/Player/ScrollCameraSystem.h"

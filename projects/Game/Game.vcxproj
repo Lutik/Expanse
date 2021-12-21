@@ -154,8 +154,11 @@
     <ClInclude Include="..\..\src\Game\CoordSystems.h" />
     <ClInclude Include="..\..\src\Game\ISystem.h" />
     <ClInclude Include="..\..\src\Game\Player\ScrollCameraSystem.h" />
+    <ClInclude Include="..\..\src\Game\Terrain\Components\TerrainMesh.h" />
     <ClInclude Include="..\..\src\Game\Terrain\Systems\GenerateTerrain.h" />
     <ClInclude Include="..\..\src\Game\Terrain\Systems\RenderTerrain.h" />
+    <ClInclude Include="..\..\src\Game\Terrain\Systems\StreamTerrainGPU.h" />
+    <ClInclude Include="..\..\src\Game\Terrain\Systems\TerrainMeshGenerator.h" />
     <ClInclude Include="..\..\src\Game\Terrain\TerrainData.h" />
     <ClInclude Include="..\..\src\Game\Utils\NeighbourCells.h" />
     <ClInclude Include="..\..\src\Game\World.h" />
@@ -167,6 +170,8 @@
     <ClCompile Include="..\..\src\Game\Player\ScrollCameraSystem.cpp" />
     <ClCompile Include="..\..\src\Game\Terrain\Systems\GenerateTerrain.cpp" />
     <ClCompile Include="..\..\src\Game\Terrain\Systems\RenderTerrain.cpp" />
+    <ClCompile Include="..\..\src\Game\Terrain\Systems\StreamTerrainGPU.cpp" />
+    <ClCompile Include="..\..\src\Game\Terrain\Systems\TerrainMeshGenerator.cpp" />
     <ClCompile Include="..\..\src\Input\Input.cpp" />
   </ItemGroup>
   <ItemGroup>
