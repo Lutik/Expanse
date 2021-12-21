@@ -9,6 +9,8 @@
 
 #include <set>
 
+#include "Game/Terrain/Systems/ProceduralTerrain.h"
+
 namespace Expanse::Game::Terrain
 {
 	namespace
@@ -48,26 +50,14 @@ namespace Expanse::Game::Terrain
 		}
 	}
 
-
-
-
-	GenerateChunks::GenerateChunks(World& w, uint32_t seed, Point wnd_size)
+	LoadChunks::LoadChunks(World& w, uint32_t seed, Point wnd_size)
 		: ISystem(w)
 		, window_size(wnd_size)
 	{
-		types_seed = Squirrel3(0, seed);
-		heights_seed[0] = Squirrel3(1, seed);
-		heights_seed[1] = Squirrel3(2, seed);
+		AddLoader<TerrainLoader_Procedural>(seed);
 	}
 
-	struct NoiseParam
-	{
-		float freq;
-		float min;
-		float max;
-	};
-
-	void GenerateChunks::Update()
+	void LoadChunks::Update()
 	{
 		const auto chunks_to_load = GetChunksToLoad(world, window_size);
 		for (const auto chunk_pos : chunks_to_load)
@@ -75,46 +65,11 @@ namespace Expanse::Game::Terrain
 			auto ent = world.entities.CreateEntity();
 			auto* chunk = world.entities.AddComponent<TerrainChunk>(ent, chunk_pos);
 
-			LoadChunk(*chunk);
+			for (auto& loader : loaders) {
+				if (loader->LoadChunk(*chunk))
+					break;
+			}
 		}
-	}
-
-	void GenerateChunks::LoadChunk(TerrainChunk& chunk)
-	{
-		for (const auto local_pos : utils::rect_points{ chunk.cells.GetRect() })
-		{
-			const auto cell_pos = Coords::LocalToCell(local_pos, chunk.position, TerrainChunk::Size);
-
-			auto& cell = chunk.cells[local_pos];
-
-			cell.type = GetTerrainAt(cell_pos);
-			cell.height = static_cast<int>(GetHeightAt(cell_pos));
-		}
-	}
-
-	float GenerateChunks::GetHeightAt(Point cell_pos) const
-	{
-		static constexpr NoiseParam heights_noise_params[] = {
-			{ 0.05f, -20.0f, 20.0f },
-			{ 0.27f, -5.0f, 5.0f },
-		};
-
-		float height = 0.0f;
-		utils::for_each_zipped(heights_seed, heights_noise_params, [&height, cell_pos](uint32_t seed, const auto& params)
-		{
-			const auto pt = FPoint{ cell_pos } * params.freq;
-			height += Lerp(params.min, params.max, PerlinNoise(pt, seed));
-		});
-
-		return height;
-	}
-
-	TerrainType GenerateChunks::GetTerrainAt(Point cell_pos) const
-	{
-		const auto pt = FPoint{ cell_pos } * 0.07f;
-		const float n = PerlinNoise(pt, types_seed);
-
-		return (n > 0.0f) ? TerrainType::Grass : TerrainType::Dirt;
 	}
 
 	/*************************************************************************************************/

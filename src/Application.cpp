@@ -88,7 +88,7 @@ namespace Expanse
 
         systems->AddSystem<Game::Player::ScrollCamera>();
 
-        systems->AddSystem<Game::Terrain::GenerateChunks>(GetRandomSeed(), window_size);
+        systems->AddSystem<Game::Terrain::LoadChunks>(GetRandomSeed(), window_size);
         systems->AddSystem<Game::Terrain::UnloadChunks>(window_size);
 
         systems->AddSystem<Game::Terrain::LoadChunksToGPU>(render);

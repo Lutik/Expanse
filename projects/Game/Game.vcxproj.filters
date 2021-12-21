@@ -63,6 +63,12 @@
     <ClInclude Include="..\..\src\Game\Terrain\Systems\RenderTerrain.h">
       <Filter>Game\Terrain\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\Systems\ProceduralTerrain.h">
+      <Filter>Game\Terrain\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game\Terrain\Systems\TerrainLoader.h">
+      <Filter>Game\Terrain\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Input\Input.cpp">
@@ -84,6 +90,9 @@
       <Filter>Game\Terrain\Systems</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Game\Terrain\Systems\RenderTerrain.cpp">
+      <Filter>Game\Terrain\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game\Terrain\Systems\ProceduralTerrain.cpp">
       <Filter>Game\Terrain\Systems</Filter>
     </ClCompile>
   </ItemGroup>

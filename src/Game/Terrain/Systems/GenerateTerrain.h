@@ -2,28 +2,26 @@
 
 #include "Game/ISystem.h"
 #include "Game/Terrain/Components/TerrainData.h"
-
+#include "Game/Terrain/Systems/TerrainLoader.h"
 #include "Utils/Math.h"
 
 namespace Expanse::Game::Terrain
 {
-	class GenerateChunks : public ISystem
+	class LoadChunks : public ISystem
 	{
 	public:
-		GenerateChunks(World& w, uint32_t seed, Point window_size);
+		LoadChunks(World& w, uint32_t seed, Point window_size);
 
 		void Update() override;
 
+		template<class T, typename... Args> requires std::is_base_of_v<ITerrainLoader, T>
+		void AddLoader(Args&&... args) {
+			loaders.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+		}
 	private:
 		Point window_size;
-		uint32_t types_seed;
-		uint32_t heights_seed[2];
-		bool init = false;
 
-		float GetHeightAt(Point cell_pos) const;
-		TerrainType GetTerrainAt(Point cell_pos) const;
-
-		void LoadChunk(TerrainChunk& chunk);
+		std::vector<std::unique_ptr<ITerrainLoader>> loaders;
 	};
 
 	class UnloadChunks : public ISystem
