@@ -21,6 +21,9 @@
     <ClInclude Include="..\..\src\ECS\EntityStore.h">
       <Filter>ECS</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\ECS\AnyVector.h">
+      <Filter>ECS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\ECS\World.cpp">

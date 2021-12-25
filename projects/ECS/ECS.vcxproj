@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\ECS\AnyVector.h" />
     <ClInclude Include="..\..\src\ECS\ComponentStore.h" />
     <ClInclude Include="..\..\src\ECS\Entity.h" />
     <ClInclude Include="..\..\src\ECS\EntityStore.h" />

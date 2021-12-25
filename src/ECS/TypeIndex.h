@@ -4,7 +4,7 @@ namespace Expanse::ecs
 {
 	namespace details
 	{
-		template<class TypeFamily = void>
+		template<class TypeFamily>
 		struct TypeIndexCounter final
 		{
 			[[nodiscard]] static size_t Next() noexcept {
@@ -14,6 +14,6 @@ namespace Expanse::ecs
 		};
 	}
 
-	template<class T, class TypeFamily = void>
-	inline const size_t TypeIndex = details::TypeIndexCounter<TypeFamily>::Next();
+	template<class TypeFamily>
+	[[nodiscard]] size_t GetNextTypeIndex() { return details::TypeIndexCounter<TypeFamily>::Next(); }
 }

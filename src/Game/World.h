@@ -15,6 +15,7 @@ namespace Expanse::Game
     {
         // ECS entities and components
         ecs::World entities;
+        ecs::Globals globals;
 
         // Coordinate systems data
         Point world_origin = { 0, 0 }; // in cell space

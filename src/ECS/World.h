@@ -3,6 +3,7 @@
 #include "TypeIndex.h"
 #include "ComponentStore.h"
 #include "EntityStore.h"
+#include "AnyVector.h"
 
 #include <memory>
 
@@ -22,6 +23,11 @@ namespace Expanse::ecs
 			return std::apply([](auto&&... v) { return (... && (v != NullComponentIndex)); }, comp_idx);
 		}
 	}
+
+	struct _ComponentsTypeFamily {};
+	struct _GlobalsTypeFamily {};
+
+	using Globals = AnyVector<_GlobalsTypeFamily>;
 
 	class World
 	{
@@ -47,14 +53,14 @@ namespace Expanse::ecs
 
 			auto store = GetOrCreateStore<Comp>();
 			const auto comp_idx = store->Create(entity, std::forward<Args>(args)...);
-			entities[entity.Index()].SetComponent(TypeIndex<Comp>, comp_idx);
+			entities[entity.Index()].SetComponent(CompTypeIndex<Comp>, comp_idx);
 			return store->Get(comp_idx);
 		}
 
 		template<typename Comp>
 		bool RemoveComponent(Entity entity)
 		{
-			return RemoveComponent(entity, TypeIndex<Comp>);
+			return RemoveComponent(entity, CompTypeIndex<Comp>);
 		}
 
 		template<typename Comp>
@@ -95,7 +101,7 @@ namespace Expanse::ecs
 		{
 			assert(HasEntity(entity));
 
-			return entities[entity.Index()].HasComponent(TypeIndex<Comp>);
+			return entities[entity.Index()].HasComponent(CompTypeIndex<Comp>);
 		}
 
 		template<typename Comp>
@@ -134,9 +140,11 @@ namespace Expanse::ecs
 		template<typename Comp>
 		ComponentStore<Comp>* GetOrCreateStore()
 		{
-			comp_stores.resize(std::max(comp_stores.size(), TypeIndex<Comp> + 1));
+			const auto type_index = CompTypeIndex<Comp>;
 
-			auto& store = comp_stores[TypeIndex<Comp>];
+			comp_stores.resize(std::max(comp_stores.size(), type_index + 1));
+
+			auto& store = comp_stores[type_index];
 			if (!store) {
 				store = std::make_unique<ComponentStore<Comp>>();
 			}
@@ -147,7 +155,8 @@ namespace Expanse::ecs
 		template<typename Comp>
 		ComponentStore<Comp>* GetStore() const
 		{
-			ComponentStoreBase* store = (TypeIndex<Comp> < comp_stores.size()) ? comp_stores[TypeIndex<Comp>].get() : nullptr;
+			const auto type_index = CompTypeIndex<Comp>;
+			ComponentStoreBase* store = (type_index < comp_stores.size()) ? comp_stores[type_index].get() : nullptr;
 			return static_cast<ComponentStore<Comp>*>(store);
 		}
 
@@ -156,10 +165,12 @@ namespace Expanse::ecs
 		{
 			assert(HasEntity(entity));
 
-			auto& comps = entities[entity.Index()].components;
-			if (TypeIndex<Comp> >= comps.size()) return nullptr;
+			const auto type_index = CompTypeIndex<Comp>;
 
-			const auto comp_idx = comps[TypeIndex<Comp>];
+			auto& comps = entities[entity.Index()].components;
+			if (type_index >= comps.size()) return nullptr;
+
+			const auto comp_idx = comps[type_index];
 			if (comp_idx == NullComponentIndex) return nullptr;
 
 			auto store = GetStore<Comp>();
@@ -172,7 +183,7 @@ namespace Expanse::ecs
 		auto GetComponentIndices(Entity entity) const noexcept
 		{
 			const auto& ent = entities[entity.Index()];
-			return std::make_tuple( (ent.GetComponentIndex(TypeIndex<Comps>))... );
+			return std::make_tuple( (ent.GetComponentIndex(CompTypeIndex<Comps>))... );
 		}
 
 		template<typename... Comps>
@@ -205,5 +216,8 @@ namespace Expanse::ecs
 		std::vector<std::unique_ptr<ComponentStoreBase>> comp_stores;
 		std::vector<EntityStore> entities;
 		std::vector<size_t> free_entities;
+
+		template<class CompType>
+		static const size_t CompTypeIndex = GetNextTypeIndex<_ComponentsTypeFamily>();
 	};
 }
