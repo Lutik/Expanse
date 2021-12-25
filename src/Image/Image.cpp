@@ -1,107 +1,73 @@
 #include "Image.h"
 
-#include "png.h"
-
 #include "Utils/Logger/Logger.h"
+
+namespace stb_utils
+{
+	inline void* malloc(size_t size)
+	{
+		return new uint8_t[size];
+	}
+
+	void* realloc_sized(void* ptr, size_t old_size, size_t new_size)
+	{
+		auto* src = static_cast<uint8_t*>(ptr);
+		auto* dst = new uint8_t[new_size];
+		std::copy(src, src + std::min(old_size, new_size), dst);
+		delete[] src;
+		return dst;
+	}
+
+	inline void free(void* ptr)
+	{
+		delete[] static_cast<uint8_t*>(ptr);
+	}
+}
+
+#define STBI_MALLOC(sz)                     stb_utils::malloc(sz)
+#define STBI_REALLOC_SIZED(p, oldsz, newsz) stb_utils::realloc_sized(p, oldsz, newsz)
+#define STBI_FREE(p)                        stb_utils::free(p)
+
+#define STBI_MAX_DIMENSIONS 4096
+
+#define STBI_ONLY_PNG
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 namespace Expanse::Image
 {
-	namespace PNG
+	ColorFormat FormatFromChannels(int channels)
 	{
-		ColorFormat ConvertPNGColorFormat(int png_color_type, int bit_depth)
-		{
-			switch (png_color_type) {
-			case PNG_COLOR_TYPE_GRAY:
-				break;
-			case PNG_COLOR_TYPE_RGB:
-				// RGB
-				if (bit_depth == 8) return ColorFormat::RGB_8;
-				if (bit_depth == 16) return ColorFormat::RGB_16;
-				break;
-			case PNG_COLOR_TYPE_PALETTE:
-				break;
-			case PNG_COLOR_TYPE_GRAY_ALPHA:
-				break;
-			case PNG_COLOR_TYPE_RGBA:
-				if (bit_depth == 8) return ColorFormat::RGBA_8;
-				if (bit_depth == 16) return ColorFormat::RGBA_16;
-				break;
-			}
-			return ColorFormat::Unsupported;
-		}
-
-
-		ImageData Load(const std::string& filename)
-		{
-			ImageData image;
-
-			FILE* file;
-			fopen_s(&file, filename.c_str(), "rb");
-
-			if (!file)
-				return image;
-
-			png_byte signature[8];
-			fread(signature, 1, 8, file);
-			if (!png_check_sig(signature, 8))
-				return image;
-
-			// create libpng structures
-			auto read_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-			auto info_ptr = png_create_info_struct(read_ptr);
-
-			// libpng's error handling
-			if (setjmp(png_jmpbuf(read_ptr))) {
-				png_destroy_read_struct(&read_ptr, &info_ptr, nullptr);
-				return image;
-			}
-
-			// init input stream for
-			png_init_io(read_ptr, file);
-
-			// tell that we handled signature
-			png_set_sig_bytes(read_ptr, 8);
-
-			// read png headers
-			png_read_info(read_ptr, info_ptr);
-
-			// read image info
-			int bit_depth;
-			int color_type;
-			png_get_IHDR(read_ptr, info_ptr, &image.width, &image.height, &bit_depth, &color_type, nullptr, nullptr, nullptr);
-			image.format = ConvertPNGColorFormat(color_type, bit_depth);
-
-			// read image information
-			const auto row_size = png_get_rowbytes(read_ptr, info_ptr);
-
-			// allocate memory for our image, setup pointers to rows in this memory
-			image.data.reset(new uint8_t[image.height * row_size]);
-			std::vector<png_bytep> row_pointers;
-			row_pointers.reserve(image.height);
-			for (size_t row = image.height; row > 0; --row) {
-				row_pointers.push_back(image.data.get() + (row - 1) * row_size);
-			}
-
-			// when reading 16 bit images, convert endianness from BE to LE
-			if (bit_depth == 16) {
-				png_set_swap(read_ptr);
-			}
-
-			// read image data
-			png_read_image(read_ptr, row_pointers.data());
-
-			// cleanup
-			png_destroy_read_struct(&read_ptr, &info_ptr, nullptr);
-			fclose(file);
-
-			return image;
+		switch (channels) {
+			case 3: return ColorFormat::RGB_8;
+			case 4: return ColorFormat::RGBA_8;
+			default: return ColorFormat::Unsupported;
 		}
 	}
 
-
-
 	ImageData Load(const std::string& file)
 	{
-		return PNG::Load(file);
+		ImageData image;
+
+		int width, height, channels;
+		unsigned char* data = stbi_load(file.c_str(), &width, &height, &channels, 0);
+
+		if (data)
+		{
+			image.width = width;
+			image.height = height;
+			image.format = FormatFromChannels(channels);
+
+			// We can just own this pointer, because we overrided STB memory
+			// functions, otherwise we would need to copy the data
+			image.data.reset(static_cast<uint8_t*>(data));
+		}
+		else
+		{
+			const std::string error_msg{ stbi_failure_reason() };
+			Log::message(error_msg);
+		}
+
+		return image;
 	}
 }
