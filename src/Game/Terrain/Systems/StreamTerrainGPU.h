@@ -3,6 +3,7 @@
 #include "Game/ISystem.h"
 #include "Render/IRenderer.h"
 #include "Game/Terrain/Components/TerrainData.h"
+#include "Game/Terrain/Components/TerrainMesh.h"
 #include "TerrainMeshGenerator.h"
 
 namespace Expanse::Game::Terrain
@@ -19,7 +20,9 @@ namespace Expanse::Game::Terrain
 
 	private:
 		Render::IRenderer* renderer = nullptr;
-		TerrainMeshGenerator gen;
+		Render::Material terrain_material;
+
+		TerrainMesh UploadTerrainMeshData(const TerrainMeshData& data);
 	};
 
 	/*

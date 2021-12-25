@@ -70,24 +70,6 @@ namespace Expanse::Game::Terrain
 		};
 	}
 
-	struct TerrainVertex
-	{
-		FPoint position;
-		FPoint uv;
-		glm::vec3 normal;
-		Render::Color color;
-	};
-
-	static const Render::VertexLayout TerrainVertexFormat = { sizeof(TerrainVertex),
-	{
-		{ Render::VertexElementUsage::POSITION, sizeof(TerrainVertex::position), offsetof(TerrainVertex, position), sizeof(float), false, false },
-		{ Render::VertexElementUsage::TEXCOORD0, sizeof(TerrainVertex::uv), offsetof(TerrainVertex, uv), sizeof(float), false, false },
-		{ Render::VertexElementUsage::NORMAL, sizeof(TerrainVertex::normal), offsetof(TerrainVertex, normal), sizeof(float), false, false },
-		{ Render::VertexElementUsage::COLOR, sizeof(TerrainVertex::color), offsetof(TerrainVertex, color), sizeof(uint8_t), true, false },
-	} };
-
-	using TerrainTextureSlots = std::vector<TerrainType>;
-
 
 	auto EmitCellVertices(std::vector<TerrainVertex>& vertices)
 	{
@@ -242,20 +224,6 @@ namespace Expanse::Game::Terrain
 		return result;
 	}
 
-	void SetTerrainMaterialTextures(Render::IRenderer* renderer, Render::Material material, const TerrainTextureSlots& terrain_slots)
-	{
-		static const std::map<TerrainType, std::string> terrain_textures = {
-			{ TerrainType::Dirt, "content/textures/dirt.json" },
-			{ TerrainType::Grass, "content/textures/grass.json" }
-		};
-
-		assert(terrain_slots.size() == 4u);
-
-		for (size_t i : std::views::iota(0u, terrain_slots.size())) {
-			renderer->SetMaterialParameter(material, std::format("tex{}", i), terrain_textures.at(terrain_slots[i]));
-		}
-	}
-
 	// Landscape types blending calculations
 
 	Render::Color CalcVertexColor(const CellGeometry::VertexColorWeights& weights, const Neighbours<uint8_t>& neighbours)
@@ -275,34 +243,25 @@ namespace Expanse::Game::Terrain
 		});
 	}
 
-
-	TerrainMeshGenerator::TerrainMeshGenerator(Render::IRenderer* r)
-		: renderer(r)
+	TerrainMeshData GenerateTerrainMesh(const TerrainChunk& chunk)
 	{
-		terrain_material = renderer->CreateMaterial("content/materials/terrain.json");
-	}
-
-
-	TerrainMesh TerrainMeshGenerator::Generate(const TerrainChunk& chunk) const
-	{
-		TerrainMesh render_data;
+		TerrainMeshData data;
 
 		// Distribute terrain types to textures slots
 		const auto& [slot_map, slots] = AllocateTerrainTextureSlots(chunk);
 
 		// Create vertex and index buffers
 		const auto chunk_cells_count = chunk.Size * chunk.Size;
-		std::vector<TerrainVertex> vertices;
-		std::vector<uint16_t> indices;
-		vertices.reserve(std::size(CellGeometry::vertices) * chunk_cells_count);
-		indices.reserve(std::size(CellGeometry::indices) * chunk_cells_count);
 
+		data.vertices.reserve(std::size(CellGeometry::vertices) * chunk_cells_count);
+		data.indices.reserve(std::size(CellGeometry::indices) * chunk_cells_count);
+		data.tex_slots = slots;
 
 		for (Point cell_pos : utils::rect_points_rt2lb(TerrainChunk::Area))
 		{
 			// Append indices and vertices
-			EmitIndices(vertices.size(), indices);
-			auto cell_verts = EmitCellVertices(vertices);
+			EmitIndices(data.vertices.size(), data.indices);
+			auto cell_verts = EmitCellVertices(data.vertices);
 
 			// Calculate 3D positions of vertices in world
 			const auto positions = CalcVertexPositions(cell_pos, chunk);
@@ -316,18 +275,6 @@ namespace Expanse::Game::Terrain
 			WriteVertexColors(cell_verts, cell_pos, slot_map);
 		}
 
-		// create mesh
-		auto mesh = renderer->CreateMesh();
-		renderer->SetMeshVertices(mesh, vertices, TerrainVertexFormat);
-		renderer->SetMeshIndices(mesh, indices);
-		render_data.mesh = mesh;
-
-		// create material
-		Render::Material material = renderer->CreateMaterial(terrain_material);
-		SetTerrainMaterialTextures(renderer, material, slots);
-		render_data.material = material;
-
-
-		return render_data;
+		return data;
 	}
 }

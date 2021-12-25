@@ -7,6 +7,9 @@
 
 #include "TerrainMeshGenerator.h"
 
+#include <map>
+#include <ranges>
+
 namespace Expanse::Game::Terrain
 {
 	namespace
@@ -22,8 +25,36 @@ namespace Expanse::Game::Terrain
 	LoadChunksToGPU::LoadChunksToGPU(World& w, Render::IRenderer* r)
 		: ISystem(w)
 		, renderer(r)
-		, gen(r)
 	{
+		terrain_material = renderer->CreateMaterial("content/materials/terrain.json");
+	}
+
+	void SetTerrainMaterialTextures(Render::IRenderer* renderer, Render::Material material, const TerrainTextureSlots& terrain_slots)
+	{
+		static const std::map<TerrainType, std::string> terrain_textures = {
+			{ TerrainType::Dirt, "content/textures/dirt.json" },
+			{ TerrainType::Grass, "content/textures/grass.json" }
+		};
+
+		assert(terrain_slots.size() == 4u);
+
+		for (size_t i : std::views::iota(0u, terrain_slots.size())) {
+			renderer->SetMaterialParameter(material, std::format("tex{}", i), terrain_textures.at(terrain_slots[i]));
+		}
+	}
+
+	TerrainMesh LoadChunksToGPU::UploadTerrainMeshData(const TerrainMeshData& data)
+	{
+		// create mesh
+		auto mesh = renderer->CreateMesh();
+		renderer->SetMeshVertices(mesh, data.vertices, TerrainVertexFormat);
+		renderer->SetMeshIndices(mesh, data.indices);
+
+		// create material
+		Render::Material material = renderer->CreateMaterial(terrain_material);
+		SetTerrainMaterialTextures(renderer, material, data.tex_slots);
+
+		return { mesh, material };
 	}
 
 	void LoadChunksToGPU::Update()
@@ -57,7 +88,8 @@ namespace Expanse::Game::Terrain
 
 			chunk->use_count++;
 
-			*render_data = gen.Generate(*chunk);
+			const auto mesh_data = GenerateTerrainMesh(*chunk);
+			*render_data = UploadTerrainMeshData(mesh_data);
 		};
 	}
 
