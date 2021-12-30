@@ -49,10 +49,19 @@ namespace Expanse::Input
 
 		// constructor
 		InputState();
+
+		// Should be called every frame
+		void Update();
 	};
 
-	
+	extern InputState g_input_state;
 
-	// Should be called every frame to update input state
-	void UpdateState(InputState& input);
+	inline bool KeyPressed(KeyCode key) { return g_input_state.KeyPressed(key); }
+	inline bool KeyReleased(KeyCode key) { return g_input_state.KeyReleased(key); }
+	inline bool IsKeyDown(KeyCode key) { return g_input_state.IsKeyDown(key); }
+	inline bool MousePressed(int button) { return g_input_state.MousePressed(button); }
+	inline bool MouseReleased(int button) { return g_input_state.MouseReleased(button); }
+	inline bool IsMouseDown(int button) { return g_input_state.IsMouseDown(button); }
+	inline int MouseWheel() { return g_input_state.mouse_wheel; }
+	inline void Update() { g_input_state.Update(); }
 }

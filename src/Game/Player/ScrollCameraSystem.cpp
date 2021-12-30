@@ -1,6 +1,7 @@
 #include "ScrollCameraSystem.h"
 
 #include "Game/World.h"
+#include "Input/Input.h"
 
 namespace Expanse::Game::Player
 {
@@ -26,7 +27,7 @@ namespace Expanse::Game::Player
 
 		FPoint cam_offset = { 0.0f, 0.0f };
 		for (auto [key, dir] : MoveBindings) {
-			if (world.input.IsKeyDown(key)) {
+			if (Input::IsKeyDown(key)) {
 				cam_offset += dir;
 			}
 		}
@@ -37,10 +38,10 @@ namespace Expanse::Game::Player
 
 	void ScrollCamera::UpdateZoom()
 	{
-		if (world.input.mouse_wheel > 0) {
+		if (Input::MouseWheel() > 0) {
 			world.camera_scale *= 1.5f;
 		}
-		if (world.input.mouse_wheel < 0) {
+		if (Input::MouseWheel() < 0) {
 			world.camera_scale /= 1.5f;
 		}
 	}

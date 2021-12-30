@@ -38,10 +38,10 @@ namespace Expanse::Input
 		return (mouse_state[button] == ButtonState::Down) || (mouse_state[button] == ButtonState::Pressed);
 	}
 
-	void UpdateState(InputState& input)
+	void InputState::Update()
 	{
-		input.mouse_wheel = 0;
-		input.mouse_pos_rel = { 0, 0 };
+		mouse_wheel = 0;
+		mouse_pos_rel = { 0, 0 };
 
 		auto update_key_state = [](auto& key_state)
 		{
@@ -53,13 +53,16 @@ namespace Expanse::Input
 			}
 		};
 
-		if (input.key_state_changed) {
-			std::ranges::for_each(input.keyboard_state, update_key_state);
-			input.key_state_changed = false;
+		if (key_state_changed) {
+			std::ranges::for_each(keyboard_state, update_key_state);
+			key_state_changed = false;
 		}
-		if (input.mouse_key_state_changed) {
-			std::ranges::for_each(input.mouse_state, update_key_state);
-			input.mouse_key_state_changed = false;
+		if (mouse_key_state_changed) {
+			std::ranges::for_each(mouse_state, update_key_state);
+			mouse_key_state_changed = false;
 		}
 	}
+
+
+	InputState g_input_state;
 }

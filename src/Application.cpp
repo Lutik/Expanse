@@ -113,7 +113,7 @@ namespace Expanse
 
         systems->Update();
 
-        Input::UpdateState(world.input);
+        Input::Update();
     }
 
     void Application::ProcessSystemEvent(const SDL_Event& evt)
@@ -127,7 +127,7 @@ namespace Expanse
     {
         using namespace Input;
 
-        auto& input = world.input;
+        auto& input = g_input_state;
 
         if (event.type == SDL_KEYDOWN)
         {
