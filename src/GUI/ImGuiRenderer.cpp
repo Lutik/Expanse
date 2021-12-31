@@ -7,6 +7,8 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#include "backends/imgui_impl_sdl.h"
+
 namespace Expanse
 {
     static const Render::VertexLayout ImGuiVertexFormat = { sizeof(ImDrawVert),
@@ -41,6 +43,7 @@ namespace Expanse
 
     void ImGuiRenderer::StartFrame()
     {
+        ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
     }
 

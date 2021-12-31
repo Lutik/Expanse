@@ -68,6 +68,10 @@ int main(int argc, char* args[])
 
         app.Tick();
 
+        if (app.ReadyToQuit()) {
+            quit = true;
+        }
+
         window.SwapBuffers();
     }
 

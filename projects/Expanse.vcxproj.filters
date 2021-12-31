@@ -13,7 +13,7 @@
     <Filter Include="copy_dll\x86">
       <UniqueIdentifier>{3022da4d-7617-453c-9245-ea62c338f927}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\UI">
+    <Filter Include="src\GUI">
       <UniqueIdentifier>{c51208df-966b-4e7f-8807-71c678a9b314}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -28,10 +28,10 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\GUI\ImGuiRenderer.cpp">
-      <Filter>src\UI</Filter>
+      <Filter>src\GUI</Filter>
     </ClCompile>
     <ClCompile Include="..\src\GUI\LogWindow.cpp">
-      <Filter>src\UI</Filter>
+      <Filter>src\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -42,10 +42,13 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\GUI\ImGuiRenderer.h">
-      <Filter>src\UI</Filter>
+      <Filter>src\GUI</Filter>
     </ClInclude>
     <ClInclude Include="..\src\GUI\LogWindow.h">
-      <Filter>src\UI</Filter>
+      <Filter>src\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AppState.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -42,78 +42,71 @@ namespace Expanse
         class RenderGUISystem : public SystemCollection
         {
         public:
-            RenderGUISystem(World& w, Render::IRenderer* renderer)
+            RenderGUISystem(World& w, ImGuiRenderer* renderer)
                 : SystemCollection(w)
+                , imgui_render(renderer)
             {
-                imgui_render = std::make_unique<ImGuiRenderer>(renderer);
             }
 
             void Update() override
             {
-                ImGui_ImplSDL2_NewFrame();
-
                 imgui_render->StartFrame();
-
                 SystemCollection::Update();
-                //ImGui::ShowDemoWindow();
-
                 imgui_render->EndFrame();
             }
 
         private:
-            std::unique_ptr<ImGuiRenderer> imgui_render;
+            ImGuiRenderer* imgui_render;
         };
     }
 
 
-    Application::Application()
+    void Application::Init(Point window_size, Point framebuffer_size)
     {
-        systems = std::make_unique<Game::SystemCollection>(world);
-    }
-
-    void Application::Init(Point wnd_size, Point framebuffer_size)
-    {
-        window_size = wnd_size;
-
         // Create renderer
         renderer = Render::CreateOpenGLRenderer(window_size, framebuffer_size);
-        renderer->SetBgColor({0.0f, 0.3f, 0.2f, 1.0f});
 
-        InitSystems();
-    }
+        gui_renderer = std::make_unique<ImGuiRenderer>(renderer.get());
 
-    void Application::InitSystems()
-    {
-        auto render = renderer.get();
-
-        systems->AddSystem<Game::Player::ScrollCamera>();
-
-        systems->AddSystem<Game::Terrain::LoadChunks>(GetRandomSeed(), window_size);
-        systems->AddSystem<Game::Terrain::UnloadChunks>(window_size);
-
-        systems->AddSystem<Game::Terrain::LoadChunksToGPU>(render);
-        systems->AddSystem<Game::Terrain::UnloadChunksFromGPU>(render);
-
-        auto render_system = systems->AddSystem<Game::RenderWorldSystem>(render);
-        {
-            render_system->AddSystem<Game::Terrain::RenderChunks>(render);
-        }
-
-        auto gui_system = systems->AddSystem<Game::RenderGUISystem>(render);
-        {
-            gui_system->AddSystem<LogWindowSystem>();
-        }
+        SwitchToState(AppState::MainMenu);
     }
 
     void Application::Tick()
     {
-        world.dt = timer.Elapsed(true);
+        const auto dt = timer.Elapsed(true);
 
         renderer->ClearFrame();
 
-        systems->Update();
+        if (app_state)
+        {
+            app_state->Update(dt);
+
+            const auto req_state = app_state->GetRequestedState();
+            if (req_state != AppState::None)
+            {
+                SwitchToState(req_state);
+            }
+        }
 
         Input::Update();
+    }
+
+    void Application::SwitchToState(AppState new_state)
+    {
+        switch (new_state)
+        {
+        case AppState::MainMenu:
+            app_state = std::make_unique<MainMenu>(renderer.get(), gui_renderer.get());
+            break;
+        case AppState::Game:
+            app_state = std::make_unique<GameScreen>(renderer.get(), gui_renderer.get());
+            break;
+        case AppState::Quit:
+            ready_to_quit = true;
+            break;
+        default:
+            break;
+        }
     }
 
     void Application::ProcessSystemEvent(const SDL_Event& evt)
@@ -162,5 +155,86 @@ namespace Expanse
             input.mouse_state[event.button.button] = ButtonState::Released;
             input.mouse_key_state_changed = true;
         }
+    }
+
+    /************************************************************************/
+
+    GameScreen::GameScreen(Render::IRenderer* renderer, ImGuiRenderer* gui_render)
+    {
+        renderer->SetBgColor({ 0.0f, 0.3f, 0.2f, 1.0f });
+
+        InitSystems(renderer, gui_render);
+    }
+
+    void GameScreen::Update(float dt)
+    {
+        world.dt = dt;
+
+        systems->Update();
+    }
+
+    void GameScreen::InitSystems(Render::IRenderer* renderer, ImGuiRenderer* gui_render)
+    {
+        const auto window_size = renderer->GetWindowSize();
+
+        systems = std::make_unique<Game::SystemCollection>(world);
+
+        systems->AddSystem<Game::Player::ScrollCamera>();
+
+        systems->AddSystem<Game::Terrain::LoadChunks>(GetRandomSeed(), window_size);
+        systems->AddSystem<Game::Terrain::UnloadChunks>(window_size);
+
+        systems->AddSystem<Game::Terrain::LoadChunksToGPU>(renderer);
+        systems->AddSystem<Game::Terrain::UnloadChunksFromGPU>(renderer);
+
+        auto render_system = systems->AddSystem<Game::RenderWorldSystem>(renderer);
+        {
+            render_system->AddSystem<Game::Terrain::RenderChunks>(renderer);
+        }
+
+        auto gui_system = systems->AddSystem<Game::RenderGUISystem>(gui_render);
+        {
+            gui_system->AddSystem<LogWindowSystem>();
+        }
+    }
+
+
+
+    MainMenu::MainMenu(Render::IRenderer* renderer, ImGuiRenderer* gui_renderer)
+        : gui_render(gui_renderer)
+    {
+        renderer->SetBgColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    }
+
+    void MainMenu::Update(float dt)
+    {
+        gui_render->StartFrame();
+
+        ShowMainMenu();
+
+        gui_render->EndFrame();
+    }
+
+    void MainMenu::ShowMainMenu()
+    {
+        const auto MenuBtnSize = ImVec2(300, 60);
+
+        const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(ImVec2(main_viewport->Size.x * 0.5f, main_viewport->Size.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+
+        constexpr auto MenuWindowFlags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove  | ImGuiWindowFlags_NoCollapse;
+        ImGui::Begin("Main menu", nullptr, MenuWindowFlags);
+
+        if (ImGui::Button("Play", MenuBtnSize))
+        {
+            SwitchTo(AppState::Game);
+        }
+
+        if (ImGui::Button("Quit", MenuBtnSize))
+        {
+            SwitchTo(AppState::Quit);
+        }
+
+        ImGui::End();
     }
 }

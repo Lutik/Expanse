@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Application.h" />
+    <ClInclude Include="..\src\AppState.h" />
     <ClInclude Include="..\src\GUI\ImGuiRenderer.h" />
     <ClInclude Include="..\src\GUI\LogWindow.h" />
     <ClInclude Include="..\src\SDL_Utils.h" />
