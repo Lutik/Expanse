@@ -8,6 +8,12 @@ namespace Expanse
 	template<class T>
 	concept Number = std::is_arithmetic_v<T>;
 
+	template<class T>
+	concept IntNumber = std::is_integral_v<T>;
+
+	template<class T>
+	concept FloatNumber = std::is_floating_point_v<T>;
+
 	template<Number T>
 	struct TPoint
 	{
@@ -103,19 +109,30 @@ namespace Expanse
 	constexpr bool operator!=(const TRect<T>& rect1, const TRect<T>& rect2) { return !operator==(rect1, rect2); }
 
 
-	using Rect = TRect<int>;
-	using FRect = TRect<float>;
 
-	constexpr Point LeftBottom(const Rect& rect) { return { rect.x, rect.y }; }
-	constexpr Point LeftTop(const Rect& rect) { return { rect.x, rect.y + rect.h - 1 }; }
-	constexpr Point RightBottom(const Rect& rect) { return { rect.x + rect.w - 1, rect.y }; }
-	constexpr Point RightTop(const Rect& rect) { return { rect.x + rect.w - 1, rect.y + rect.h - 1 }; }
+	template<Number T>
+	constexpr TPoint<T> LeftBottom(const TRect<T>& rect) { return { rect.x, rect.y }; }
 
-	constexpr FPoint LeftBottom(const FRect& rect) { return { rect.x, rect.y }; }
-	constexpr FPoint LeftTop(const FRect& rect) { return { rect.x, rect.y + rect.h }; }
-	constexpr FPoint RightBottom(const FRect& rect) { return { rect.x + rect.w, rect.y }; }
-	constexpr FPoint RightTop(const FRect& rect) { return { rect.x + rect.w, rect.y + rect.h }; }
-	constexpr FPoint Center(const FRect& rect) { return { rect.x + 0.5f * rect.w, rect.y + 0.5f * rect.h }; }
+	template<IntNumber T>
+	constexpr TPoint<T> LeftTop(const TRect<T>& rect) { return { rect.x, rect.y + rect.h - 1 }; }
+
+	template<FloatNumber T>
+	constexpr TPoint<T> LeftTop(const TRect<T>& rect) { return { rect.x, rect.y + rect.h }; }
+
+	template<IntNumber T>
+	constexpr TPoint<T> RightBottom(const TRect<T>& rect) { return { rect.x + rect.w - 1, rect.y }; }
+
+	template<FloatNumber T>
+	constexpr TPoint<T> RightBottom(const TRect<T>& rect) { return { rect.x + rect.w, rect.y }; }
+
+	template<IntNumber T>
+	constexpr TPoint<T> RightTop(const TRect<T>& rect) { return { rect.x + rect.w - 1, rect.y + rect.h - 1 }; }
+
+	template<FloatNumber T>
+	constexpr TPoint<T> RightTop(const TRect<T>& rect) { return { rect.x + rect.w, rect.y + rect.h }; }
+
+	template<FloatNumber T>
+	constexpr TPoint<T> Center(const TRect<T>& rect) { return { rect.x + static_cast<T>(0.5) * rect.w, rect.y + static_cast<T>(0.5) * rect.h }; }
 
 
 
@@ -147,6 +164,13 @@ namespace Expanse
 		return rect;
 	}
 
+
+
+	using Rect = TRect<int>;
+	using FRect = TRect<float>;
+
+
+
 	constexpr void Centralize(FRect& rect, FPoint center = { 0.0f, 0.0f })
 	{
 		rect.x = center.x - rect.w * 0.5f;
@@ -161,8 +185,8 @@ namespace Expanse
 
 	constexpr void ScaleFromCenter(FRect rect, FPoint scale)
 	{
-		const float dx = rect.w * (scale.x - 1.0f) * 0.5f;
-		const float dy = rect.h * (scale.y - 1.0f) * 0.5f;
+		const auto dx = rect.w * (scale.x - 1.0f) * 0.5f;
+		const auto dy = rect.h * (scale.y - 1.0f) * 0.5f;
 		Inflate(rect, dx, dy);
 	}
 
