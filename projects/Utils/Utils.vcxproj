@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Utils\Array2D.h" />
+    <ClInclude Include="..\..\src\Utils\Bounds.h" />
     <ClInclude Include="..\..\src\Utils\Logger\Logger.h" />
     <ClInclude Include="..\..\src\Utils\Math.h" />
     <ClInclude Include="..\..\src\Utils\Random.h" />

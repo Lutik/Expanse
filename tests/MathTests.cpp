@@ -2,6 +2,7 @@
 
 #include "Utils/Math.h"
 #include "Utils/Random.h"
+#include "Utils/Bounds.h"
 
 #include "TestUtils.h"
 
@@ -77,5 +78,67 @@ namespace Expanse::Tests
 		{
 			EXPECT_GE(count, MaxRngValue / (counters.size() + 1));
 		}
+	}
+
+
+
+	TEST(BoundsTests, EmptyRectIfNoInput)
+	{
+		utils::Bounds<float> fbounds;
+		const auto frect = fbounds.ToRect();
+		EXPECT_EQ(0.0f, frect.w);
+		EXPECT_EQ(0.0f, frect.h);
+
+		utils::Bounds<int> ibounds;
+		const auto irect = ibounds.ToRect();
+		EXPECT_EQ(0, irect.w);
+		EXPECT_EQ(0, irect.h);
+	}
+
+	TEST(BoundsTests, OnePointBoundsFloat)
+	{
+		utils::Bounds<float> bounds;
+		bounds.Add(FPoint{3.0f, 4.0f});
+		const auto rect = bounds.ToRect();
+		const auto expected = FRect{ 3.0f, 4.0f, 0.0f, 0.0f };
+		EXPECT_FRECT_EQ(expected, rect);
+	}
+
+	TEST(BoundsTests, OnePointBoundsInt)
+	{
+		utils::Bounds<int> bounds;
+		bounds.Add(Point{ 3, 4 });
+		const auto rect = bounds.ToRect();
+		const auto expected = Rect{ 3, 4, 1, 1 };
+		EXPECT_EQ(expected, rect);
+	}
+
+	TEST(BoundsTests, OneRectBoundsFloat)
+	{
+		const auto rect = FRect{3.0f, 4.0, 1.5f, 0.8f };
+		utils::Bounds<float> bounds;
+		bounds.Add(rect);
+		const auto result = bounds.ToRect();
+		EXPECT_FRECT_EQ(rect, result);
+	}
+
+	TEST(BoundsTests, OneRectBoundsInt)
+	{
+		const auto rect = Rect{ 3, 4, 2, 5 };
+		utils::Bounds<int> bounds;
+		bounds.Add(rect);
+		const auto result = bounds.ToRect();
+		EXPECT_EQ(rect, result);
+	}
+
+	TEST(BoundsTests, RangeBounds)
+	{
+		const std::vector<int> numbers{ 0, -1, 3, 4 };
+		auto to_point = [](int n) { return Point(n, n * 2); };
+		const auto pt_range = numbers | std::views::transform(to_point);
+
+		const auto rect = utils::CalcBounds(pt_range);
+		const auto expected = Rect{ -1, -2, 6, 11 };
+		EXPECT_EQ(expected, rect);
 	}
 }
