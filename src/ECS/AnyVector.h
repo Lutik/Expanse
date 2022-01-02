@@ -48,6 +48,13 @@ namespace Expanse::ecs
 			return any_val ? &(any_val->value) : nullptr;
 		}
 
+		template<typename T, typename... Args>
+		T* GetOrCreate(Args&&... args)
+		{
+			T* val = Get<T>();
+			return val ? val : Set<T>(std::forward<Args>(args)...);
+		}
+
 		template<typename T>
 		void Reset()
 		{

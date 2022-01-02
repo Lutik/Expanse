@@ -10,19 +10,12 @@
 #include <set>
 
 #include "Game/Terrain/Systems/ProceduralTerrain.h"
+#include "Game/Terrain/TerrainHelpers.h"
 
 namespace Expanse::Game::Terrain
 {
 	namespace
 	{
-		struct PointCmp
-		{
-			constexpr bool operator()(const Point& p1, const Point& p2) const
-			{
-				return (p1.x < p2.x) || ((p1.x == p2.x) && (p1.y < p2.y));
-			}
-		};
-
 		Rect GetMapAreaToLoad(World& world, Point window_size)
 		{
 			const auto window_rect = FRect{ 0, 0, static_cast<float>(window_size.x), static_cast<float>(window_size.y) };
@@ -33,20 +26,6 @@ namespace Expanse::Game::Terrain
 			const auto cell_rect = Coords::WorldRectCellBounds(world_rect, world.world_origin);
 			const auto chunks_area = Coords::CellRectChunkBounds(cell_rect, TerrainChunk::Size);
 			return chunks_area;
-		}
-
-		std::vector<Point> GetChunksToLoad(World& world, Point window_size)
-		{
-			auto get_pos = [](const TerrainChunk& chunk){ return chunk.position; };
-			const auto loaded_view = world.entities.GetComponentArray<TerrainChunk>() | std::views::transform(get_pos);
-			std::set<Point, PointCmp> loaded_chunks{ loaded_view.begin(), loaded_view.end() };
-
-			const auto req_area = utils::rect_points{ GetMapAreaToLoad(world, window_size) };
-			std::set<Point, PointCmp> req_chunks{ req_area.begin(), req_area.end() };
-
-			std::vector<Point> result;
-			std::set_difference(req_chunks.begin(), req_chunks.end(), loaded_chunks.begin(), loaded_chunks.end(), std::back_inserter(result), PointCmp{});
-			return result;
 		}
 	}
 
@@ -59,16 +38,24 @@ namespace Expanse::Game::Terrain
 
 	void LoadChunks::Update()
 	{
-		const auto chunks_to_load = GetChunksToLoad(world, window_size);
-		for (const auto chunk_pos : chunks_to_load)
-		{
-			auto ent = world.entities.CreateEntity();
-			auto* chunk = world.entities.AddComponent<TerrainChunk>(ent, chunk_pos);
+		const auto req_area = GetMapAreaToLoad(world, window_size);
 
-			for (auto& loader : loaders) {
-				if (loader->LoadChunk(*chunk))
-					break;
+		if (loaded_area != req_area)
+		{
+			const auto chunks_to_load = GetNotLoadedChunksInArea(world, req_area);
+			for (const auto chunk_pos : chunks_to_load)
+			{
+				auto ent = world.entities.CreateEntity();
+				auto* chunk = world.entities.AddComponent<TerrainChunk>(ent, chunk_pos);
+
+				for (auto& loader : loaders) {
+					if (loader->LoadChunk(*chunk))
+						break;
+				}
 			}
+
+			loaded_area = req_area;
+			UpdateChunkMap(world);
 		}
 	}
 
@@ -91,6 +78,10 @@ namespace Expanse::Game::Terrain
 			}
 		});
 
-		world.entities.DestroyEntities(free_chunks);
+		if (!free_chunks.empty())
+		{
+			world.entities.DestroyEntities(free_chunks);
+			UpdateChunkMap(world);
+		}
 	}
 }

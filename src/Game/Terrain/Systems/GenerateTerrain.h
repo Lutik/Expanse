@@ -20,6 +20,7 @@ namespace Expanse::Game::Terrain
 		}
 	private:
 		Point window_size;
+		Rect loaded_area{ 0, 0, 0, 0 };
 
 		std::vector<std::unique_ptr<ITerrainLoader>> loaders;
 	};

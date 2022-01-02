@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils/Array2D.h"
+#include "ECS/Entity.h"
 
 namespace Expanse::Game::Terrain
 {
@@ -12,8 +13,8 @@ namespace Expanse::Game::Terrain
 
 	struct TerrainCell
 	{
-		TerrainType type;
-		int height;
+		TerrainType type = TerrainType::Dirt;
+		int height = 0;
 	};
 
 	struct TerrainChunk
@@ -31,5 +32,12 @@ namespace Expanse::Game::Terrain
 			: position(pos)
 			, cells(Rect{-1, -1, Size + 2, Size + 2})
 		{}
+	};
+
+
+
+	struct ChunkMap
+	{
+		Array2D<ecs::Entity> chunks;
 	};
 }
