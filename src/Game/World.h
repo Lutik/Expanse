@@ -3,8 +3,6 @@
 #include "Render/RenderTypes.h"
 #include "Utils/Math.h"
 
-#include <vector>
-
 #include "ECS/World.h"
 
 namespace Expanse::Game

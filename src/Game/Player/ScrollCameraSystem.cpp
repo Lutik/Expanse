@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "ScrollCameraSystem.h"
 
 #include "Game/World.h"

@@ -72,6 +72,9 @@
     <ClInclude Include="..\..\src\Game\Terrain\TerrainHelpers.h">
       <Filter>Game\Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Game\pch.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Input\Input.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Game\Terrain\TerrainHelpers.cpp">
       <Filter>Game\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Game\pch.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

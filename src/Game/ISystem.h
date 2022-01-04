@@ -1,8 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-
 namespace Expanse::Game
 {
 	struct World;

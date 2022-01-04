@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "StreamTerrainGPU.h"
 
 #include "Game/World.h"
@@ -10,7 +12,6 @@
 #include "TerrainMeshGenerator.h"
 
 #include <map>
-#include <ranges>
 
 namespace Expanse::Game::Terrain
 {

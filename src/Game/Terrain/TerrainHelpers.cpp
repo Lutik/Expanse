@@ -1,10 +1,10 @@
+#include "pch.h"
+
 #include "TerrainHelpers.h"
 
 #include "Components/TerrainData.h"
 #include "Utils/Bounds.h"
 #include "Utils/RectPoints.h"
-
-#include <ranges>
 
 namespace Expanse::Game::Terrain
 {

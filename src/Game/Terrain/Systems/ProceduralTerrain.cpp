@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "ProceduralTerrain.h"
 
 #include "Game/CoordSystems.h"
@@ -5,8 +7,6 @@
 #include "Utils/Random.h"
 #include "Utils/RectPoints.h"
 #include "Utils/Utils.h"
-
-#include <array>
 
 namespace Expanse::Game::Terrain
 {
@@ -69,8 +69,7 @@ namespace Expanse::Game::Terrain
 		};
 
 		const auto index = std::distance(std::ranges::begin(values), std::ranges::max_element(values));
-		assert(index >= 0 && index < values.size());
-		
+
 		return static_cast<TerrainType>(index);
 	}
 }
