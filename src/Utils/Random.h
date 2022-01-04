@@ -30,4 +30,9 @@ namespace Expanse
 	/* Convenience functions */
 	float RandomFloat(float a, float b);
 	int RandomInt(int a, int b);
+
+	template<typename R>
+	void GenerateSeeds(R&& out_range, uint32_t seed) {
+		std::ranges::generate(out_range, [&seed] () mutable { return (seed = Xorshift32(seed)); });
+	}
 }

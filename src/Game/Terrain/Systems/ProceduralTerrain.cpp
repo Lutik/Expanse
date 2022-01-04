@@ -6,6 +6,8 @@
 #include "Utils/RectPoints.h"
 #include "Utils/Utils.h"
 
+#include <array>
+
 namespace Expanse::Game::Terrain
 {
 	struct NoiseParam
@@ -17,9 +19,11 @@ namespace Expanse::Game::Terrain
 
 	TerrainLoader_Procedural::TerrainLoader_Procedural(uint32_t seed)
 	{
-		types_seed = Squirrel3(0, seed);
-		heights_seed[0] = Squirrel3(1, seed);
-		heights_seed[1] = Squirrel3(2, seed);
+		const auto types_init_seed = Squirrel3(0, seed);
+		GenerateSeeds(type_seeds, types_init_seed);
+
+		const auto heights_init_seed = Squirrel3(100, seed);
+		GenerateSeeds(height_seeds, heights_init_seed);
 	}
 
 	bool TerrainLoader_Procedural::LoadChunk(TerrainChunk& chunk)
@@ -40,14 +44,14 @@ namespace Expanse::Game::Terrain
 	float TerrainLoader_Procedural::GetHeightAt(Point cell_pos) const
 	{
 		static constexpr NoiseParam heights_noise_params[] = {
-			{ 0.05f, -20.0f, 20.0f },
-			{ 0.27f, -5.0f, 5.0f },
+			{ 0.05f, -5.0f, 5.0f },
+			{ 0.27f, -3.0f, 3.0f },
 		};
 
 		float height = 0.0f;
-		utils::for_each_zipped(heights_seed, heights_noise_params, [&height, cell_pos](uint32_t seed, const auto& params)
+		utils::for_each_zipped(height_seeds, heights_noise_params, [&height, cell_pos](uint32_t seed, const auto& params)
 		{
-			const auto pt = FPoint{ cell_pos } *params.freq;
+			const auto pt = FPoint{ cell_pos } * params.freq;
 			height += Lerp(params.min, params.max, PerlinNoise(pt, seed));
 		});
 
@@ -56,9 +60,17 @@ namespace Expanse::Game::Terrain
 
 	TerrainType TerrainLoader_Procedural::GetTerrainAt(Point cell_pos) const
 	{
-		const auto pt = FPoint{ cell_pos } *0.07f;
-		const float n = PerlinNoise(pt, types_seed);
+		const auto pt = FPoint{ cell_pos } * 0.07f;
 
-		return (n > 0.0f) ? TerrainType::Grass : TerrainType::Dirt;
+		const std::array<float, 3> values = {
+			PerlinNoise(pt, type_seeds[0]),
+			PerlinNoise(pt, type_seeds[1]),
+			PerlinNoise(pt, type_seeds[2]),
+		};
+
+		const auto index = std::distance(std::ranges::begin(values), std::ranges::max_element(values));
+		assert(index >= 0 && index < values.size());
+		
+		return static_cast<TerrainType>(index);
 	}
 }

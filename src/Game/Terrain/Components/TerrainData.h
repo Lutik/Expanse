@@ -8,7 +8,8 @@ namespace Expanse::Game::Terrain
 	enum class TerrainType
 	{
 		Dirt,
-		Grass
+		Grass,
+		Stones
 	};
 
 	struct TerrainCell

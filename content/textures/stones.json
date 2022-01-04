@@ -1,0 +1,6 @@
+{
+    "image":"content/textures/stones.png",
+    "filter":"linear",
+    "address":"repeat",
+    "mipmaps":true
+}

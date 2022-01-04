@@ -40,7 +40,8 @@ namespace Expanse::Game::Terrain
 	{
 		static const std::map<TerrainType, std::string> terrain_textures = {
 			{ TerrainType::Dirt, "content/textures/dirt.json" },
-			{ TerrainType::Grass, "content/textures/grass.json" }
+			{ TerrainType::Grass, "content/textures/grass.json" },
+			{ TerrainType::Stones, "content/textures/stones.json" }
 		};
 
 		assert(terrain_slots.size() == 4u);
