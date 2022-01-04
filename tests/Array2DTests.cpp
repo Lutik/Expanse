@@ -21,7 +21,7 @@ namespace Expanse::Tests
 
 		Array2D<int> dst{ Rect{-1, -1, 3, 3}, 0 };
 
-		CopyArrayData(src, dst, Rect{ 0, 0, 2, 2 });
+		CopyArrayData(src, dst, Rect{ 0, 0, 2, 2 }, Point{ 0, 0 });
 
 		EXPECT_EQ(expected, dst);
 	}

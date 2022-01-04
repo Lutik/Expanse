@@ -92,6 +92,8 @@ namespace Expanse
 		Elem& operator[](Point pt) { return _data[PointToIndex(pt)]; }
 		const Elem& operator[](Point pt) const { return _data[PointToIndex(pt)]; }
 
+		Elem GetOrDef(Point pt, const Elem& def) const { return IndexIsValid(pt) ? operator[](pt) : def; }
+
 		const Rect& GetRect() const { return _rect; }
 		Point Origin() const { return { _rect.x, _rect.y }; }
 		int Width() const { return _rect.w; }
@@ -119,19 +121,19 @@ namespace Expanse
 	};
 
 	template<class T>
-	void CopyArrayData(const Array2D<T>& src, Array2D<T>& dst, const Rect& rect)
+	void CopyArrayData(const Array2D<T>& src, Array2D<T>& dst, const Rect& src_rect, const Point& dst_rect_origin)
 	{
-		assert(Contains(src.GetRect(), rect));
-		assert(Contains(dst.GetRect(), rect));
+		assert(Contains(src.GetRect(), src_rect));
+		assert(Contains(dst.GetRect(), Rect{ dst_rect_origin.x, dst_rect_origin.y, src_rect.w, src_rect.h }));
 	
-		const Point pt{ rect.x, rect.y };
-		auto* src_line = &src[pt];
-		auto* dst_line = &dst[pt];
-		const auto src_row_size = static_cast<size_t>(src.GetRect().w);
-		const auto dst_row_size = static_cast<size_t>(dst.GetRect().w);
-		const auto row_size = static_cast<size_t>(rect.w);
+		auto* src_line = &src[LeftBottom(src_rect)];
+		auto* dst_line = &dst[dst_rect_origin];
 
-		for (int i = 0; i < rect.h; ++i) {
+		const auto src_row_size = static_cast<size_t>(src.Width());
+		const auto dst_row_size = static_cast<size_t>(dst.Width());
+		const auto row_size = static_cast<size_t>(src_rect.w);
+
+		for (int i = 0; i < src_rect.h; ++i) {
 			std::copy_n(src_line, row_size, dst_line);
 			src_line += src_row_size;
 			dst_line += dst_row_size;

@@ -3,6 +3,7 @@
 #include "Game/Terrain/Components/TerrainMesh.h"
 #include "Game/Terrain/Components/TerrainData.h"
 #include "Render/VertexTypes.h"
+#include "Game/World.h"
 
 namespace Expanse::Game::Terrain
 {
@@ -31,6 +32,5 @@ namespace Expanse::Game::Terrain
 		TerrainTextureSlots tex_slots;
 	};
 
-
-	TerrainMeshData GenerateTerrainMesh(const TerrainChunk& chunk);
+	TerrainMeshData GenerateTerrainMesh(World& world, Point chunk_pos);
 }

@@ -22,7 +22,9 @@ namespace Expanse::Game::Terrain
 		Render::IRenderer* renderer = nullptr;
 		Render::Material terrain_material;
 
-		TerrainMesh UploadTerrainMeshData(const TerrainMeshData& data);
+		void UploadTerrainMeshData(TerrainMesh& rdata, const TerrainMeshData& data);
+
+		std::vector<ecs::Entity> GatherChunksToLoad() const;
 	};
 
 	/*

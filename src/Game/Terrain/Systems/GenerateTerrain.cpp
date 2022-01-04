@@ -38,8 +38,14 @@ namespace Expanse::Game::Terrain
 
 	void LoadChunks::Update()
 	{
-		const auto req_area = GetMapAreaToLoad(world, window_size);
+		// Clear loaded events
+		const auto ents = world.entities.GetEntitiesWith<Event::ChunkLoaded>();
+		for (auto ent : ents) {
+			world.entities.RemoveComponent<Event::ChunkLoaded>(ent);
+		}
 
+		// Load chunks
+		const auto req_area = GetMapAreaToLoad(world, window_size);
 		if (loaded_area != req_area)
 		{
 			const auto chunks_to_load = GetNotLoadedChunksInArea(world, req_area);
@@ -52,6 +58,8 @@ namespace Expanse::Game::Terrain
 					if (loader->LoadChunk(*chunk))
 						break;
 				}
+
+				world.entities.AddComponent<Event::ChunkLoaded>(ent);
 			}
 
 			loaded_area = req_area;

@@ -21,6 +21,8 @@ namespace Expanse::Game
 		inline constexpr Point LeftDown = { -1, -1 };
 		inline constexpr Point Down = { 0, -1 };
 		inline constexpr Point RightDown  = { 1, -1 };
+
+		inline constexpr std::array<Point, 8> Neighbors8 = { LeftUp, Up, RightUp, Left, Right, LeftDown, Down, RightDown };
 	}
 
 	template<class T, class Pred = std::identity>

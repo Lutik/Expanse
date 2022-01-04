@@ -4,6 +4,8 @@
 #include "Game/CoordSystems.h"
 #include "Game/Terrain/Components/TerrainMesh.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/RectPoints.h"
+#include "Game/Utils/NeighbourCells.h"
 
 #include "TerrainMeshGenerator.h"
 
@@ -14,11 +16,16 @@ namespace Expanse::Game::Terrain
 {
 	namespace
 	{
-		FRect ChunkSceneBounds(Point chunk_pos, Point world_origin)
+		Rect GetChunksAreaToLoad(World& world, Point window_size)
 		{
-			const auto chunk_cell_rect = Coords::LocalToCell(TerrainChunk::Area, chunk_pos, TerrainChunk::Size);
-			const auto chunk_world_rect = Coords::CellToWorld(chunk_cell_rect, world_origin);
-			return Coords::WorldRectSceneBounds(chunk_world_rect);
+			const auto window_rect = FRect{ 0, 0, static_cast<float>(window_size.x), static_cast<float>(window_size.y) };
+			const auto view_rect = Centralized(window_rect) / world.camera_scale + world.camera_pos;
+			ScaleFromCenter(view_rect, 2.0f);
+
+			const auto world_rect = Coords::SceneRectWorldBounds(view_rect);
+			const auto cell_rect = Coords::WorldRectCellBounds(world_rect, world.world_origin);
+			const auto chunks_area = Coords::CellRectChunkBounds(cell_rect, TerrainChunk::Size);
+			return chunks_area;
 		}
 	}
 
@@ -43,54 +50,84 @@ namespace Expanse::Game::Terrain
 		}
 	}
 
-	TerrainMesh LoadChunksToGPU::UploadTerrainMeshData(const TerrainMeshData& data)
+	void LoadChunksToGPU::UploadTerrainMeshData(TerrainMesh& rdata, const TerrainMeshData& data)
 	{
 		// create mesh
-		auto mesh = renderer->CreateMesh();
-		renderer->SetMeshVertices(mesh, data.vertices, TerrainVertexFormat);
-		renderer->SetMeshIndices(mesh, data.indices);
+		if (!rdata.mesh.IsValid())
+			rdata.mesh = renderer->CreateMesh();
+		renderer->SetMeshVertices(rdata.mesh, data.vertices, TerrainVertexFormat);
+		renderer->SetMeshIndices(rdata.mesh, data.indices);
 
 		// create material
-		Render::Material material = renderer->CreateMaterial(terrain_material);
-		SetTerrainMaterialTextures(renderer, material, data.tex_slots);
-
-		return { mesh, material };
+		if (!rdata.material.IsValid())
+			rdata.material = renderer->CreateMaterial(terrain_material);
+		SetTerrainMaterialTextures(renderer, rdata.material, data.tex_slots);
 	}
 
 	void LoadChunksToGPU::Update()
 	{
-		// Gather all chunks we need to render, that dont have associated meshes yet
-
-		const auto window_rect = FRect{ renderer->GetWindowRect() };
-		const auto view_rect = Centralized(window_rect) / world.camera_scale + world.camera_pos;
-		ScaleFromCenter(view_rect, 1.1f);
-
-		std::vector<ecs::Entity> gen_entities;
-		world.entities.ForEach<TerrainChunk>([this, view_rect, &gen_entities](auto ent, const TerrainChunk& chunk)
-		{
-			if (!world.entities.HasComponent<TerrainMesh>(ent))
-			{
-				const FRect chunk_view = ChunkSceneBounds(chunk.position, world.world_origin);
-				if (Intersects(chunk_view, view_rect)) {
-					gen_entities.push_back(ent);
-				}
-			}
-		});
+		const auto gen_entities = GatherChunksToLoad();
 
 		// Generate meshes for them
 
 		for (const auto ent : gen_entities)
 		{
-			auto* render_data = world.entities.AddComponent<TerrainMesh>(ent);
 			auto* chunk = world.entities.GetComponent<TerrainChunk>(ent);
-
 			assert(chunk);
 
-			chunk->use_count++;
+			auto* render_data = world.entities.GetComponent<TerrainMesh>(ent);
+			if (!render_data) {
+				chunk->use_count++;
+				render_data = world.entities.AddComponent<TerrainMesh>(ent);
+			}
 
-			const auto mesh_data = GenerateTerrainMesh(*chunk);
-			*render_data = UploadTerrainMeshData(mesh_data);
+			const auto mesh_data = GenerateTerrainMesh(world, chunk->position);
+			UploadTerrainMeshData(*render_data, mesh_data);
 		};
+	}
+
+	std::vector<ecs::Entity> LoadChunksToGPU::GatherChunksToLoad() const
+	{
+		std::vector<ecs::Entity> gen_entities;
+
+		auto* map = world.globals.Get<ChunkMap>();
+		if (!map)
+			return gen_entities;
+
+		const auto visible_area = GetChunksAreaToLoad(world, renderer->GetWindowSize());
+		const auto load_area = Intersection(map->chunks.GetRect(), visible_area);
+
+		Array2D<bool> load_map{ load_area, false };
+
+		// gather not loaded chunks in view
+		world.entities.ForEach<TerrainChunk>([this, &load_map](auto ent, const TerrainChunk& chunk)
+		{
+			if (!world.entities.HasComponent<TerrainMesh>(ent) && load_map.IndexIsValid(chunk.position)) {
+				load_map[chunk.position] = true;
+			}
+		});
+
+		// gather chunks to update
+		world.entities.ForEach<Event::ChunkLoaded, TerrainChunk>([&load_map](auto ent, const Event::ChunkLoaded&, const TerrainChunk& chunk)
+		{
+			for (Point off : Offset::Neighbors8) {
+				const Point pos = chunk.position + off;
+				if (load_map.IndexIsValid(pos)) {
+					load_map[pos] = true;
+				}
+			}
+		});
+
+		// convert chunk map to entities list
+		for (Point pt : utils::rect_points(load_map.GetRect()))
+		{
+			const auto ent = map->chunks[pt];
+			if (load_map[pt] && ent) {
+				gen_entities.push_back(ent);
+			}
+		}
+
+		return gen_entities;
 	}
 
 	/*************************************************************************************************/
@@ -103,15 +140,12 @@ namespace Expanse::Game::Terrain
 
 	void UnloadChunksFromGPU::Update()
 	{
-		const auto window_rect = FRect{ renderer->GetWindowRect() };
-		const auto view_rect = Centralized(window_rect) / world.camera_scale + world.camera_pos;
-		ScaleFromCenter(view_rect, 2.0f);
+		const auto visible_area = GetChunksAreaToLoad(world, renderer->GetWindowSize());
 
 		std::vector<ecs::Entity> freed_chunks;
-		world.entities.ForEach<TerrainMesh, TerrainChunk>([this, &freed_chunks, view_rect](auto ent, const TerrainMesh& rdata, TerrainChunk& chunk)
+		world.entities.ForEach<TerrainMesh, TerrainChunk>([this, &freed_chunks, visible_area](auto ent, const TerrainMesh& rdata, TerrainChunk& chunk)
 		{
-			const auto chunk_view = ChunkSceneBounds(chunk.position, world.world_origin);
-			if (!Intersects(chunk_view, view_rect))
+			if (!Contains(visible_area, chunk.position))
 			{
 				renderer->FreeMaterial(rdata.material);
 				renderer->FreeMesh(rdata.mesh);
