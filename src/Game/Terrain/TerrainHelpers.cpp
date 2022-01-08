@@ -13,15 +13,23 @@ namespace Expanse::Game::Terrain
 		auto* map = world.globals.GetOrCreate<ChunkMap>();
 		
 		// Calculate bounding rect of all chunks
-		const auto& loaded_chunks = world.entities.GetComponentArray<TerrainChunk>();
-		auto get_pos = [](const TerrainChunk& chunk) { return chunk.position; };
-		const auto bounds = utils::CalcBounds(loaded_chunks | std::views::transform(get_pos));
+		utils::Bounds<int> bounds;
+		for (const auto& chunk : world.entities.GetComponentArray<TerrainChunk>()) {
+			bounds.Add(chunk.position);
+		}
+		for (const auto& chunk : world.entities.GetComponentArray<AsyncLoadingChunk>()) {
+			bounds.Add(chunk.position);
+		}
+		const auto bounds_rect = bounds.ToRect();
 
 		// Write entities into map
-		if (bounds.w > 0 && bounds.h > 0)
+		if (bounds_rect.w > 0 && bounds_rect.h > 0)
 		{
-			map->chunks = Array2D<ecs::Entity>(bounds);
+			map->chunks = Array2D<ecs::Entity>(bounds_rect);
 			world.entities.ForEach<TerrainChunk>([map](auto entity, const TerrainChunk& chunk){
+				map->chunks[chunk.position] = entity;
+			});
+			world.entities.ForEach<AsyncLoadingChunk>([map](auto entity, const AsyncLoadingChunk& chunk) {
 				map->chunks[chunk.position] = entity;
 			});
 		}

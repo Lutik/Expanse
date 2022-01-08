@@ -22,19 +22,31 @@ namespace Expanse::Game::Terrain
 		GenerateSeeds(type_seeds, types_init_seed);
 	}
 
-	bool TerrainLoader_Procedural::LoadChunk(TerrainChunk& chunk)
+	bool TerrainLoader_Procedural::HasChunk(Point pos) const
 	{
-		for (const auto local_pos : utils::rect_points{ chunk.cells.GetRect() })
-		{
-			const auto cell_pos = Coords::LocalToCell(local_pos, chunk.position, TerrainChunk::Size);
+		return true;
+	}
 
-			auto& cell = chunk.cells[local_pos];
+	std::future<Array2D<TerrainCell>> TerrainLoader_Procedural::LoadChunk(Point chunk_pos)
+	{
+		return std::async([this, chunk_pos](){ return LoadChunk_Internal(chunk_pos); });
+	}
+
+	Array2D<TerrainCell> TerrainLoader_Procedural::LoadChunk_Internal(Point chunk_pos)
+	{
+		Array2D<TerrainCell> cells{ TerrainChunk::Area };
+
+		for (const auto local_pos : utils::rect_points{ cells.GetRect() })
+		{
+			const auto cell_pos = Coords::LocalToCell(local_pos, chunk_pos, TerrainChunk::Size);
+
+			auto& cell = cells[local_pos];
 
 			cell.type = GetTerrainAt(cell_pos);
 			cell.height = static_cast<int>(height_gen.Get(FPoint{ cell_pos }));
 		}
 
-		return true;
+		return cells;
 	}
 
 	TerrainType TerrainLoader_Procedural::GetTerrainAt(Point cell_pos) const

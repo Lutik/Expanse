@@ -9,6 +9,9 @@ namespace Expanse::Game::Terrain
 	{
 	public:
 		virtual ~ITerrainLoader() = default;
-		virtual bool LoadChunk(TerrainChunk& chunk) = 0;
+
+		virtual bool HasChunk(Point chunk) const = 0;
+
+		virtual std::future<Array2D<TerrainCell>> LoadChunk(Point pos) = 0;
 	};
 }

@@ -10,7 +10,9 @@ namespace Expanse::Game::Terrain
 	public:
 		TerrainLoader_Procedural(uint32_t seed);
 
-		bool LoadChunk(TerrainChunk& chunk);
+		bool HasChunk(Point pos) const override;
+
+		std::future<Array2D<TerrainCell>> LoadChunk(Point pos) override;
 
 	private:
 		uint32_t type_seeds[3];
@@ -18,5 +20,7 @@ namespace Expanse::Game::Terrain
 		TerrainType GetTerrainAt(Point cell_pos) const;
 
 		PerlinNoiseGenerator height_gen;
+
+		Array2D<TerrainCell> LoadChunk_Internal(Point pos);
 	};
 }

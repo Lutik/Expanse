@@ -3,6 +3,8 @@
 #include "Utils/Array2D.h"
 #include "ECS/Entity.h"
 
+#include <future>
+
 namespace Expanse::Game::Terrain
 {
 	enum class TerrainType
@@ -33,6 +35,12 @@ namespace Expanse::Game::Terrain
 			: position(pos)
 			, cells(Area)
 		{}
+	};
+
+	struct AsyncLoadingChunk
+	{
+		Point position;
+		std::future<Array2D<TerrainCell>> cells;
 	};
 
 

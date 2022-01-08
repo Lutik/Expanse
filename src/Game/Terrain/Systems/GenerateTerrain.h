@@ -23,6 +23,8 @@ namespace Expanse::Game::Terrain
 		Rect loaded_area{ 0, 0, 0, 0 };
 
 		std::vector<std::unique_ptr<ITerrainLoader>> loaders;
+
+		ITerrainLoader* GetLoaderForChunk(Point chunk_pos);
 	};
 
 	class UnloadChunks : public ISystem

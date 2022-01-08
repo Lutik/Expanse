@@ -99,6 +99,9 @@ namespace Expanse::Game::Terrain
 		const auto visible_area = GetChunksAreaToLoad(world, renderer->GetWindowSize());
 		const auto load_area = Intersection(map->chunks.GetRect(), visible_area);
 
+		if (load_area.w <= 0 || load_area.h <= 0)
+			return gen_entities;
+
 		Array2D<bool> load_map{ load_area, false };
 
 		// gather not loaded chunks in view

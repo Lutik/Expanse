@@ -38,6 +38,13 @@ namespace Expanse::Game::Terrain
 		AddLoader<TerrainLoader_Procedural>(seed);
 	}
 
+	ITerrainLoader* LoadChunks::GetLoaderForChunk(Point chunk_pos)
+	{
+		auto can_load = [chunk_pos](const auto& loader) { return loader->HasChunk(chunk_pos); };
+		auto itr = std::ranges::find_if(loaders, can_load);
+		return (itr != loaders.end()) ? itr->get() : nullptr;
+	}
+
 	void LoadChunks::Update()
 	{
 		// Clear loaded events
@@ -53,19 +60,36 @@ namespace Expanse::Game::Terrain
 			const auto chunks_to_load = GetNotLoadedChunksInArea(world, req_area);
 			for (const auto chunk_pos : chunks_to_load)
 			{
-				auto ent = world.entities.CreateEntity();
-				auto* chunk = world.entities.AddComponent<TerrainChunk>(ent, chunk_pos);
-
-				for (auto& loader : loaders) {
-					if (loader->LoadChunk(*chunk))
-						break;
+				// find loader to use
+				if (auto* loader = GetLoaderForChunk(chunk_pos))
+				{
+					auto ent = world.entities.CreateEntity();
+					auto* loading_chunk = world.entities.AddComponent<AsyncLoadingChunk>(ent, chunk_pos);
+					loading_chunk->cells = loader->LoadChunk(chunk_pos);
 				}
-
-				world.entities.AddComponent<Event::ChunkLoaded>(ent);
 			}
 
 			loaded_area = req_area;
 			UpdateChunkMap(world);
+		}
+
+		// Process loading chunks
+		std::vector<ecs::Entity> loaded_chunks;
+		world.entities.ForEach<AsyncLoadingChunk>([&, this](auto ent, AsyncLoadingChunk& async_chunk)
+		{
+			const auto status = async_chunk.cells.wait_for(std::chrono::seconds(0));
+			if (status == std::future_status::ready)
+			{
+				auto* chunk = world.entities.AddComponent<TerrainChunk>(ent, async_chunk.position);
+				chunk->cells = async_chunk.cells.get();
+				
+				world.entities.AddComponent<Event::ChunkLoaded>(ent);
+
+				loaded_chunks.push_back(ent);
+			}
+		});
+		for (auto ent : loaded_chunks) {
+			world.entities.RemoveComponent<AsyncLoadingChunk>(ent);
 		}
 	}
 
