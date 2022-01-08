@@ -1,6 +1,8 @@
 
 #include "Utils/Random.h"
 
+#include <numbers>
+
 namespace Expanse
 {
 	/*
@@ -63,13 +65,14 @@ namespace Expanse
 
 	float PerlinNoise(FPoint pos, uint32_t seed)
 	{
-		const auto seedx = Squirrel3(0, seed);
-		const auto seedy = Squirrel3(1, seed);
+		auto ease = [](float t) {
+			return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
+		};
 
 		auto get_grad = [=](int px, int py){
-			const float gx = UniformFloat(Squirrel3(Point{px, py}, seedx), -1.0f, 1.0f);
-			const float gy = UniformFloat(Squirrel3(Point{px, py}, seedy), -1.0f, 1.0f);
-			return FPoint{ gx, gy };
+			const auto noise = Squirrel3(Point{ px, py }, seed);
+			const auto angle = UniformFloat(noise, 0.0f, 2.0f * std::numbers::pi_v<float>);
+			return FPoint{ std::sin(angle), std::cos(angle) };
 		};
 
 		const auto fx = std::floor(pos.x);
@@ -98,13 +101,14 @@ namespace Expanse
 			DotProduct(grads[3], offsets[3]),
 		};
 
-		const float sx = pos.x - fx;
-		const float sy = pos.y - fy;
+		const float sx = ease(pos.x - fx);
+		const float sy = ease(pos.y - fy);
 
 		const float v0 = Lerp(dots[0], dots[1], sy);
 		const float v1 = Lerp(dots[2], dots[3], sy);
+		const float v = Lerp(v0, v1, sx);
 
-		return Lerp(v0, v1, sx);
+		return std::clamp((v + 0.55f) / 1.1f, 0.0f, 1.0f);
 	}
 
 	/*
