@@ -322,9 +322,9 @@ namespace Expanse::Game::Terrain
 		return cells;
 	}
 
-	TerrainMeshData GenerateTerrainMesh(World& world, Point chunk_pos)
+	std::future<TerrainMeshData> GenerateTerrainMesh(World& world, Point chunk_pos)
 	{
 		const auto chunk_cells_ex = GetExtendedChunkCells(world, chunk_pos);
-		return GenerateTerrainMesh(chunk_cells_ex);
+		return std::async(std::launch::async, [=](){ return GenerateTerrainMesh(chunk_cells_ex); });
 	}
 }

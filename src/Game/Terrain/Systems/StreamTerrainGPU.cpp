@@ -30,6 +30,12 @@ namespace Expanse::Game::Terrain
 		}
 	}
 
+
+	struct FutureTerrainMesh
+	{
+		std::future<TerrainMeshData> data;
+	};
+
 	LoadChunksToGPU::LoadChunksToGPU(World& w, Render::IRenderer* r)
 		: ISystem(w)
 		, renderer(r)
@@ -70,22 +76,35 @@ namespace Expanse::Game::Terrain
 	{
 		const auto gen_entities = GatherChunksToLoad();
 
-		// Generate meshes for them
-
+		// Generate meshes for them asynchronously
 		for (const auto ent : gen_entities)
 		{
 			auto* chunk = world.entities.GetComponent<TerrainChunk>(ent);
 			assert(chunk);
+			chunk->use_count++;
 
-			auto* render_data = world.entities.GetComponent<TerrainMesh>(ent);
-			if (!render_data) {
-				chunk->use_count++;
-				render_data = world.entities.AddComponent<TerrainMesh>(ent);
-			}
-
-			const auto mesh_data = GenerateTerrainMesh(world, chunk->position);
-			UploadTerrainMeshData(*render_data, mesh_data);
+			auto* future_mesh = world.entities.GetOrAddComponent<FutureTerrainMesh>(ent);
+			future_mesh->data = GenerateTerrainMesh(world, chunk->position);
+			//UploadTerrainMeshData(*render_data, mesh_data);
 		};
+
+		// Upload generated meshes
+		std::vector<ecs::Entity> loaded_ents;
+		world.entities.ForEach<FutureTerrainMesh>([&](auto ent, FutureTerrainMesh& future_mesh)
+		{
+			const auto status = future_mesh.data.wait_for(std::chrono::seconds(0));
+			if (status == std::future_status::ready)
+			{
+				const auto data = future_mesh.data.get();
+				auto* mesh = world.entities.GetOrAddComponent<TerrainMesh>(ent);
+				UploadTerrainMeshData(*mesh, data);
+
+				loaded_ents.push_back(ent);
+			}
+		});
+		for (auto ent : loaded_ents) {
+			world.entities.RemoveComponent<FutureTerrainMesh>(ent);
+		}
 	}
 
 	std::vector<ecs::Entity> LoadChunksToGPU::GatherChunksToLoad() const
@@ -107,12 +126,12 @@ namespace Expanse::Game::Terrain
 		// gather not loaded chunks in view
 		world.entities.ForEach<TerrainChunk>([this, &load_map](auto ent, const TerrainChunk& chunk)
 		{
-			if (!world.entities.HasComponent<TerrainMesh>(ent) && load_map.IndexIsValid(chunk.position)) {
+			if (!world.entities.HasAnyComponent<TerrainMesh, FutureTerrainMesh>(ent) && load_map.IndexIsValid(chunk.position)) {
 				load_map[chunk.position] = true;
 			}
 		});
 
-		// gather chunks to update
+		// gather chunks to update (update these one even if async operation is already running)
 		world.entities.ForEach<Event::ChunkLoaded, TerrainChunk>([&load_map](auto ent, const Event::ChunkLoaded&, const TerrainChunk& chunk)
 		{
 			for (Point off : Offset::Neighbors8) {
@@ -127,7 +146,7 @@ namespace Expanse::Game::Terrain
 		for (Point pt : utils::rect_points(load_map.GetRect()))
 		{
 			const auto ent = map->chunks[pt];
-			if (load_map[pt] && ent) {
+			if (load_map[pt] && ent && world.entities.HasComponent<TerrainChunk>(ent)) {
 				gen_entities.push_back(ent);
 			}
 		}

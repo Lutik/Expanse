@@ -32,5 +32,5 @@ namespace Expanse::Game::Terrain
 		TerrainTextureSlots tex_slots;
 	};
 
-	TerrainMeshData GenerateTerrainMesh(World& world, Point chunk_pos);
+	std::future<TerrainMeshData> GenerateTerrainMesh(World& world, Point chunk_pos);
 }

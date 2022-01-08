@@ -29,7 +29,7 @@ namespace Expanse::Game::Terrain
 
 	std::future<Array2D<TerrainCell>> TerrainLoader_Procedural::LoadChunk(Point chunk_pos)
 	{
-		return std::async([this, chunk_pos](){ return LoadChunk_Internal(chunk_pos); });
+		return std::async(std::launch::async, [this, chunk_pos](){ return LoadChunk_Internal(chunk_pos); });
 	}
 
 	Array2D<TerrainCell> TerrainLoader_Procedural::LoadChunk_Internal(Point chunk_pos)
