@@ -157,6 +157,7 @@
     <ClInclude Include="..\..\src\Utils\Bounds.h" />
     <ClInclude Include="..\..\src\Utils\Logger\Logger.h" />
     <ClInclude Include="..\..\src\Utils\Math.h" />
+    <ClInclude Include="..\..\src\Utils\PerlinNoiseGenerator.h" />
     <ClInclude Include="..\..\src\Utils\Random.h" />
     <ClInclude Include="..\..\src\Utils\RectPoints.h" />
     <ClInclude Include="..\..\src\Utils\StaticArray2D.h" />
@@ -166,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Utils\Logger\Logger.cpp" />
+    <ClCompile Include="..\..\src\Utils\PerlinNoiseGenerator.cpp" />
     <ClCompile Include="..\..\src\Utils\Random.cpp" />
     <ClCompile Include="..\..\src\Utils\FileUtils.cpp" />
   </ItemGroup>

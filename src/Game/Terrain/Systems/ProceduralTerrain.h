@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game/Terrain/Systems/TerrainLoader.h"
+#include "Utils/PerlinNoiseGenerator.h"
 
 namespace Expanse::Game::Terrain
 {
@@ -13,9 +14,9 @@ namespace Expanse::Game::Terrain
 
 	private:
 		uint32_t type_seeds[3];
-		uint32_t height_seeds[2];
 
-		float GetHeightAt(Point cell_pos) const;
 		TerrainType GetTerrainAt(Point cell_pos) const;
+
+		PerlinNoiseGenerator height_gen;
 	};
 }
