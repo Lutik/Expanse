@@ -69,6 +69,16 @@ namespace Expanse::ecs
 			return GetComponentImpl<Comp>(entity);
 		}
 
+		template<typename Comp, typename... Args>
+		Comp* GetOrAddComponent(Entity entity, Args&&... args)
+		{
+			auto* comp = GetComponent<Comp>(entity);
+			if (!comp) {
+				comp = AddComponent<Comp>(entity, std::forward<Args>(args)...);
+			}
+			return comp;
+		}
+
 		template<typename Comp>
 		const Comp* GetComponent(Entity entity) const
 		{
@@ -102,6 +112,12 @@ namespace Expanse::ecs
 			assert(HasEntity(entity));
 
 			return entities[entity.Index()].HasComponent(CompTypeIndex<Comp>);
+		}
+
+		template<typename... Comp>
+		bool HasAnyComponent(Entity entity) const
+		{
+			return (HasComponent<Comp>(entity) || ...);
 		}
 
 		template<typename Comp>
