@@ -10,14 +10,11 @@ namespace Expanse::Render
 		BufferData() = default;
 		BufferData(const void* data, size_t sz) : ptr(data), size(sz) {}
 
-		template<class Elem>
-		BufferData(const std::vector<Elem>& vec) : ptr(vec.data()), size(vec.size() * sizeof(Elem)) {}
-
-		template<class Elem, auto N>
-		BufferData(const std::array<Elem, N>& arr) : ptr(arr.data()), size(arr.size() * sizeof(Elem)) {}
-
-		template<class Elem, auto N>
-		BufferData(const Elem (*arr)[N]) : ptr(arr), size(N * sizeof(Elem)) {}
+		template<std::ranges::contiguous_range Rng>
+		BufferData(const Rng& range)
+			: ptr(std::ranges::data(range))
+			, size(std::ranges::size(range) * sizeof(std::ranges::range_value_t<Rng>))
+		{}
 
 		const void* ptr = nullptr;
 		size_t size = 0;

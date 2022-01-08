@@ -71,20 +71,29 @@ namespace Expanse::Render
 		virtual void SetMeshIndices(Mesh mesh, BufferData data, size_t index_size) = 0;
 		virtual void SetMeshPrimitiveType(Mesh mesh, PrimitiveType prim_type) = 0;
 
-		template<class Vertex>
-		void SetMeshVertices(Mesh mesh, const std::vector<Vertex>& vertices)
+		template<std::ranges::contiguous_range VertexRange>
+		void SetMeshVertices(Mesh mesh, const VertexRange& vertices)
 		{
-			SetMeshVertices(mesh, vertices, VertexFormat<Vertex>);
+			SetMeshVertices(mesh, vertices, VertexFormat<std::ranges::range_value_t<VertexRange>>);
 		}
 
-		template<class Index>
-		void SetMeshIndices(Mesh mesh, const std::vector<Index>& indices)
+		template<std::ranges::contiguous_range IndexRange>
+		void SetMeshIndices(Mesh mesh, const IndexRange& indices)
 		{
-			SetMeshIndices(mesh, indices, sizeof(Index));
+			SetMeshIndices(mesh, indices, sizeof(std::ranges::range_value_t<IndexRange>));
 		}
 
-		template<class Vertex, class Index>
-		Mesh CreateMesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, PrimitiveType prim_type = PrimitiveType::Triangles)
+		template<std::ranges::contiguous_range VertexRange>
+		Mesh CreateMesh(const VertexRange& vertices, PrimitiveType prim_type = PrimitiveType::Triangles)
+		{
+			auto mesh = CreateMesh();
+			SetMeshVertices(mesh, vertices);
+			SetMeshPrimitiveType(mesh, prim_type);
+			return mesh;
+		}
+
+		template<std::ranges::contiguous_range VertexRange, std::ranges::contiguous_range IndexRange>
+		Mesh CreateMesh(const VertexRange& vertices, const IndexRange& indices, PrimitiveType prim_type = PrimitiveType::Triangles)
 		{
 			auto mesh = CreateMesh();
 			SetMeshVertices(mesh, vertices);
