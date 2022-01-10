@@ -33,6 +33,9 @@
     <ClCompile Include="..\src\GUI\LogWindow.cpp">
       <Filter>src\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\GUI\DebugWindow.cpp">
+      <Filter>src\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\SDL_Utils.h">
@@ -49,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="..\src\AppState.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\GUI\DebugWindow.h">
+      <Filter>src\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

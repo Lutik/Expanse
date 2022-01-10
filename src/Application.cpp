@@ -3,6 +3,7 @@
 #include "backends/imgui_impl_sdl.h"
 #include "GUI/ImGuiRenderer.h"
 #include "GUI/LogWindow.h"
+#include "GUI/DebugWindow.h"
 
 #include "Render/SpriteBatch.h"
 #include "Utils/Random.h"
@@ -194,7 +195,8 @@ namespace Expanse
 
         auto gui_system = systems->AddSystem<Game::RenderGUISystem>(gui_render);
         {
-            gui_system->AddSystem<LogWindowSystem>();
+            //gui_system->AddSystem<LogWindowSystem>();
+            gui_system->AddSystem<DebugWindowSystem>();
         }
     }
 

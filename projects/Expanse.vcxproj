@@ -162,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Application.cpp" />
+    <ClCompile Include="..\src\GUI\DebugWindow.cpp" />
     <ClCompile Include="..\src\GUI\ImGuiRenderer.cpp" />
     <ClCompile Include="..\src\GUI\LogWindow.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
@@ -170,6 +171,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\Application.h" />
     <ClInclude Include="..\src\AppState.h" />
+    <ClInclude Include="..\src\GUI\DebugWindow.h" />
     <ClInclude Include="..\src\GUI\ImGuiRenderer.h" />
     <ClInclude Include="..\src\GUI\LogWindow.h" />
     <ClInclude Include="..\src\SDL_Utils.h" />
