@@ -34,6 +34,9 @@
     <ClInclude Include="..\..\src\Utils\PerlinNoiseGenerator.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Utils\Async.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utils">
@@ -54,6 +57,9 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Utils\PerlinNoiseGenerator.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Utils\Async.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>

@@ -4,6 +4,7 @@
 
 #include "Game/Utils/NeighbourCells.h"
 #include "Utils/Utils.h"
+#include "Utils/Async.h"
 #include "Game/CoordSystems.h"
 
 #include <map>
@@ -244,7 +245,7 @@ namespace Expanse::Game::Terrain
 		});
 	}
 
-	TerrainMeshData GenerateTerrainMesh(const Array2D<TerrainCell>& chunk_cells)
+	TerrainMeshData GenerateTerrainMeshFromCells(const Array2D<TerrainCell>& chunk_cells)
 	{
 		TerrainMeshData data;
 
@@ -325,6 +326,6 @@ namespace Expanse::Game::Terrain
 	std::future<TerrainMeshData> GenerateTerrainMesh(World& world, Point chunk_pos)
 	{
 		const auto chunk_cells_ex = GetExtendedChunkCells(world, chunk_pos);
-		return std::async(std::launch::async, [=](){ return GenerateTerrainMesh(chunk_cells_ex); });
+		return utils::Async(GenerateTerrainMeshFromCells, chunk_cells_ex);
 	}
 }

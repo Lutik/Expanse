@@ -7,6 +7,7 @@
 #include "Utils/Random.h"
 #include "Utils/RectPoints.h"
 #include "Utils/Utils.h"
+#include "Utils/Async.h"
 
 namespace Expanse::Game::Terrain
 {
@@ -29,7 +30,7 @@ namespace Expanse::Game::Terrain
 
 	std::future<Array2D<TerrainCell>> TerrainLoader_Procedural::LoadChunk(Point chunk_pos)
 	{
-		return std::async(std::launch::async, [this, chunk_pos](){ return LoadChunk_Internal(chunk_pos); });
+		return utils::Async(&TerrainLoader_Procedural::LoadChunk_Internal, this, chunk_pos);
 	}
 
 	Array2D<TerrainCell> TerrainLoader_Procedural::LoadChunk_Internal(Point chunk_pos)
