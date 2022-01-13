@@ -1,12 +1,10 @@
 #include "Utils/Logger/Logger.h"
 
 #include <fstream>
-#include <type_traits>
+#include <mutex>
 
 namespace Expanse::Log
 {
-	
-
 	class TextFileSink : public ILogSink
 	{
 	public:
@@ -26,29 +24,32 @@ namespace Expanse::Log
 
 	/**********************************************************************************/
 
-	// TODO: make it thread-safe
 	class Logger
 	{
 	public:
 
 		void AddSink(std::shared_ptr<ILogSink> sink)
 		{
+			std::scoped_lock lock(mtx);
 			sinks.push_back(sink);
 		}
 
 		void RemoveSink(std::shared_ptr<ILogSink> sink)
 		{
+			std::scoped_lock lock(mtx);
 			std::erase(sinks, sink);
 		}
 
 		void Write(const std::string& msg)
 		{
+			std::scoped_lock lock(mtx);
 			for (auto& sink : sinks) {
 				sink->Write(msg);
 			}
 		}
 
 	private:
+		std::mutex mtx;
 		std::vector<std::shared_ptr<ILogSink>> sinks;
 	};
 
