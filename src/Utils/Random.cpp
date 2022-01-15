@@ -128,7 +128,7 @@ namespace Expanse
 	* Convenience functions
 	*/
 
-	static uint32_t debug_rng = GetRandomSeed();
+	static thread_local uint32_t debug_rng = GetRandomSeed();
 
 	float RandomFloat(float a, float b)
 	{

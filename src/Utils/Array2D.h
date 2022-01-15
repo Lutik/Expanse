@@ -16,7 +16,7 @@ namespace Expanse
 	public:
 		Array2D() = default;
 
-		Array2D(const Rect& rect)
+		explicit Array2D(const Rect& rect)
 			: _rect(rect)
 		{
 			assert(rect.w > 0 && rect.h > 0);

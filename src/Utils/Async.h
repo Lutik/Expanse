@@ -7,7 +7,6 @@ namespace Expanse::utils
 {
 	class ThreadPool
 	{
-		using Task = std::function<void()>;
 	public:
 		ThreadPool(unsigned int thread_count = std::thread::hardware_concurrency());
 		~ThreadPool();

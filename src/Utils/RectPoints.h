@@ -74,8 +74,6 @@ namespace Expanse::utils
 		};
 	}
 
-	//using IterOrder = details::IterRectLB2RT;
-
 	template<details::RectIterOrder IterOrder>
 	class rect_points_base : public std::ranges::view_interface<rect_points_base<IterOrder>>
 	{
