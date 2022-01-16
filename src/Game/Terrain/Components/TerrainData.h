@@ -14,10 +14,17 @@ namespace Expanse::Game::Terrain
 		Stones
 	};
 
-	struct TerrainCell
+	struct TerrainCellsArray
 	{
-		TerrainType type = TerrainType::Dirt;
-		int height = 0;
+		Array2D<TerrainType> types;
+		Array2D<float> heights;
+
+		TerrainCellsArray() = default;
+
+		explicit TerrainCellsArray(const Rect& area)
+			: types(area, TerrainType::Dirt)
+			, heights(area, 0.0f)
+		{}
 	};
 
 	struct TerrainChunk
@@ -25,11 +32,11 @@ namespace Expanse::Game::Terrain
 		static constexpr int Size = 32;
 		static constexpr Rect Area = {0, 0, Size, Size};
 
-
 		Point position;
-		Array2D<TerrainCell> cells;
 		int use_count = 0;
+		TerrainCellsArray cells;
 
+		TerrainChunk() = default;
 
 		explicit TerrainChunk(Point pos)
 			: position(pos)
@@ -40,7 +47,7 @@ namespace Expanse::Game::Terrain
 	struct AsyncLoadingChunk
 	{
 		Point position;
-		std::future<Array2D<TerrainCell>> cells;
+		std::future<TerrainCellsArray> data;
 	};
 
 

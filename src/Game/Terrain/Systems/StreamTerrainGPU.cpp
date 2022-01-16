@@ -85,7 +85,6 @@ namespace Expanse::Game::Terrain
 
 			auto* future_mesh = world.entities.GetOrAddComponent<FutureTerrainMesh>(ent);
 			future_mesh->data = GenerateTerrainMesh(world, chunk->position);
-			//UploadTerrainMeshData(*render_data, mesh_data);
 		};
 
 		// Upload generated meshes

@@ -12,8 +12,8 @@
 namespace Expanse::Game::Terrain
 {
 	static const std::vector<NoiseHarmonics> height_harmonics = {
-		{ 0.05f, -5.0f, 5.0f },
-		{ 0.27f, -3.0f, 3.0f },
+		{ 0.05f, -1.0f, 1.0f },
+		{ 0.27f, -0.5f, 0.5f },
 	};
 
 	TerrainLoader_Procedural::TerrainLoader_Procedural(uint32_t seed)
@@ -28,23 +28,27 @@ namespace Expanse::Game::Terrain
 		return true;
 	}
 
-	std::future<Array2D<TerrainCell>> TerrainLoader_Procedural::LoadChunk(Point chunk_pos)
+	std::future<TerrainCellsArray> TerrainLoader_Procedural::LoadChunk(Point chunk_pos)
 	{
 		return utils::Async(&TerrainLoader_Procedural::LoadChunk_Internal, this, chunk_pos);
 	}
 
-	Array2D<TerrainCell> TerrainLoader_Procedural::LoadChunk_Internal(Point chunk_pos)
+	TerrainCellsArray TerrainLoader_Procedural::LoadChunk_Internal(Point chunk_pos)
 	{
-		Array2D<TerrainCell> cells{ TerrainChunk::Area };
+		TerrainCellsArray cells{ TerrainChunk::Area };
 
-		for (const auto local_pos : utils::rect_points{ cells.GetRect() })
+		// load terrain types
+		for (const auto local_pos : utils::rect_points{ cells.types.GetRect() })
 		{
 			const auto cell_pos = Coords::LocalToCell(local_pos, chunk_pos, TerrainChunk::Size);
+			cells.types[local_pos] = GetTerrainAt(cell_pos);
+		}
 
-			auto& cell = cells[local_pos];
-
-			cell.type = GetTerrainAt(cell_pos);
-			cell.height = static_cast<int>(height_gen.Get(FPoint{ cell_pos }));
+		// load heightmap
+		for (const auto local_pos : utils::rect_points{ cells.heights.GetRect() })
+		{
+			const auto cell_pos = Coords::LocalToCell(local_pos, chunk_pos, TerrainChunk::Size);
+			cells.heights[local_pos] = height_gen.Get(FPoint{ cell_pos });
 		}
 
 		return cells;

@@ -65,7 +65,7 @@ namespace Expanse::Game::Terrain
 				{
 					auto ent = world.entities.CreateEntity();
 					auto* loading_chunk = world.entities.AddComponent<AsyncLoadingChunk>(ent, chunk_pos);
-					loading_chunk->cells = loader->LoadChunk(chunk_pos);
+					loading_chunk->data = loader->LoadChunk(chunk_pos);
 				}
 			}
 
@@ -77,11 +77,11 @@ namespace Expanse::Game::Terrain
 		std::vector<ecs::Entity> loaded_chunks;
 		world.entities.ForEach<AsyncLoadingChunk>([&, this](auto ent, AsyncLoadingChunk& async_chunk)
 		{
-			const auto status = async_chunk.cells.wait_for(std::chrono::seconds(0));
+			const auto status = async_chunk.data.wait_for(std::chrono::seconds(0));
 			if (status == std::future_status::ready)
 			{
 				auto* chunk = world.entities.AddComponent<TerrainChunk>(ent, async_chunk.position);
-				chunk->cells = async_chunk.cells.get();
+				chunk->cells = async_chunk.data.get();
 				
 				world.entities.AddComponent<Event::ChunkLoaded>(ent);
 

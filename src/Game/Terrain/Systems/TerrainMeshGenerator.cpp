@@ -16,9 +16,6 @@ namespace Expanse::Game::Terrain
 	// Cell geometry configuration
 	namespace CellGeometry
 	{
-		// How much does one unit of height takes in scene coordinates
-		static constexpr float UnitHeight = 0.15f;
-
 		/*
 		* Vertices configuration
 		* 1 - 2 - 3
@@ -114,7 +111,7 @@ namespace Expanse::Game::Terrain
 		indices.insert(indices.end(), rebased_indices.begin(), rebased_indices.end());
 	}
 
-	std::vector<glm::vec3> CalcVertexPositions(Point cell_pos, const Array2D<TerrainCell>& chunk_cells)
+	std::vector<glm::vec3> CalcVertexPositions(Point cell_pos, const Array2D<float>& chunk_heightmap)
 	{
 		auto pos_to_vertex = [pos = FPoint{ cell_pos }](FPoint vp) {
 			return glm::vec3{ pos.x + vp.x, pos.y + vp.y, 0.0f };
@@ -123,9 +120,7 @@ namespace Expanse::Game::Terrain
 		std::vector<glm::vec3> positions{ vertices_gen.begin(), vertices_gen.end() };
 
 
-		const auto neighbours = SelectNeighbours(cell_pos, chunk_cells, [](const TerrainCell& cell) {
-			return cell.height * CellGeometry::UnitHeight;
-		});
+		const auto neighbours = SelectNeighbours(cell_pos, chunk_heightmap);
 
 		utils::for_each_zipped(positions, CellGeometry::height_weights, [&neighbours](auto& pos, const auto& weights)
 		{
@@ -188,11 +183,9 @@ namespace Expanse::Game::Terrain
 		return glm::normalize(n);
 	}
 
-	std::vector<glm::vec3> CalcVertexNormals(Point cell_pos, const Array2D<TerrainCell>& chunk_cells)
+	std::vector<glm::vec3> CalcVertexNormals(Point cell_pos, const Array2D<float>& chunk_heightmap)
 	{
-		const auto nheights = SelectNeighbours(cell_pos, chunk_cells, [](const TerrainCell& cell) {
-			return cell.height * CellGeometry::UnitHeight;
-		});
+		const auto nheights = SelectNeighbours(cell_pos, chunk_heightmap);
 
 		std::vector<glm::vec3> normals(CellGeometry::CellVertexCount, glm::vec3{ 0.0f, 0.0f, 1.0f });
 
@@ -204,24 +197,24 @@ namespace Expanse::Game::Terrain
 	}
 
 	// Distributes terrain types in chunk into material texture slots
-	std::pair<Array2D<uint8_t>, TerrainTextureSlots> AllocateTerrainTextureSlots(const Array2D<TerrainCell>& chunk_cells)
+	std::pair<Array2D<uint8_t>, TerrainTextureSlots> AllocateTerrainTextureSlots(const Array2D<TerrainType>& chunk_terrain)
 	{
 		std::pair<Array2D<uint8_t>, TerrainTextureSlots> result;
 
 		// find all types, assign them indices
 		auto& types = result.second;
-		for (const auto& cell : chunk_cells) {
-			if (!utils::contains(types, cell.type)) {
-				types.push_back(cell.type);
+		for (const auto& type : chunk_terrain) {
+			if (!utils::contains(types, type)) {
+				types.push_back(type);
 			}
 		}
 		types.resize(4, TerrainType::Grass);
 
 		// create map of all cells terrain slots
 		auto& arr = result.first;
-		arr = Array2D<uint8_t>{ chunk_cells.GetRect() };
-		auto get_index = [&types](const TerrainCell& cell) { return static_cast<uint8_t>(std::ranges::find(types, cell.type) - types.begin()); };
-		std::transform(chunk_cells.begin(), chunk_cells.end(), arr.begin(), get_index);
+		arr = Array2D<uint8_t>{ chunk_terrain.GetRect() };
+		auto get_index = [&types](const TerrainType& type){ return static_cast<uint8_t>(std::ranges::find(types, type) - types.begin()); };
+		std::transform(chunk_terrain.begin(), chunk_terrain.end(), arr.begin(), get_index);
 
 		return result;
 	}
@@ -245,12 +238,12 @@ namespace Expanse::Game::Terrain
 		});
 	}
 
-	TerrainMeshData GenerateTerrainMeshFromCells(const Array2D<TerrainCell>& chunk_cells)
+	TerrainMeshData GenerateTerrainMeshFromCells(const Array2D<TerrainType>& chunk_terrain, const Array2D<float>& chunk_heightmap)
 	{
 		TerrainMeshData data;
 
 		// Distribute terrain types to textures slots
-		const auto& [slot_map, slots] = AllocateTerrainTextureSlots(chunk_cells);
+		const auto& [slot_map, slots] = AllocateTerrainTextureSlots(chunk_terrain);
 
 		// Create vertex and index buffers
 		const auto chunk_cells_count = TerrainChunk::Size * TerrainChunk::Size;
@@ -266,10 +259,10 @@ namespace Expanse::Game::Terrain
 			auto cell_verts = EmitCellVertices(data.vertices);
 
 			// Calculate 3D positions of vertices in world
-			const auto positions = CalcVertexPositions(cell_pos, chunk_cells);
+			const auto positions = CalcVertexPositions(cell_pos, chunk_heightmap);
 
 			// Calculate 3D normals of vertices in world
-			const auto normals = CalcVertexNormals(cell_pos, chunk_cells);
+			const auto normals = CalcVertexNormals(cell_pos, chunk_heightmap);
 
 			WriteVertexPositions(cell_verts, positions);
 			WriteVertexUVs(cell_verts, 0.5f, positions);
@@ -281,9 +274,9 @@ namespace Expanse::Game::Terrain
 	}
 
 
-	Array2D<TerrainCell> GetExtendedChunkCells(World& world, Point chunk_pos)
+	TerrainCellsArray GetExtendedChunkCells(World& world, Point chunk_pos)
 	{
-		Array2D<TerrainCell> cells{ Inflated(TerrainChunk::Area, 1, 1) };
+		TerrainCellsArray cells{ Inflated(TerrainChunk::Area, 1, 1) };
 
 		auto* map = world.globals.Get<ChunkMap>();
 		if (!map || !map->chunks.IndexIsValid(chunk_pos))
@@ -294,7 +287,8 @@ namespace Expanse::Game::Terrain
 		if (chunk_ent)
 		{
 			if (auto* chunk = world.entities.GetComponent<TerrainChunk>(chunk_ent)) {
-				CopyArrayData(chunk->cells, cells, chunk->cells.GetRect(), LeftBottom(chunk->cells.GetRect()));
+				CopyArrayData(chunk->cells.types, cells.types, chunk->cells.types.GetRect(), LeftBottom(chunk->cells.types.GetRect()));
+				CopyArrayData(chunk->cells.heights, cells.heights, chunk->cells.heights.GetRect(), LeftBottom(chunk->cells.heights.GetRect()));
 			}
 		}
 
@@ -304,19 +298,16 @@ namespace Expanse::Game::Terrain
 		{
 			const Point nchunk_pos = chunk_pos + offset;
 
-			const auto dst_area = Intersection(cells.GetRect(), TerrainChunk::Area + offset * TerrainChunk::Size);
+			const auto dst_area = Intersection(cells.types.GetRect(), TerrainChunk::Area + offset * TerrainChunk::Size);
 			const auto src_area = dst_area - offset * TerrainChunk::Size;
 
 			const auto nchunk_ent = map->chunks.GetOrDef(nchunk_pos, ecs::Entity{});
 			if (nchunk_ent)
 			{
 				if (auto* chunk = world.entities.GetComponent<TerrainChunk>(nchunk_ent)) {
-					CopyArrayData(chunk->cells, cells, src_area, LeftBottom(dst_area));
+					CopyArrayData(chunk->cells.types, cells.types, src_area, LeftBottom(dst_area));
+					CopyArrayData(chunk->cells.heights, cells.heights, src_area, LeftBottom(dst_area));
 				}
-			}
-			else
-			{
-				// TODO: try to duplicate data from central chunk
 			}
 		}
 
@@ -326,6 +317,6 @@ namespace Expanse::Game::Terrain
 	std::future<TerrainMeshData> GenerateTerrainMesh(World& world, Point chunk_pos)
 	{
 		const auto chunk_cells_ex = GetExtendedChunkCells(world, chunk_pos);
-		return utils::Async(GenerateTerrainMeshFromCells, chunk_cells_ex);
+		return utils::Async(GenerateTerrainMeshFromCells, chunk_cells_ex.types, chunk_cells_ex.heights);
 	}
 }

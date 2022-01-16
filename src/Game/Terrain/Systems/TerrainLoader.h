@@ -12,6 +12,6 @@ namespace Expanse::Game::Terrain
 
 		virtual bool HasChunk(Point chunk) const = 0;
 
-		virtual std::future<Array2D<TerrainCell>> LoadChunk(Point pos) = 0;
+		virtual std::future<TerrainCellsArray> LoadChunk(Point pos) = 0;
 	};
 }
