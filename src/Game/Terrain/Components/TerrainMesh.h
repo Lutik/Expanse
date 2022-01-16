@@ -6,7 +6,6 @@ namespace Expanse::Game::Terrain
 {
 	struct TerrainMesh
 	{
-		Render::Mesh mesh;
-		Render::Material material;
+		std::vector<std::pair<Render::Mesh, Render::Material>> layers;
 	};
 }

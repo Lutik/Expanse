@@ -28,6 +28,15 @@ namespace Expanse::Game::Terrain
 			const auto chunks_area = Coords::CellRectChunkBounds(cell_rect, TerrainChunk::Size);
 			return chunks_area;
 		}
+		
+		void FreeTerrainMesh(const TerrainMesh& rdata, Render::IRenderer* renderer)
+		{
+			for (const auto [mesh, material] : rdata.layers)
+			{
+				renderer->FreeMesh(mesh);
+				//renderer->FreeMaterial(material);
+			}
+		}
 	}
 
 
@@ -40,36 +49,38 @@ namespace Expanse::Game::Terrain
 		: ISystem(w)
 		, renderer(r)
 	{
-		terrain_material = renderer->CreateMaterial("content/materials/terrain.json");
-	}
-
-	void SetTerrainMaterialTextures(Render::IRenderer* renderer, Render::Material material, const TerrainTextureSlots& terrain_slots)
-	{
-		static const std::map<TerrainType, std::string> terrain_textures = {
-			{ TerrainType::Dirt, "content/textures/dirt.json" },
-			{ TerrainType::Grass, "content/textures/grass.json" },
-			{ TerrainType::Stones, "content/textures/stones.json" }
+		static const std::vector<std::string> terrain_textures = {
+			"content/textures/dirt.json",
+			"content/textures/grass.json",
+			"content/textures/stones.json"
 		};
 
-		assert(terrain_slots.size() == 4u);
+		const auto base_mat = renderer->CreateMaterial("content/materials/terrain.json");
 
-		for (size_t i : std::views::iota(0u, terrain_slots.size())) {
-			renderer->SetMaterialParameter(material, std::format("tex{}", i), terrain_textures.at(terrain_slots[i]));
+		for (const auto& tex_name : terrain_textures)
+		{
+			auto material = renderer->CreateMaterial(base_mat);
+			auto tex = renderer->CreateTexture(tex_name);
+			renderer->SetMaterialParameter(material, "tex", tex);
+
+			terrain_materials.push_back(material);
 		}
 	}
 
 	void LoadChunksToGPU::UploadTerrainMeshData(TerrainMesh& rdata, const TerrainMeshData& data)
 	{
-		// create mesh
-		if (!rdata.mesh.IsValid())
-			rdata.mesh = renderer->CreateMesh();
-		renderer->SetMeshVertices(rdata.mesh, data.vertices, TerrainVertexFormat);
-		renderer->SetMeshIndices(rdata.mesh, data.indices);
+		// TODO: reuse same meshes, instead of destroying them and creating new
+		FreeTerrainMesh(rdata, renderer);
+		rdata.layers.clear();
 
-		// create material
-		if (!rdata.material.IsValid())
-			rdata.material = renderer->CreateMaterial(terrain_material);
-		SetTerrainMaterialTextures(renderer, rdata.material, data.tex_slots);
+		for (auto& layer : data.layers)
+		{
+			auto mesh = renderer->CreateMesh();
+			renderer->SetMeshVertices(mesh, layer.vertices, TerrainVertexFormat);
+			renderer->SetMeshIndices(mesh, layer.indices);
+
+			rdata.layers.emplace_back(mesh, terrain_materials[layer.type]);
+		}
 	}
 
 	void LoadChunksToGPU::Update()
@@ -170,8 +181,7 @@ namespace Expanse::Game::Terrain
 		{
 			if (!Contains(visible_area, chunk.position))
 			{
-				renderer->FreeMaterial(rdata.material);
-				renderer->FreeMesh(rdata.mesh);
+				FreeTerrainMesh(rdata, renderer);
 
 				freed_chunks.push_back(ent);
 
@@ -183,8 +193,4 @@ namespace Expanse::Game::Terrain
 			world.entities.RemoveComponent<TerrainMesh>(ent);
 		}
 	}
-
-	/*************************************************************************************************/
-
-	
 }

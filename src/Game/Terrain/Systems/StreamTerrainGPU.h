@@ -20,7 +20,7 @@ namespace Expanse::Game::Terrain
 
 	private:
 		Render::IRenderer* renderer = nullptr;
-		Render::Material terrain_material;
+		std::vector<Render::Material> terrain_materials;
 
 		void UploadTerrainMeshData(TerrainMesh& rdata, const TerrainMeshData& data);
 

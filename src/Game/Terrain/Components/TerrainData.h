@@ -7,12 +7,7 @@
 
 namespace Expanse::Game::Terrain
 {
-	enum class TerrainType
-	{
-		Dirt,
-		Grass,
-		Stones
-	};
+	using TerrainType = int;
 
 	struct TerrainCellsArray
 	{
@@ -22,8 +17,8 @@ namespace Expanse::Game::Terrain
 		TerrainCellsArray() = default;
 
 		explicit TerrainCellsArray(const Rect& area)
-			: types(area, TerrainType::Dirt)
-			, heights(area, 0.0f)
+			: types(area, 0)
+			, heights({area.x, area.y, area.w + 1, area.h + 1}, 0.0f)
 		{}
 	};
 
@@ -31,6 +26,7 @@ namespace Expanse::Game::Terrain
 	{
 		static constexpr int Size = 32;
 		static constexpr Rect Area = {0, 0, Size, Size};
+		static constexpr Rect AreaVtx = {0, 0, Size+1, Size+1};
 
 		Point position;
 		int use_count = 0;

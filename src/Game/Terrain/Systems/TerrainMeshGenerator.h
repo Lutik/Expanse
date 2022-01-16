@@ -12,7 +12,6 @@ namespace Expanse::Game::Terrain
 		FPoint position;
 		FPoint uv;
 		glm::vec3 normal;
-		Render::Color color;
 	};
 
 	static const Render::VertexLayout TerrainVertexFormat = { sizeof(TerrainVertex),
@@ -20,16 +19,18 @@ namespace Expanse::Game::Terrain
 		{ Render::VertexElementUsage::POSITION, sizeof(TerrainVertex::position), offsetof(TerrainVertex, position), sizeof(float), false, false },
 		{ Render::VertexElementUsage::TEXCOORD0, sizeof(TerrainVertex::uv), offsetof(TerrainVertex, uv), sizeof(float), false, false },
 		{ Render::VertexElementUsage::NORMAL, sizeof(TerrainVertex::normal), offsetof(TerrainVertex, normal), sizeof(float), false, false },
-		{ Render::VertexElementUsage::COLOR, sizeof(TerrainVertex::color), offsetof(TerrainVertex, color), sizeof(uint8_t), true, false },
 	} };
 
-	using TerrainTextureSlots = std::vector<TerrainType>;
+	struct TerrainTypeMeshData
+	{
+		TerrainType type;
+		std::vector<TerrainVertex> vertices;
+		std::vector<uint16_t> indices;
+	};
 
 	struct TerrainMeshData
 	{
-		std::vector<TerrainVertex> vertices;
-		std::vector<uint16_t> indices;
-		TerrainTextureSlots tex_slots;
+		std::vector<TerrainTypeMeshData> layers;
 	};
 
 	std::future<TerrainMeshData> GenerateTerrainMesh(World& world, Point chunk_pos);

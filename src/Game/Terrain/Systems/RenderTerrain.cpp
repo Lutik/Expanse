@@ -34,8 +34,13 @@ namespace Expanse::Game::Terrain
 		{
 			const auto world_pos = Coords::LocalToWorld(FPoint{ 0.0f, 0.0f }, pos, world.world_origin, TerrainChunk::Size);
 			const auto scene_pos = Coords::WorldToScene(world_pos);
-			renderer->SetMaterialParameter(data.material, "chunk_pos", glm::vec2{ scene_pos.x, scene_pos.y });
-			renderer->Draw(data.mesh, data.material);
+			const auto scene_pos_mat = glm::vec2{ scene_pos.x, scene_pos.y };
+
+			for (const auto [mesh, material] : std::views::reverse(data.layers))
+			{
+				renderer->SetMaterialParameter(material, "chunk_pos", scene_pos_mat);
+				renderer->Draw(mesh, material);
+			}
 		}
 	}
 
