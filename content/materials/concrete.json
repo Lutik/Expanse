@@ -1,7 +1,0 @@
-{
-    "shader":"content/shaders/basic_textured.txt",
-    "parameters":{
-        "color":[1.0, 1.0, 1.0, 1.0],
-        "tex0":"content/textures/concrete.json"
-    }
-}

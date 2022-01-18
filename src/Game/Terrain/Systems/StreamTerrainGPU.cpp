@@ -49,19 +49,14 @@ namespace Expanse::Game::Terrain
 		: ISystem(w)
 		, renderer(r)
 	{
-		static const std::vector<std::string> terrain_textures = {
-			"content/textures/dirt.json",
-			"content/textures/grass.json",
-			"content/textures/stones.json"
+		static const std::vector<std::string> terrain_mats = {
+			"content/materials/terrain/dirt.json",
+			"content/materials/terrain/grass.json",
+			"content/materials/terrain/stones.json"
 		};
-
-		const auto base_mat = renderer->CreateMaterial("content/materials/terrain.json");
-
-		for (const auto& tex_name : terrain_textures)
+		for (const auto& mat_desc : terrain_mats)
 		{
-			auto material = renderer->CreateMaterial(base_mat);
-			auto tex = renderer->CreateTexture(tex_name);
-			renderer->SetMaterialParameter(material, "tex", tex);
+			auto material = renderer->CreateMaterial(mat_desc);
 
 			terrain_materials.push_back(material);
 		}
