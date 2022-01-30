@@ -39,6 +39,7 @@ namespace Expanse::Image
 	ColorFormat FormatFromChannels(int channels)
 	{
 		switch (channels) {
+			case 1: return ColorFormat::Red_8;
 			case 3: return ColorFormat::RGB_8;
 			case 4: return ColorFormat::RGBA_8;
 			default: return ColorFormat::Unsupported;

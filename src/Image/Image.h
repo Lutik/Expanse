@@ -9,8 +9,10 @@ namespace Expanse::Image
 	{
 		RGB_8,
 		RGBA_8,
+		Red_8,
 		RGB_16,
 		RGBA_16,
+		Red_16,
 		Unsupported
 	};
 	struct ImageData

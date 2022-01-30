@@ -118,8 +118,10 @@ namespace Expanse::Render::GL
 		{
 			case ColorFormat::RGB_8: return { GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE };
 			case ColorFormat::RGBA_8: return { GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE };
+			case ColorFormat::Red_8: return { GL_RED, GL_RED, GL_UNSIGNED_BYTE };
 			case ColorFormat::RGB_16: return { GL_RGB16, GL_RGB, GL_UNSIGNED_SHORT };
 			case ColorFormat::RGBA_16: return { GL_RGBA16, GL_RGBA, GL_UNSIGNED_SHORT };
+			case ColorFormat::Red_16: return { GL_RED, GL_RED, GL_UNSIGNED_BYTE };
 			default: return {};
 		}
 	}
@@ -155,7 +157,7 @@ namespace Expanse::Render::GL
 			glGenTextures(1, &id);
 		}
 
-		auto format = ImageFormatToGL(desc.image.format);
+		const auto format = ImageFormatToGL(desc.image.format);
 
 		glBindTexture(GL_TEXTURE_2D, id);
 		glTexImage2D(GL_TEXTURE_2D, 0, format.texture_format, desc.image.width, desc.image.height, 0, format.pixel_format, format.component_type, desc.image.data.get());
