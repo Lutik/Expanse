@@ -11,6 +11,7 @@ namespace Expanse::Game::Terrain
 	{
 		FPoint position;
 		FPoint uv;
+		FPoint mask_uv;
 		glm::vec3 normal;
 	};
 
@@ -18,6 +19,7 @@ namespace Expanse::Game::Terrain
 	{
 		{ Render::VertexElementUsage::POSITION, sizeof(TerrainVertex::position), offsetof(TerrainVertex, position), sizeof(float), false, false },
 		{ Render::VertexElementUsage::TEXCOORD0, sizeof(TerrainVertex::uv), offsetof(TerrainVertex, uv), sizeof(float), false, false },
+		{ Render::VertexElementUsage::TEXCOORD1, sizeof(TerrainVertex::mask_uv), offsetof(TerrainVertex, mask_uv), sizeof(float), false, false },
 		{ Render::VertexElementUsage::NORMAL, sizeof(TerrainVertex::normal), offsetof(TerrainVertex, normal), sizeof(float), false, false },
 	} };
 

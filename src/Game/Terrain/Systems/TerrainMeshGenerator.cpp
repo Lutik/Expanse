@@ -13,53 +13,210 @@
 
 namespace Expanse::Game::Terrain
 {
-	static constexpr size_t CellVertexCount = 4;
-	static constexpr Point CellVertices[CellVertexCount] = { {0, 0}, {0, 1}, {1, 0}, {1, 1} };
-	static constexpr uint16_t CellIndices[6] = { 0, 1, 2, 2, 1, 3 };
+	static constexpr uint16_t QuadIndices[6] = { 0, 1, 2, 2, 1, 3 };
+	struct TerrainVertexParams
+	{
+		FPoint pos;
+		std::vector<Point> points; // ofsets of cells contributing to height and normals (1 or 2)
+	};
 
-	glm::vec3 CalcNormal(Point vtx_pos, const Array2D<float>& heights)
+	struct TerrainMaskParams
+	{
+		uint8_t nmask;
+		std::array<FPoint, 4> uv;
+	};
+
+	struct TerrainQuadParams
+	{
+		std::array<TerrainVertexParams, 4> verts;
+		std::vector<TerrainMaskParams> blend;
+		uint8_t nmask = 0;
+	};
+
+	static const TerrainQuadParams FullQuad = {
+		.verts = {{
+			{ .pos = {0.0f, 0.0f}, .points = {{0, 0}} },
+			{ .pos = {0.0f, 1.0f}, .points = {{0, 1}} },
+			{ .pos = {1.0f, 0.0f}, .points = {{1, 0}} },
+			{ .pos = {1.0f, 1.0f}, .points = {{1, 1}} },
+		}},
+		.blend = {
+			{ .nmask = 0b0000'0000, .uv = {{ {0.25f, 0.25f}, {0.25f, 0.26f}, {0.26f, 0.25f}, {0.26f, 0.26f} }} },
+		},
+		.nmask = 0
+	};
+	static const TerrainQuadParams LeftBottomQuad = {
+		.verts = {{
+			{ .pos = {0.0f, 0.0f}, .points = {{0, 0}        } },
+			{ .pos = {0.0f, 0.5f}, .points = {{0, 0}, {0, 1}} },
+			{ .pos = {0.5f, 0.0f}, .points = {{0, 0}, {1, 0}} },
+			{ .pos = {0.5f, 0.5f}, .points = {{0, 1}, {1, 0}} },
+		}},
+		.blend = {
+			// corner
+			{.nmask = 0b0010'0000, .uv = {{ {0.75f, 0.75f}, {0.75f, 1.0f}, {1.0f, 0.75f}, {1.0f, 1.0f} }} },
+			// left side
+			{.nmask = 0b0010'1000, .uv = {{ {0.75f, 0.25f}, {0.75f, 0.5f}, {1.0f, 0.25f}, {1.0f, 0.5f} }} },
+			{.nmask = 0b0000'1000, .uv = {{ {0.75f, 0.25f}, {0.75f, 0.5f}, {1.0f, 0.25f}, {1.0f, 0.5f} }} },
+			// bottom side
+			{.nmask = 0b0110'0000, .uv = {{ {0.25f, 0.75f}, {0.25f, 1.0f}, {0.5f, 0.75f}, {0.5f, 1.0f} }} },
+			{.nmask = 0b0100'0000, .uv = {{ {0.25f, 0.75f}, {0.25f, 1.0f}, {0.5f, 0.75f}, {0.5f, 1.0f} }} },
+			// inner corner
+			{.nmask = 0b0110'1000, .uv = {{ {0.25f, 0.25f}, {0.5f, 0.25f}, {0.25f, 0.5f}, {0.5f, 0.5f} }} },
+			{.nmask = 0b0100'1000, .uv = {{ {0.25f, 0.25f}, {0.5f, 0.25f}, {0.25f, 0.5f}, {0.5f, 0.5f} }} },
+		},
+		.nmask = 0b0110'1000
+	};
+	static const TerrainQuadParams RightBottomQuad = {
+		.verts = {{
+			{.pos = {0.5f, 0.0f}, .points = {{0, 0}, {1, 0}} },
+			{.pos = {0.5f, 0.5f}, .points = {{0, 1}, {1, 0}} },
+			{.pos = {1.0f, 0.0f}, .points = {{1, 0}        } },
+			{.pos = {1.0f, 0.5f}, .points = {{1, 0}, {1, 1}} },
+		}},
+		.blend = {
+			// corner
+			{.nmask = 0b1000'0000, .uv = {{ {0.0f, 0.75f}, {0.0f, 1.0f}, {0.25f, 0.75f}, {0.25f, 1.0f} }} },
+			// right side
+			{.nmask = 0b0001'0000, .uv = {{ {0.0f, 0.25f}, {0.0f, 0.5f}, {0.25f, 0.25f}, {0.25f, 0.5f} }} },
+			{.nmask = 0b1001'0000, .uv = {{ {0.0f, 0.25f}, {0.0f, 0.5f}, {0.25f, 0.25f}, {0.25f, 0.5f} }} },
+			// bottom side
+			{.nmask = 0b1100'0000, .uv = {{ {0.25f, 0.75f}, {0.25f, 1.0f}, {0.5f, 0.75f}, {0.5f, 1.0f} }} },
+			{.nmask = 0b0100'0000, .uv = {{ {0.25f, 0.75f}, {0.25f, 1.0f}, {0.5f, 0.75f}, {0.5f, 1.0f} }} },
+			// inner corner
+			{.nmask = 0b1101'0000, .uv = {{ {0.5f, 0.25f}, {0.5f, 0.5f}, {0.75f, 0.25f}, {0.75f, 0.5f} }} },
+			{.nmask = 0b0101'0000, .uv = {{ {0.5f, 0.25f}, {0.5f, 0.5f}, {0.75f, 0.25f}, {0.75f, 0.5f} }} },
+		},
+		.nmask = 0b1101'0000
+	};
+	static const TerrainQuadParams LeftTopQuad = {
+		.verts = {{
+			{.pos = {0.0f, 0.5f}, .points = {{0, 0}, {0, 1}} },
+			{.pos = {0.0f, 1.0f}, .points = {{0, 1}        } },
+			{.pos = {0.5f, 0.5f}, .points = {{0, 1}, {1, 0}} },
+			{.pos = {0.5f, 1.0f}, .points = {{0, 1}, {1, 1}} },
+		}},
+		.blend = {
+			// corner
+			{.nmask = 0b0000'0001, .uv = {{ {0.75f, 0.0f}, {0.75f, 0.25f}, {1.0f, 0.0f}, {1.0f, 0.25f} }} },
+			// left side
+			{.nmask = 0b0000'1001, .uv = {{ {0.75f, 0.5f}, {0.75f, 0.75f}, {1.0f, 0.5f}, {1.0f, 0.75f} }} },
+			{.nmask = 0b0000'1000, .uv = {{ {0.75f, 0.5f}, {0.75f, 0.75f}, {1.0f, 0.5f}, {1.0f, 0.75f} }} },
+			// top side
+			{.nmask = 0b0000'0011, .uv = {{ {0.25f, 0.0f}, {0.25f, 0.25f}, {0.5f, 0.0f}, {0.5f, 0.25f} }} },
+			{.nmask = 0b0000'0010, .uv = {{ {0.25f, 0.0f}, {0.25f, 0.25f}, {0.5f, 0.0f}, {0.5f, 0.25f} }} },
+			// inner corner
+			{.nmask = 0b0000'1011, .uv = {{ {0.25f, 0.5f}, {0.25f, 0.75f}, {0.5f, 0.5f}, {0.5f, 0.75f} }} },
+			{.nmask = 0b0000'1010, .uv = {{ {0.25f, 0.5f}, {0.25f, 0.75f}, {0.5f, 0.5f}, {0.5f, 0.75f} }} },
+		},
+		.nmask = 0b0000'1011
+	};
+	static const TerrainQuadParams RightTopQuad = {
+		.verts = {{
+			{.pos = {0.5f, 0.5f}, .points = {{0, 1}, {1, 0}} },
+			{.pos = {0.5f, 1.0f}, .points = {{0, 1}, {1, 1}} },
+			{.pos = {1.0f, 0.5f}, .points = {{1, 0}, {1, 1}} },
+			{.pos = {1.0f, 1.0f}, .points = {{1, 1}        } },
+		}},
+		.blend = {
+			// corner
+			{.nmask = 0b0000'0100, .uv = {{ {0.0f, 0.0f}, {0.0f, 0.25f}, {0.25f, 0.0f}, {0.25f, 0.25f} }} },
+			// right side
+			{.nmask = 0b0001'0100, .uv = {{ {0.0f, 0.5f}, {0.0f, 0.75f}, {0.25f, 0.5f}, {0.25f, 0.75f} }} },
+			{.nmask = 0b0001'0000, .uv = {{ {0.0f, 0.5f}, {0.0f, 0.75f}, {0.25f, 0.5f}, {0.25f, 0.75f} }} },
+			// top side
+			{.nmask = 0b0000'0010, .uv = {{ {0.5f, 0.0f}, {0.5f, 0.25f}, {0.75f, 0.0f}, {0.75f, 0.25f} }} },
+			{.nmask = 0b0000'0110, .uv = {{ {0.5f, 0.0f}, {0.5f, 0.25f}, {0.75f, 0.0f}, {0.75f, 0.25f} }} },
+			// inner corner
+			{.nmask = 0b0001'0110, .uv = {{ {0.5f, 0.5f}, {0.5f, 0.75f}, {0.75f, 0.5f}, {0.75f, 0.75f} }} },
+		},
+		.nmask = 0b0001'0110
+	};
+
+	glm::vec3 CalcNormal(Point vtx_pos, const Array2D<float>& chunk_heightmap)
 	{
 		glm::vec3 n;
-		n.x = heights[vtx_pos + Offset::Left] - heights[vtx_pos + Offset::Right];
-		n.y = heights[vtx_pos + Offset::Down] - heights[vtx_pos + Offset::Up];
+		n.x = chunk_heightmap[vtx_pos + Offset::Left] - chunk_heightmap[vtx_pos + Offset::Right];
+		n.y = chunk_heightmap[vtx_pos + Offset::Down] - chunk_heightmap[vtx_pos + Offset::Up];
 		n.z = 2.0f;
 
 		return glm::normalize(n);
 	}
 
-	TerrainVertex GenVertex(Point cell_pos, size_t vtx_index, const Array2D<float>& chunk_heightmap)
+	glm::vec3 CalcAvgNormal(Point cell_pos, const std::vector<Point>& offsets, const Array2D<float>& chunk_heightmap)
+	{
+		glm::vec3 n{0.0f};
+		for (const auto off : offsets) {
+			n += CalcNormal(cell_pos + off, chunk_heightmap);
+		}
+		return glm::normalize(n);
+	}
+
+	float CalcAvgHeight(Point cell_pos, const std::vector<Point>& offsets, const Array2D<float>& chunk_heightmap)
+	{
+		float h = 0.0f;
+		for (const auto off : offsets) {
+			h += chunk_heightmap[cell_pos + off];
+		}
+		return h / static_cast<float>(offsets.size());
+	}
+
+
+	uint8_t CalcNeighboursMask(Point cell_pos, TerrainType type, const Array2D<TerrainType>& chunk_terrain)
+	{
+		uint8_t mask = 0;
+		uint8_t val = 1;
+		for (const auto off : Offset::Neighbors8)
+		{
+			if (chunk_terrain[cell_pos + off] == type) {
+				mask = mask | val;
+			}
+			val = val << 1;
+		}
+		return mask;
+	}
+
+
+	TerrainVertex GenTerrainVertex(Point cell_pos, const TerrainVertexParams& params, const Array2D<float>& chunk_heightmap)
 	{
 		TerrainVertex vtx;
 
-		const Point vtx_pos = cell_pos + CellVertices[vtx_index];
+		vtx.position = Coords::WorldToScene(FPoint{cell_pos} + params.pos);
+		vtx.position.y += CalcAvgHeight(cell_pos, params.points, chunk_heightmap);
 
-		// isometric position
-		const FPoint scene_pos = Coords::WorldToScene(FPoint{vtx_pos});
-		vtx.position = scene_pos;
+		vtx.normal = CalcAvgNormal(cell_pos, params.points, chunk_heightmap);
 
-		// add height
-		vtx.position.y += chunk_heightmap[vtx_pos];
-
-		// UV
-		vtx.uv = FPoint{ CellVertices[vtx_index] };
-
-		// normals
-		vtx.normal = CalcNormal(vtx_pos, chunk_heightmap);
+		vtx.uv = params.pos;
 
 		return vtx;
 	}
 
-	void GenerateUnblendedCell(TerrainTypeMeshData& data, Point cell_pos, const Array2D<float>& chunk_heightmap)
+	void GenerateQuad(const TerrainQuadParams& quad, TerrainTypeMeshData& data, Point cell_pos, uint8_t nmask, const Array2D<float>& chunk_heightmap)
 	{
+		// Find blend mask
+		nmask = nmask & quad.nmask;
+		const FPoint* mask_uvs = nullptr;
+		for (const auto& mask_param : quad.blend) {
+			if (nmask == mask_param.nmask) {
+				mask_uvs = mask_param.uv.data();
+			}
+		}
+		if (!mask_uvs) return;
+
 		// Emit indices
 		const auto base_idx = static_cast<uint16_t>(data.vertices.size());
-		for (const auto idx : CellIndices) {
+		for (const auto idx : QuadIndices) {
 			data.indices.push_back(base_idx + idx);
 		}
 
 		// Emit vertices
-		for (size_t i = 0; i < CellVertexCount; ++i) {
-			data.vertices.push_back(GenVertex(cell_pos, i, chunk_heightmap));
+		for (size_t i = 0; i < quad.verts.size(); ++i)
+		{
+			auto vtx = GenTerrainVertex(cell_pos, quad.verts[i], chunk_heightmap);
+
+			vtx.mask_uv = mask_uvs[i];
+
+			data.vertices.push_back(vtx);
 		}
 	}
 
@@ -73,11 +230,16 @@ namespace Expanse::Game::Terrain
 			const auto cell_type = chunk_terrain[cell_pos];
 			if (cell_type == type)
 			{
-				GenerateUnblendedCell(data, cell_pos, heightmap);
+				GenerateQuad(FullQuad, data, cell_pos, 0, heightmap);
 			}
 			else if (cell_type < type)
 			{
-				// generate blend
+				const auto nmask = CalcNeighboursMask(cell_pos, type, chunk_terrain);
+
+				GenerateQuad(RightTopQuad, data, cell_pos, nmask, heightmap);
+				GenerateQuad(LeftTopQuad, data, cell_pos, nmask, heightmap);
+				GenerateQuad(RightBottomQuad, data, cell_pos, nmask, heightmap);
+				GenerateQuad(LeftBottomQuad, data, cell_pos, nmask, heightmap);	
 			}
 		}
 

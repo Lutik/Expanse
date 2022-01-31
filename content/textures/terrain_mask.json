@@ -1,0 +1,6 @@
+{
+    "image":"content/textures/terrain_mask.png",
+    "filter":"linear",
+    "address":"repeat",
+    "mipmaps":true
+}

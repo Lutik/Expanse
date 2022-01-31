@@ -8,15 +8,18 @@ layout(std140) uniform GlobalMatrices
 };
 
 in vec2 a_position;
-in vec2 a_uv;
+in vec2 a_uv0;
+in vec2 a_uv1;
 in vec3 a_normal;
 
-out vec2 frag_uv;
+out vec2 frag_uv0;
+out vec2 frag_uv1;
 out vec3 frag_normal;
 
 void main()
 {
-  frag_uv = a_uv;
+  frag_uv0 = a_uv0;
+  frag_uv1 = a_uv1;
   frag_normal = a_normal;
   gl_Position = proj * view * vec4(a_position + chunk_pos, 0, 1);
 }
@@ -24,10 +27,12 @@ void main()
 $fragment #version 330 core
 
 uniform sampler2D tex;
+uniform sampler2D mask;
 
 uniform vec3 lightDir = vec3(0.0, 0.0, 1.0);
 
-in vec2 frag_uv;
+in vec2 frag_uv0;
+in vec2 frag_uv1;
 in vec3 frag_normal;
 in vec4 frag_color;
 
@@ -35,9 +40,12 @@ out vec4 fragment_color;
 
 void main()
 {
-  vec4 col = texture(tex, frag_uv);
+  vec3 color = texture(tex, frag_uv0).rgb;
+  float alpha = texture(mask, frag_uv1).r;
 
   float shadow_factor = max(0.0, dot(frag_normal, normalize(lightDir)));
 
-  fragment_color = col * mix(0.2, 1.0, shadow_factor);
+  color = color * mix(0.2, 1.0, shadow_factor);
+
+  fragment_color = vec4(color, alpha);
 }

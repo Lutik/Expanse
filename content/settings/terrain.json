@@ -1,0 +1,8 @@
+{
+    "base_folder":"content/materials/terrain/",
+    "materials":[
+        {"0": "dirt.json"},
+        {"1":"grass.json"},
+        {"2":"stones.json"}
+    ]
+}
