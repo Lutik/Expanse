@@ -133,30 +133,30 @@ namespace Expanse::Game::Terrain
 		.nmask = 0b0001'0110
 	};
 
-	glm::vec3 CalcNormal(Point vtx_pos, const Array2D<float>& chunk_heightmap)
+	glm::vec3 CalcSmoothNormal(Point vtx_pos, const Array2D<HeightType>& chunk_heightmap)
 	{
 		glm::vec3 n;
-		n.x = chunk_heightmap[vtx_pos + Offset::Left] - chunk_heightmap[vtx_pos + Offset::Right];
-		n.y = chunk_heightmap[vtx_pos + Offset::Down] - chunk_heightmap[vtx_pos + Offset::Up];
+		n.x = ToWorldHeight(chunk_heightmap[vtx_pos + Offset::Left] - chunk_heightmap[vtx_pos + Offset::Right]);
+		n.y = ToWorldHeight(chunk_heightmap[vtx_pos + Offset::Down] - chunk_heightmap[vtx_pos + Offset::Up]);
 		n.z = 2.0f;
 
 		return glm::normalize(n);
 	}
 
-	glm::vec3 CalcAvgNormal(Point cell_pos, const std::vector<Point>& offsets, const Array2D<float>& chunk_heightmap)
+	glm::vec3 CalcAvgSmoothNormal(Point cell_pos, const std::vector<Point>& offsets, const Array2D<HeightType>& chunk_heightmap)
 	{
 		glm::vec3 n{0.0f};
 		for (const auto off : offsets) {
-			n += CalcNormal(cell_pos + off, chunk_heightmap);
+			n += CalcSmoothNormal(cell_pos + off, chunk_heightmap);
 		}
 		return glm::normalize(n);
 	}
 
-	float CalcAvgHeight(Point cell_pos, const std::vector<Point>& offsets, const Array2D<float>& chunk_heightmap)
+	float CalcAvgHeight(Point cell_pos, const std::vector<Point>& offsets, const Array2D<HeightType>& chunk_heightmap)
 	{
 		float h = 0.0f;
 		for (const auto off : offsets) {
-			h += chunk_heightmap[cell_pos + off];
+			h += ToWorldHeight(chunk_heightmap[cell_pos + off]);
 		}
 		return h / static_cast<float>(offsets.size());
 	}
@@ -177,21 +177,22 @@ namespace Expanse::Game::Terrain
 	}
 
 
-	TerrainVertex GenTerrainVertex(Point cell_pos, const TerrainVertexParams& params, const Array2D<float>& chunk_heightmap)
+	TerrainVertex GenTerrainVertex(Point cell_pos, const TerrainVertexParams& params, const Array2D<HeightType>& chunk_heightmap)
 	{
 		TerrainVertex vtx;
 
-		vtx.position = Coords::WorldToScene(FPoint{cell_pos} + params.pos);
-		vtx.position.y += CalcAvgHeight(cell_pos, params.points, chunk_heightmap);
+		const auto world_pos = FPoint{cell_pos} + params.pos;
+		const auto height = CalcAvgHeight(cell_pos, params.points, chunk_heightmap);
+		vtx.position = Coords::WorldToScene(world_pos, height);
 
-		vtx.normal = CalcAvgNormal(cell_pos, params.points, chunk_heightmap);
+		vtx.normal = CalcAvgSmoothNormal(cell_pos, params.points, chunk_heightmap);
 
 		vtx.uv = params.pos;
 
 		return vtx;
 	}
 
-	void GenerateQuad(const TerrainQuadParams& quad, TerrainTypeMeshData& data, Point cell_pos, uint8_t nmask, const Array2D<float>& chunk_heightmap)
+	void GenerateQuad(const TerrainQuadParams& quad, TerrainTypeMeshData& data, Point cell_pos, uint8_t nmask, const Array2D<HeightType>& chunk_heightmap)
 	{
 		// Find blend mask
 		nmask = nmask & quad.nmask;
@@ -220,7 +221,7 @@ namespace Expanse::Game::Terrain
 		}
 	}
 
-	TerrainTypeMeshData GenerateRenderDataForChunkLayer(TerrainType type, const Array2D<TerrainType>& chunk_terrain, const Array2D<float>& heightmap)
+	TerrainTypeMeshData GenerateRenderDataForChunkLayer(TerrainType type, const Array2D<TerrainType>& chunk_terrain, const Array2D<HeightType>& heightmap)
 	{
 		TerrainTypeMeshData data;
 		data.type = type;
@@ -246,7 +247,7 @@ namespace Expanse::Game::Terrain
 		return data;
 	}
 
-	TerrainMeshData GenerateTerrainMeshFromCells(const Array2D<TerrainType>& chunk_terrain, const Array2D<float>& chunk_heightmap)
+	TerrainMeshData GenerateTerrainMeshFromCells(const Array2D<TerrainType>& chunk_terrain, const Array2D<HeightType>& chunk_heightmap)
 	{
 		TerrainMeshData data;
 

@@ -25,7 +25,7 @@ namespace Expanse::Game::Terrain
 
 	struct TerrainTypeMeshData
 	{
-		TerrainType type;
+		TerrainType type = 0;
 		std::vector<TerrainVertex> vertices;
 		std::vector<uint16_t> indices;
 	};

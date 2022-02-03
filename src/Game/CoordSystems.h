@@ -38,7 +38,8 @@ namespace Expanse::Coords
 
 	Point WorldToCell(FPoint world_pos, Point world_origin);
 
-	FPoint WorldToScene(FPoint world_pos);
+	FPoint WorldToScene(FPoint world_pos, float height = 0.0f);
+
 	FPoint SceneToWorld(FPoint scene_pos);
 
 	Point CellToChunk(Point cell, int chunk_size);

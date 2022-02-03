@@ -6,7 +6,7 @@
 
 namespace Expanse::Coords
 {
-	static constexpr FPoint Axis[2] = {{ 1.6f, 0.4f }, { -1.0f, 0.75f }};
+	static constexpr FPoint Axis[3] = {{ 1.6f, 0.4f }, { -1.0f, 0.75f }, { 0.0f, 1.0f }};
 
 
 	FRect CellToWorld(Rect cell, Point world_origin)
@@ -71,9 +71,9 @@ namespace Expanse::Coords
 		return Point{ x, y } + world_origin;
 	}
 
-	FPoint WorldToScene(FPoint world_pos)
+	FPoint WorldToScene(FPoint world_pos, float height)
 	{
-		return Axis[0] * world_pos.x + Axis[1] * world_pos.y;
+		return Axis[0] * world_pos.x + Axis[1] * world_pos.y + Axis[2] * height;
 	}
 
 	FPoint SceneToWorld(FPoint scene_pos)

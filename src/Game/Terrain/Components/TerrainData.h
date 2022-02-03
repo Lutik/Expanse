@@ -7,18 +7,21 @@
 
 namespace Expanse::Game::Terrain
 {
-	using TerrainType = int;
+	using TerrainType = uint8_t;
+	using HeightType = int8_t;
+
+	constexpr float ToWorldHeight(HeightType height) { return 0.25f * height; }
 
 	struct TerrainCellsArray
 	{
 		Array2D<TerrainType> types;
-		Array2D<float> heights;
+		Array2D<HeightType> heights;
 
 		TerrainCellsArray() = default;
 
 		explicit TerrainCellsArray(const Rect& area)
 			: types(area, 0)
-			, heights({area.x, area.y, area.w + 1, area.h + 1}, 0.0f)
+			, heights({area.x, area.y, area.w + 1, area.h + 1}, 0)
 		{}
 	};
 

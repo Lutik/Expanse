@@ -12,8 +12,8 @@
 namespace Expanse::Game::Terrain
 {
 	static const std::vector<NoiseHarmonics> height_harmonics = {
-		{ 0.05f, -1.0f, 1.0f },
-		{ 0.27f, -0.5f, 0.5f },
+		{ 0.05f, -6.0f, 6.0f },
+		{ 0.27f, -3.0f, 3.0f },
 	};
 
 	TerrainLoader_Procedural::TerrainLoader_Procedural(uint32_t seed)
@@ -48,7 +48,7 @@ namespace Expanse::Game::Terrain
 		for (const auto local_pos : utils::rect_points{ cells.heights.GetRect() })
 		{
 			const auto cell_pos = Coords::LocalToCell(local_pos, chunk_pos, TerrainChunk::Size);
-			cells.heights[local_pos] = height_gen.Get(FPoint{ cell_pos });
+			cells.heights[local_pos] = static_cast<HeightType>(height_gen.Get(FPoint{ cell_pos }));
 		}
 
 		return cells;
