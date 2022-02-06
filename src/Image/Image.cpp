@@ -4,7 +4,7 @@
 
 namespace stb_utils
 {
-	inline void* malloc(size_t size)
+	void* malloc(size_t size)
 	{
 		return new uint8_t[size];
 	}
@@ -18,7 +18,7 @@ namespace stb_utils
 		return dst;
 	}
 
-	inline void free(void* ptr)
+	void free(void* ptr)
 	{
 		delete[] static_cast<uint8_t*>(ptr);
 	}
