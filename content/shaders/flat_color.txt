@@ -1,0 +1,26 @@
+$vertex #version 330 core
+
+uniform vec2 position;
+layout(std140) uniform GlobalMatrices
+{
+  mat4 view;
+  mat4 proj;
+};
+
+in vec2 a_position;
+
+void main()
+{
+  gl_Position = proj * view * vec4(a_position + position, 0, 1);
+}
+
+$fragment #version 330 core
+
+uniform vec4 color;
+
+out vec4 fragment_color;
+
+void main()
+{
+  fragment_color = color;
+}

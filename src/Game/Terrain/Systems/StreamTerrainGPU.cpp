@@ -34,7 +34,6 @@ namespace Expanse::Game::Terrain
 			for (const auto [mesh, material] : rdata.layers)
 			{
 				renderer->FreeMesh(mesh);
-				//renderer->FreeMaterial(material);
 			}
 		}
 	}

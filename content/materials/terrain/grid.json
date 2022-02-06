@@ -1,0 +1,6 @@
+{
+    "shader":"content/shaders/flat_color.txt",
+    "parameters":{
+        "color":[0.15, 0.15, 0.15, 0.9]
+    }
+}

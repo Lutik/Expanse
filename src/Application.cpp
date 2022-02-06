@@ -11,6 +11,7 @@
 #include "Game/Terrain/Systems/GenerateTerrain.h"
 #include "Game/Terrain/Systems/StreamTerrainGPU.h"
 #include "Game/Terrain/Systems/RenderTerrain.h"
+#include "Game/Terrain/Systems/DrawTerrainGrid.h"
 
 #include "Game/Player/ScrollCameraSystem.h"
 
@@ -191,6 +192,7 @@ namespace Expanse
         auto render_system = systems->AddSystem<Game::RenderWorldSystem>(renderer);
         {
             render_system->AddSystem<Game::Terrain::RenderChunks>(renderer);
+            render_system->AddSystem<Game::Terrain::RenderGrid>(renderer);
         }
 
         auto gui_system = systems->AddSystem<Game::RenderGUISystem>(gui_render);
