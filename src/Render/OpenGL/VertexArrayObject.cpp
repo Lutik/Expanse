@@ -24,6 +24,12 @@ namespace Expanse::Render::GL
 				return GL_FLOAT;
 			}
 		}
+
+		constexpr GLuint RestartIndexFromIndexSize(int index_size)
+		{
+			constexpr auto MaxIndex = std::numeric_limits<GLuint>::max();
+			return MaxIndex >> (8 * (sizeof(GLuint) - index_size));
+		}
 	}
 
 	void VertexArrayManager::VertexArray::Create()
@@ -204,6 +210,14 @@ namespace Expanse::Render::GL
 		{
 			auto& vb = vertex_arrays[mesh.index];
 			glBindVertexArray(vb.vao);
+
+			if (last_index_size != vb.index_size)
+			{
+				last_index_size = vb.index_size;
+				const GLuint restart_idx = RestartIndexFromIndexSize(vb.index_size);
+				glPrimitiveRestartIndex(restart_idx);
+			}
+
 			return &vb;
 		}
 		return nullptr;

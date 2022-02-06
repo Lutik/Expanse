@@ -16,6 +16,7 @@ namespace Expanse::Render::GL
 		LogOpenGLInfo();
 
 		glEnable(GL_SCISSOR_TEST);
+		glEnable(GL_PRIMITIVE_RESTART);
 
 		ResetScissor();
 		ResetViewport();

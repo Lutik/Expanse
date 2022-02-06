@@ -49,5 +49,7 @@ namespace Expanse::Render::GL
 		VertexArray* Bind(Mesh mesh);
 
 		std::vector<VertexArray> vertex_arrays;
+
+		int last_index_size = 0;
 	};
 }

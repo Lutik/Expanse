@@ -158,4 +158,7 @@ namespace Expanse::Render
 	using RendererPtr = std::unique_ptr<IRenderer>;
 
 	RendererPtr CreateOpenGLRenderer(Point window_size, Point framebuffer_size);
+
+	template<typename IndexType>
+	inline constexpr auto RestartIndex = std::numeric_limits<IndexType>::max();
 }
