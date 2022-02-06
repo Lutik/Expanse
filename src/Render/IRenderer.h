@@ -83,22 +83,27 @@ namespace Expanse::Render
 			SetMeshIndices(mesh, indices, sizeof(std::ranges::range_value_t<IndexRange>));
 		}
 
+		Mesh CreateMesh(PrimitiveType prim_type)
+		{
+			auto mesh = CreateMesh();
+			SetMeshPrimitiveType(mesh, prim_type);
+			return mesh;
+		}
+
 		template<std::ranges::contiguous_range VertexRange>
 		Mesh CreateMesh(const VertexRange& vertices, PrimitiveType prim_type = PrimitiveType::Triangles)
 		{
-			auto mesh = CreateMesh();
+			auto mesh = CreateMesh(prim_type);
 			SetMeshVertices(mesh, vertices);
-			SetMeshPrimitiveType(mesh, prim_type);
 			return mesh;
 		}
 
 		template<std::ranges::contiguous_range VertexRange, std::ranges::contiguous_range IndexRange>
 		Mesh CreateMesh(const VertexRange& vertices, const IndexRange& indices, PrimitiveType prim_type = PrimitiveType::Triangles)
 		{
-			auto mesh = CreateMesh();
+			auto mesh = CreateMesh(prim_type);
 			SetMeshVertices(mesh, vertices);
 			SetMeshIndices(mesh, indices);
-			SetMeshPrimitiveType(mesh, prim_type);
 			return mesh;
 		}
 
